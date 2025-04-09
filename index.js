@@ -18,10 +18,28 @@ app.post("/api/submit", async (req, res) => {
   try {
     const { discord_id, ...scores } = req.body;
 
+    // Check for previous submission
+    const existing = await collection.findOne(
+      { discord_id },
+      { sort: { submitted_at: -1 } }
+    );
+
+    const now = new Date();
+
+    if (existing) {
+      const lastSubmission = new Date(existing.submitted_at);
+      const diffDays = (now - lastSubmission) / (1000 * 60 * 60 * 24);
+
+      if (diffDays < 7) {
+        return res.status(403).send(`❌ You must wait ${Math.ceil(7 - diffDays)} day(s) before submitting again.`);
+      }
+    }
+
+    // Save new entry
     await collection.insertOne({
       discord_id,
       scores,
-      submitted_at: new Date()
+      submitted_at: now
     });
 
     res.status(200).send("✅ Data saved to MongoDB!");
