@@ -1,0 +1,23 @@
+/* Glassmorphism Styles */
+.pricing-options {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px; /* Adjust the gap between pricing options as needed */
+}
+
+.pricing-option {
+    flex: 1 1 calc(50% - 40px); /* Two cards per row with equal spacing */
+    max-width: calc(50% - 40px); /* Ensure max-width matches the flex basis */
+    text-align: center;
+    border: 1px solid #ccc;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin: 10px; /* Add margin to ensure spacing around each option */
+}
+
+
+.pricing-option:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
