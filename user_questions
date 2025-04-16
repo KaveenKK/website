@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Complete Your Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 40px;
+      width: 100%;
+      max-width: 700px;
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+      color: white;
+    }
+    .card h2 {
+      margin-bottom: 20px;
+      font-weight: 600;
+      font-size: 28px;
+      text-align: center;
+    }
+    .step {
+      display: none;
+    }
+    .step.active {
+      display: block;
+    }
+    .form-group {
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 16px;
+      color: #e0e0e0;
+    }
+    input[type=range] {
+      width: 100%;
+    }
+    .slider-value {
+      margin-top: 5px;
+      font-size: 14px;
+      text-align: right;
+      color: #ccc;
+    }
+    .channels-group {
+      margin-bottom: 20px;
+    }
+    .channels-group h3 {
+      margin-bottom: 10px;
+      font-size: 20px;
+    }
+    .channels-group label {
+      display: inline-block;
+      margin-right: 15px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .channels-group input[type="checkbox"] {
+      margin-right: 5px;
+    }
+    button {
+      margin-top: 20px;
+      width: 48%;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease-in-out;
+    }
+    button:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+    }
+    .btn-group {
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Complete Your Profile</h2>
+    <form id="multiStepForm" action="https://nevengiweb-backend.onrender.com/api/submit" method="POST">
+      <input type="hidden" id="discord_id" name="discord_id" value="" />
+
+      <!-- Step 1: Life Sector Ratings -->
+      <div class="step active" id="step1">
+        <h3>Rate Your Life Sectors</h3>
+        <div class="form-group">
+          <label for="physical">Physical Health</label>
+          <input type="range" name="physical" id="physical" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_physical">5</div>
+        </div>
+        <div class="form-group">
+          <label for="mental">Mental & Emotional Wellbeing</label>
+          <input type="range" name="mental" id="mental" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_mental">5</div>
+        </div>
+        <div class="form-group">
+          <label for="social">Social Confidence</label>
+          <input type="range" name="social" id="social" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_social">5</div>
+        </div>
+        <div class="form-group">
+          <label for="love">Love & Relationships</label>
+          <input type="range" name="love" id="love" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_love">5</div>
+        </div>
+        <div class="form-group">
+          <label for="career">Career or Business</label>
+          <input type="range" name="career" id="career" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_career">5</div>
+        </div>
+        <div class="form-group">
+          <label for="creative">Creative Expression</label>
+          <input type="range" name="creative" id="creative" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_creative">5</div>
+        </div>
+        <div class="form-group">
+          <label for="travel">Travel / Adventure</label>
+          <input type="range" name="travel" id="travel" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_travel">5</div>
+        </div>
+        <div class="form-group">
+          <label for="family">Family & Close Connections</label>
+          <input type="range" name="family" id="family" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_family">5</div>
+        </div>
+        <div class="form-group">
+          <label for="style">Personal Style & Appearance</label>
+          <input type="range" name="style" id="style" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_style">5</div>
+        </div>
+        <div class="form-group">
+          <label for="spiritual">Spirituality & Mindset</label>
+          <input type="range" name="spiritual" id="spiritual" min="1" max="10" value="5" oninput="updateValue(this)">
+          <div class="slider-value" id="value_spiritual">5</div>
+        </div>
+        <div class="btn-group">
+          <button type="button" onclick="nextStep()">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Additional Questions & Terms -->
+      <div class="step" id="step2">
+        <h3>Additional Information</h3>
+        <!-- Example additional question -->
+        <div class="form-group">
+          <label for="additional">Tell us something else:</label>
+          <input type="text" id="additional" name="additional" placeholder="Your answer here..." />
+        </div>
+        <!-- Terms & Conditions Checkbox -->
+        <div class="form-group">
+          <input type="checkbox" name="myCheckbox" required>
+          <h4>I have read and understood the Terms & Conditions of Nevengi and agree to proceed.</h4>
+        </div>
+        <div class="btn-group">
+          <button type="button" onclick="prevStep()">Back</button>
+          <button type="button" onclick="nextStep()">Next</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Channel Selection -->
+      <div class="step" id="step3">
+        <h3>Select the Channels You Like</h3>
+
+        <!-- Category 1: Physical Health -->
+        <div class="channels-group">
+          <h3>Physical Health 🏋️‍♂️</h3>
+          <label><input type="checkbox" name="channel_physical_men"> Physical Fitness for Men</label>
+          <label><input type="checkbox" name="channel_physical_women"> Physical Fitness for Women</label>
+          <label><input type="checkbox" name="channel_physical_health"> Physical Health</label>
+        </div>
+
+        <!-- Category 2: Mental & Emotional Wellbeing -->
+        <div class="channels-group">
+          <h3>Mental & Emotional Wellbeing 🧘‍♂️</h3>
+          <label><input type="checkbox" name="channel_yoga"> Yoga</label>
+          <label><input type="checkbox" name="channel_meditation"> Meditation</label>
+        </div>
+
+        <!-- Category 3: Social Confidence -->
+        <div class="channels-group">
+          <h3>Social Confidence 🗣️</h3>
+          <label><input type="checkbox" name="channel_public_speaking"> Public Speaking</label>
+          <label><input type="checkbox" name="channel_social_confidence"> Social Confidence</label>
+          <label><input type="checkbox" name="channel_influencing"> Influencing</label>
+        </div>
+
+        <!-- Category 4: Love & Relationships -->
+        <div class="channels-group">
+          <h3>Love & Relationships ❤️</h3>
+          <label><input type="checkbox" name="channel_dating_men"> Dating for Men</label>
+          <label><input type="checkbox" name="channel_dating_women"> Dating for Women</label>
+        </div>
+
+        <!-- Category 5: Career or Business -->
+        <div class="channels-group">
+          <h3>Career or Business 💼</h3>
+          <label><input type="checkbox" name="channel_entrepreneurship"> Entrepreneurship</label>
+          <label><input type="checkbox" name="channel_work_career"> Work and Career</label>
+          <label><input type="checkbox" name="channel_ai"> Artificial Intelligence</label>
+        </div>
+
+        <!-- Category 6: Creative Expression -->
+        <div class="channels-group">
+          <h3>Creative Expression 🎨</h3>
+          <label><input type="checkbox" name="channel_art"> Art</label>
+          <label><input type="checkbox" name="channel_music"> Music</label>
+          <label><input type="checkbox" name="channel_diy"> DIY & Crafting</label>
+        </div>
+
+        <!-- Category 7: Travel / Adventure -->
+        <div class="channels-group">
+          <h3>Travel / Adventure ✈️</h3>
+          <label><input type="checkbox" name="channel_travelling"> Travelling</label>
+          <label><input type="checkbox" name="channel_adrenaline"> Adrenaline Adventure</label>
+        </div>
+
+        <!-- Category 8: Family & Close Connections -->
+        <div class="channels-group">
+          <h3>Family & Close Connections 👨‍👩‍👧‍👦</h3>
+          <label><input type="checkbox" name="channel_family"> Family and Close Friends</label>
+        </div>
+
+        <!-- Category 9: Personal Style & Appearance -->
+        <div class="channels-group">
+          <h3>Personal Style & Appearance 👗</h3>
+          <label><input type="checkbox" name="channel_fashion"> Appearance and Fashion</label>
+          <label><input type="checkbox" name="channel_minimalism"> Minimalism</label>
+        </div>
+
+        <!-- Category 10: Spirituality & Mindset -->
+        <div class="channels-group">
+          <h3>Spirituality & Mindset 🙏</h3>
+          <label><input type="checkbox" name="channel_loa"> Law of Attraction</label>
+          <label><input type="checkbox" name="channel_manifestation"> Manifestation and Visualization</label>
+          <label><input type="checkbox" name="channel_spirituality"> Spirituality</label>
+          <label><input type="checkbox" name="channel_stoicism"> Stoicism and Philosophy</label>
+          <label><input type="checkbox" name="channel_gratitude"> Gratitude</label>
+          <label><input type="checkbox" name="channel_masculine_energy"> Masculine Energy</label>
+          <label><input type="checkbox" name="channel_feminine_energy"> Feminine Energy</label>
+          <label><input type="checkbox" name="channel_tarot"> Tarot</label>
+        </div>
+
+        <div class="btn-group">
+          <button type="button" onclick="prevStep()">Back</button>
+          <button type="submit">Submit</button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Manage step navigation
+    let currentStep = 1;
+    const totalSteps = 3;
+
+    function showStep(step) {
+      for (let i = 1; i <= totalSteps; i++) {
+        document.getElementById('step' + i).classList.remove('active');
+      }
+      document.getElementById('step' + step).classList.add('active');
+      currentStep = step;
+    }
+
+    function nextStep() {
+      if (currentStep < totalSteps) {
+        showStep(currentStep + 1);
+      }
+    }
+
+    function prevStep() {
+      if (currentStep > 1) {
+        showStep(currentStep - 1);
+      }
+    }
+
+    // Auto-fill Discord ID from URL parameter
+    const params = new URLSearchParams(window.location.search);
+    const discordId = params.get('discord_id');
+    if (discordId) {
+      document.getElementById('discord_id').value = discordId;
+    }
+
+    // Update slider value display for range inputs
+    function updateValue(slider) {
+      const display = document.getElementById(`value_${slider.id}`);
+      if (display) {
+        display.textContent = slider.value;
+      }
+    }
+  </script>
+</body>
+</html>
