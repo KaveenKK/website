@@ -1,0 +1,266 @@
+html {
+    scroll-behavior: smooth;
+  }
+
+@media screen and (max-width: 600px) {
+    .brand-name {
+        font-size: 1.2rem;
+        letter-spacing: 0.3rem;
+        word-break: keep-all;
+        white-space: nowrap;
+    }
+  
+    .container {
+      padding: 0 1rem;
+      text-align: center;
+    }
+  
+    .logo-icon {
+      width: 60px;
+    }
+  
+    .highlight, .container p {
+      font-size: 1rem;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+}
+  
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-image: url('images/backgorund.webp'); /* Replace with your image path */
+    background-size: cover; /* Ensures the image covers the whole background */
+    background-position: center; /* Centers the image */
+    background-repeat: no-repeat; /* Prevents the image from repeating */
+    color: #ffffff;
+    overflow-x: hidden;
+}
+
+* {
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+  }
+  
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+    position: relative; /* Ensure container is positioned */
+    z-index: 1; /* Ensure container is above other elements */
+}
+
+.nevengi-brand {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+  
+.logo-icon {
+    width: 100px;
+    height: auto;
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+}
+  
+.brand-name {
+    font-family: 'Orbitron', sans-serif;
+    letter-spacing: 1rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: white; /* Change to black if on a light background */
+    text-transform: uppercase;
+    margin: 0;
+}
+  
+.header {
+    /*background: linear-gradient(135deg, #000000 30%, #243d30);*/
+    /*color: #fff;*/
+    padding: 100px 20px;
+    border-bottom-left-radius: 40px;
+    border-bottom-right-radius: 40px;
+    /*box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);*/
+    position: relative;
+    overflow: hidden;
+    z-index: 1; /* Ensure header is above other elements */
+
+    background: rgba(255, 255, 255, 0.1); /* Light background with transparency */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Light border */
+    backdrop-filter: blur(10px); /* Blur effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    /*padding: 20px;*/
+    /*border-radius: 20px;*/
+}
+.header::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 150%;
+    height: 150%;
+    background: radial-gradient(circle, rgb(255, 255, 255) 0%, rgba(34, 197, 94, 0) 70%);
+    animation: pulse 2s ease-in-out infinite;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 0; /* Ensure the pseudo-element is below the header content */
+}
+@keyframes pulse {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+    50% { transform: translate(-50%, -50%) scale(1.05); opacity: 0.4; }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+}
+.header h1 {
+    font-size: 4rem;
+    margin-bottom: 10px;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+.header p {
+    font-size: 1.4rem;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+.highlight {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    color: #fff;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+    animation: glow 1.5s ease-in-out infinite alternate;
+}
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px #0f2717, 0 0 10px #0f3c24, 0 0 15px #103225, 0 0 20px #0d2f17, 0 0 25px #07180c, 0 0 30px #271010, 0 0 35px #525252;
+    }
+    to {
+        text-shadow: 0 0 10px #141414, 0 0 15px #080908, 0 0 20px #111211, 0 0 25px #0c0e0d, 0 0 30px #232624, 0 0 35px #000000, 0 0 40px #0f0f0f;
+    }
+}
+.btn {
+    display: inline-block;
+    padding: 14px 40px;
+    background: linear-gradient(135deg, #000000, #77837c);
+    color: #fff;
+    text-decoration: none;
+    border-radius: 50px;
+    box-shadow: 0 6px 12px rgba(245, 255, 249, 0.4);
+    transition: all 0.3s ease;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: 10px;
+    z-index: 1; /* Ensure buttons are above other elements */
+    position: relative; /* Ensure buttons are positioned */
+}
+.btn:hover {
+    transform: translateY(-3px) scale(1.05);
+    background: linear-gradient(135deg, #046228, #0d4722);
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.6);
+}
+.features, .pricing {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 60px 0;
+    flex-wrap: wrap;
+}
+.feature, .pricing-option {
+    background-color: rgba(255, 255, 255, 0.1); /* Light glass effect */
+
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    width: 320px;
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    color: #ffffff; /* Set text color to black */
+}
+.feature img, .pricing-option img {
+    width: 150px; /* Increase the width */
+    height: auto; /* Maintain aspect ratio */
+}
+.feature-content, .pricing-content {
+    display: block;
+    margin-top: 10px;
+}
+.feature:hover .feature-content, .pricing-option:hover .pricing-content {
+    display: block;
+}
+.how-it-works h2, .pricing h2 {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+.footer {
+    background-color: #296d3e;
+    color: #ccc;
+    padding: 20px;
+    text-align: center;
+    font-size: 0.9rem;
+    box-shadow: 0 -4px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.recommended-label {
+    display: inline-block;
+    background-color: #ffffff;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    font-weight: bold;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 3rem;
+    }
+    .header p {
+        font-size: 1.2rem;
+    }
+    .btn {
+        padding: 12px 30px;
+        font-size: 0.9rem;
+    }
+    .feature, .pricing-option {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header h1 {
+        font-size: 2.5rem;
+    }
+    .header p {
+        font-size: 1rem;
+    }
+    .btn {
+        padding: 10px 20px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Add this new class for glassmorphism effect */
+.glassmorphism {
+    background: rgba(255, 255, 255, 0.1); /* Light background with transparency */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Light border */
+    backdrop-filter: blur(10px); /* Blur effect */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    padding: 20px;
+    border-radius: 20px;
+}
+
+.feature h3, .feature-content {
+    color: #ffffff; /* Set text color to black */
+}
