@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config();
+if (!process.env.MONGODB_URI) dotenv.config();
 import express from "express";
 import { MongoClient } from "mongodb";
 import cors from "cors";
