@@ -3,7 +3,6 @@ import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
-app.use("/api", authRoutes);
 
 
 dotenv.config();
@@ -107,6 +106,8 @@ const __dirname = path.dirname(__filename);
 
 // Serve all static files (HTML, CSS, JS, images)
 app.use(express.static(__dirname));
+app.use("/api", authRoutes);
+
 
 // Show index.html on homepage
 app.get("/", (req, res) => {
