@@ -11,6 +11,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+console.log("🔍 MONGODB_URI:", process.env.MONGODB_URI);
 const client = new MongoClient(process.env.MONGODB_URI);
 await client.connect();
 const db = client.db(); // Uses DB name from URI
