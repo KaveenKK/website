@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Coach Dashboard</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 30px;
+      background: #f4f4f4;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #222;
+    }
+    p {
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Welcome, <span id="name">Coach</span></h1>
+    <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+    <p><strong>Bio:</strong> <span id="bio">Loading...</span></p>
+    <p><strong>Specialties:</strong> <span id="specialties">Loading...</span></p>
+    <p><strong>Experience:</strong> <span id="experience">Loading...</span></p>
+  </div>
+
+  <script>
+    const token = new URLSearchParams(window.location.search).get('token');
+
+    if (!token) {
+      document.body.innerHTML = "<h2>No token found. Please log in again.</h2>";
+    } else {
+      fetch("/api/profile", {
+        headers: {
+          Authorization: "Bearer " + token
+        }
+      })
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("name").innerText = data.name || "Coach";
+        document.getElementById("email").innerText = data.email || "Not available";
+        document.getElementById("bio").innerText = data.bio || "Not set";
+        document.getElementById("specialties").innerText = data.specialties?.join(", ") || "Not listed";
+        document.getElementById("experience").innerText = data.experience || "Not added";
+      })
+      .catch(err => {
+        console.error("Failed to fetch profile:", err);
+        document.body.innerHTML = "<h2>Failed to load profile. Try logging in again.</h2>";
+      });
+    }
+  </script>
+</body>
+</html>
