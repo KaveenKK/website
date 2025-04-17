@@ -1,5 +1,28 @@
 import dotenv from "dotenv";
 if (!process.env.MONGODB_URI) dotenv.config();
+console.log("🚀 Using Mongo URI:", process.env.MONGODB_URI);
+
+
+import mongoose from "mongoose";
+import dns from "dns";
+dns.setDefaultResultOrder("ipv4first"); // Fix weird DNS issues on Railway
+
+const uri = process.env.MONGODB_URI;
+
+mongoose.connect(uri, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 10000, // Wait 10s max to connect
+})
+.then(() => {
+  console.log("✅ MongoDB connected");
+})
+.catch((err) => {
+  console.error("❌ MongoDB error:", err.message);
+});
+
+
+
 import express from "express";
 import { MongoClient } from "mongodb";
 import cors from "cors";
