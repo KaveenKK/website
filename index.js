@@ -96,9 +96,20 @@ app.post("/api/submit", async (req, res) => {
   }
 });
 
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve all static files (HTML, CSS, JS, images)
+app.use(express.static(__dirname));
+
+// Show index.html on homepage
 app.get("/", (req, res) => {
-  res.send("✅ Nevengi backend is running.");
+  res.sendFile(path.join(__dirname, "index.html"));
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
