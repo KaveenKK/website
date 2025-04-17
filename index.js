@@ -2,6 +2,9 @@ import express from "express";
 import { MongoClient } from "mongodb";
 import dotenv from "dotenv";
 import cors from "cors";
+import authRoutes from "./routes/auth.js";
+app.use("/api", authRoutes);
+
 
 dotenv.config();
 const app = express();
