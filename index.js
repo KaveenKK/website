@@ -27,6 +27,7 @@ import express from "express";
 import { MongoClient } from "mongodb";
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
+import userRoutes from "./routes/user.js";
 const app = express();
 import profileRoutes from "./routes/profile.js";
 app.use("/api", profileRoutes);
