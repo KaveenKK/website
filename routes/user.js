@@ -51,11 +51,8 @@ router.post("/submit", async (req, res) => {
   try {
 
 
-    console.log("Update payload:", {
-      gender,
-      country,
-      date_of_birth
-    });
+    console.log("🧪🧪🧪 YES – This backend is being used");
+
 
     const updated = await User.updateOne(
       { discord_id: stringDiscordId },
