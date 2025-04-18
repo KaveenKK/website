@@ -165,24 +165,68 @@
         </div>
       </div>
 
-      <!-- Step 2: Additional Questions & Terms -->
+      <!-- Step 2: Identity Information -->
+
       <div class="step" id="step2">
-        <h3>Additional Information</h3>
-        <!-- Example additional question -->
+        <h3>Identity Details</h3>
+        <!-- Date of Birth -->
+  
         <div class="form-group">
-          <label for="additional">Tell us something else:</label>
-          <input type="text" id="additional" name="additional" placeholder="Your answer here..." />
+    
+          <label for="date_of_birth">Date of Birth:</label>
+    
+          <input type="date" id="date_of_birth" name="date_of_birth" required />
+    
+          <small id="dob-warning" style="color: red; display: none;"></small>
+  
         </div>
-        <!-- Terms & Conditions Checkbox -->
+
+  
+        <!-- Country (Required) -->
+  
         <div class="form-group">
-          <input type="checkbox" name="myCheckbox" required>
-          <h4>I have read and understood the Terms & Conditions of Nevengi and agree to proceed.</h4>
+    
+          <label for="country">Country (Required):</label>
+    
+          <input type="text" id="country" name="country" required placeholder="Enter your country" />
+  
         </div>
+
+  
+        <!-- Optional Address Fields (can be expanded later) -->
+  
+        <!-- Gender -->
+  
+        <div class="form-group">
+    
+          <label for="gender">Gender:</label>
+    
+          <select id="gender" name="gender" required>
+      
+            <option value="">Select</option>
+      
+            <option value="male">Male</option>
+      
+            <option value="female">Female</option>
+    
+          </select>
+  
+        </div>
+
+  
+        <!-- Buttons -->
+  
         <div class="btn-group">
+    
           <button type="button" onclick="prevStep()">Back</button>
-          <button type="button" onclick="nextStep()">Next</button>
+    
+          <button type="button" onclick="validateStep2()">Next</button>
+  
         </div>
+
       </div>
+
+
 
       <!-- Step 3: Channel Selection -->
       <div class="step" id="step3">
@@ -267,6 +311,22 @@
           <label><input type="checkbox" name="channel_tarot"> Tarot</label>
         </div>
 
+        <!-- Terms & Conditions Checkbox -->
+        <div class="form-group">
+          <label style="display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" name="myCheckbox" id="myCheckbox" required>
+            <span>
+              I have read and understood the 
+              <a href="/terms.html" target="_blank" style="color: #4fc3f7; text-decoration: underline;">
+                Terms & Conditions
+              </a> 
+              of Nevengi and agree to proceed.
+            </span>
+          </label>
+          <p style="color: #ccc; font-size: 12px; margin-top: 5px;">*required</p>
+        </div>
+           
+
         <div class="btn-group">
           <button type="button" onclick="prevStep()">Back</button>
           <button type="submit">Submit</button>
@@ -314,6 +374,64 @@
         display.textContent = slider.value;
       }
     }
+
+
+  
+  // Add this to the end of your existing <script> section
+  function calculateAge(dob) {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  }
+
+  function validateStep2() {
+    const dob = document.getElementById("date_of_birth").value;
+    const country = document.getElementById("country").value.trim();
+    const gender = document.getElementById("gender").value;
+    const warning = document.getElementById("dob-warning");
+
+    warning.style.display = "none";
+    warning.textContent = "";
+
+    if (!dob) {
+      warning.textContent = "Please enter your date of birth.";
+      warning.style.display = "block";
+      return;
+    }
+
+    const age = calculateAge(dob);
+
+    if (age < 13) {
+      warning.textContent = "Sorry, you must be at least 13 years old to join Nevengi.";
+      warning.style.display = "block";
+      return;
+    }
+
+    if (age > 100) {
+      warning.textContent = "Please enter a valid age below 100.";
+      warning.style.display = "block";
+      return;
+    }
+
+    if (!country) {
+      alert("Please enter your country.");
+      return;
+    }
+
+    if (!gender) {
+      alert("Please select your gender.");
+      return;
+    }
+
+    nextStep(); // Everything is valid — go to the next step
+  }
+
+
   </script>
 </body>
 </html>
