@@ -1,7 +1,14 @@
 import mongoose from "mongoose";
 
-const UserSchema = new mongoose.Schema({
-  discord_id: String,
+const userSchema = new mongoose.Schema({
+  discord_id: { type: String, required: true, unique: true },
+  username: String,
+  email: String,
+  verified: Boolean,
+  verification_code: String,
+  code_expiry: Date,
+
+  // Life ratings
   physical: Number,
   mental: Number,
   social: Number,
@@ -12,13 +19,16 @@ const UserSchema = new mongoose.Schema({
   family: Number,
   style: Number,
   spiritual: Number,
-  additional: String,
+
+  // Identity
   date_of_birth: Date,
   country: String,
   gender: String,
   identity_completed: Boolean,
+
+  // Additional fields
+  additional: String,
   channels: [String],
 });
-
 
 export default mongoose.model("User", userSchema);
