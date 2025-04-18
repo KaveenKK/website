@@ -17,10 +17,29 @@ router.post("/submit", async (req, res) => {
     style,
     spiritual,
     additional,
+    date_of_birth,
+    country,
+    gender,
     ...rest
   } = req.body;
 
   if (!discord_id) return res.status(400).json({ error: "Missing discord_id" });
+
+  // Age validation
+  if (!date_of_birth) return res.status(400).json({ error: "Date of birth is required" });
+  const birthDate = new Date(date_of_birth);
+  const today = new Date();
+  let age = today.getFullYear() - birthDate.getFullYear();
+  const m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+  if (age < 13) {
+    return res.status(403).json({ error: "You must be at least 13 years old to register" });
+  }
+
+  if (age > 100) {
+    return res.status(400).json({ error: "Please enter a valid age under 100" });
+  }
 
   // Extract selected channels from checkboxes
   const channels = Object.entries(rest)
@@ -43,6 +62,10 @@ router.post("/submit", async (req, res) => {
           style,
           spiritual,
           additional,
+          date_of_birth,
+          country,
+          gender,
+          identity_completed: true,
           channels,
         },
       },
