@@ -24,7 +24,7 @@ mongoose.connect(uri, {
 
 
 import express from "express";
-import { MongoClient } from "mongodb";
+
 import cors from "cors";
 import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/user.js";
@@ -39,27 +39,65 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 console.log("🔍 MONGODB_URI:", process.env.MONGODB_URI);
-const client = new MongoClient(process.env.MONGODB_URI);
-await client.connect();
-const db = client.db(); // Uses DB name from URI
-const collection = db.collection("life_dashboard");
+import User from "./models/User.js"; // make sure this path is correct
 
 app.post("/api/submit", async (req, res) => {
   try {
-    const { discord_id, ...scores } = req.body;
-    
-    // Optional: Check for previous submissions (cooldown logic) here if needed...
-    // For example, check if a document exists and was submitted < 7 days ago.
-
-    // Insert the form data into MongoDB
-    await collection.insertOne({
+    const {
       discord_id,
-      scores,
-      submitted_at: new Date()
-    });
+      physical,
+      mental,
+      social,
+      love,
+      career,
+      creative,
+      travel,
+      family,
+      style,
+      spiritual,
+      additional,
+      ...rest
+    } = req.body;
 
-    // Compose a success HTML response
-    const successMessage = `
+    if (!discord_id) return res.status(400).send("Missing discord_id");
+
+    // Extract selected channels from checkboxes
+    const channels = Object.entries(rest)
+      .filter(([key, value]) => key.startsWith("channel_") && value === "on")
+      .map(([key]) => key.replace("channel_", ""));
+
+    const updatedUser = await User.findOneAndUpdate(
+      { discord_id },
+      {
+        $set: {
+          physical,
+          mental,
+          social,
+          love,
+          career,
+          creative,
+          travel,
+          family,
+          style,
+          spiritual,
+          additional,
+          channels,
+        },
+      },
+      { new: true, upsert: true }
+    );
+
+    const successMessage = `...`; // reuse your beautiful HTML message
+    res.status(200).send(successMessage);
+
+  } catch (err) {
+    console.error("Error saving data:", err);
+    res.status(500).send("❌ Failed to save");
+  }
+});
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -119,12 +157,7 @@ app.post("/api/submit", async (req, res) => {
 </html>
     `;
     
-    res.status(200).send(successMessage);
-  } catch (err) {
-    console.error("Error saving data:", err);
-    res.status(500).send("❌ Failed to save");
-  }
-});
+
 
 import path from "path";
 import { fileURLToPath } from "url";
