@@ -26,6 +26,7 @@ router.post("/submit", async (req, res) => {
   if (!discord_id) return res.status(400).json({ error: "Missing discord_id" });
 
   const stringDiscordId = String(discord_id);
+  console.log("🧪 Incoming form data:", req.body);
 
   // Validate age
   const birthDate = new Date(date_of_birth);
