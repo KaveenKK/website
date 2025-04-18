@@ -48,6 +48,14 @@ router.post("/submit", async (req, res) => {
     .map(([key]) => key.replace("channel_", ""));
 
   try {
+
+
+    console.log("Update payload:", {
+      gender,
+      country,
+      date_of_birth
+    });
+
     const updated = await User.updateOne(
       { discord_id: stringDiscordId },
       {
