@@ -1,63 +1,96 @@
 import dotenv from "dotenv";
 if (!process.env.MONGODB_URI) dotenv.config();
-console.log("🚀 Using Mongo URI:", process.env.MONGODB_URI);
 
+console.log("🚀 Using Mongo URI:", process.env.MONGODB_URI);
 
 import mongoose from "mongoose";
 import dns from "dns";
-dns.setDefaultResultOrder("ipv4first"); // Fix weird DNS issues on Railway
+dns.setDefaultResultOrder("ipv4first");
 
 const uri = process.env.MONGODB_URI;
 
 mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 10000, // Wait 10s max to connect
+  serverSelectionTimeoutMS: 10000,
 })
-.then(() => {
-  console.log("✅ MongoDB connected");
-})
-.catch((err) => {
-  console.error("❌ MongoDB error:", err.message);
-});
-
-
+  .then(() => {
+    console.log("✅ MongoDB connected");
+  })
+  .catch((err) => {
+    console.error("❌ MongoDB error:", err.message);
+  });
 
 import express from "express";
-import { MongoClient } from "mongodb";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
+
 import authRoutes from "./routes/auth.js";
-const app = express();
 import profileRoutes from "./routes/profile.js";
-app.use("/api", profileRoutes);
+import User from "./models/User.js";
 
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-
+// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-console.log("🔍 MONGODB_URI:", process.env.MONGODB_URI);
-const client = new MongoClient(process.env.MONGODB_URI);
-await client.connect();
-const db = client.db(); // Uses DB name from URI
-const collection = db.collection("life_dashboard");
+// Mount Routes
+app.use("/api", profileRoutes);
+app.use("/api", authRoutes);
 
+// Submit form (normal users)
 app.post("/api/submit", async (req, res) => {
   try {
-    const { discord_id, ...scores } = req.body;
-    
-    // Optional: Check for previous submissions (cooldown logic) here if needed...
-    // For example, check if a document exists and was submitted < 7 days ago.
-
-    // Insert the form data into MongoDB
-    await collection.insertOne({
+    const {
       discord_id,
-      scores,
-      submitted_at: new Date()
-    });
+      physical,
+      mental,
+      social,
+      love,
+      career,
+      creative,
+      travel,
+      family,
+      style,
+      spiritual,
+      additional,
+      ...rest
+    } = req.body;
 
-    // Compose a success HTML response
+    if (!discord_id) return res.status(400).send("Missing discord_id");
+
+    // Extract selected channels
+    const channels = Object.entries(rest)
+      .filter(([key, value]) => key.startsWith("channel_") && value === "on")
+      .map(([key]) => key.replace("channel_", ""));
+
+    const updatedUser = await User.findOneAndUpdate(
+      { discord_id },
+      {
+        $set: {
+          physical,
+          mental,
+          social,
+          love,
+          career,
+          creative,
+          travel,
+          family,
+          style,
+          spiritual,
+          additional,
+          channels,
+        },
+      },
+      { new: true, upsert: true }
+    );
+
+    // HTML Success Response
     const successMessage = `
 <!DOCTYPE html>
 <html lang="en">
@@ -111,38 +144,30 @@ app.post("/api/submit", async (req, res) => {
   <div class="container">
     <h1>Submission Successful!</h1>
     <p>Your profile has been updated.</p>
-    <p>Please return to the Discord server and use the slash command <strong>/getroles</strong> to get your personalized roles and access channels.</p>
+    <p>Return to the Discord server and use <strong>/getroles</strong> to unlock channels.</p>
     <a href="https://discord.com">Go to Discord</a>
   </div>
 </body>
 </html>
     `;
-    
+
     res.status(200).send(successMessage);
   } catch (err) {
-    console.error("Error saving data:", err);
+    console.error("❌ Error saving data:", err);
     res.status(500).send("❌ Failed to save");
   }
 });
 
-import path from "path";
-import { fileURLToPath } from "url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Serve all static files (HTML, CSS, JS, images)
+// Serve static files
 app.use(express.static(__dirname));
-app.use("/api", authRoutes);
 
-
-// Show index.html on homepage
+// Homepage
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
 
-
+// Start server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
