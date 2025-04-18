@@ -27,7 +27,6 @@ router.post("/submit", async (req, res) => {
 
   const stringDiscordId = String(discord_id);
 
-  // Age validation
   const birthDate = new Date(date_of_birth);
   const today = new Date();
   let age = today.getFullYear() - birthDate.getFullYear();
@@ -46,14 +45,14 @@ router.post("/submit", async (req, res) => {
     .filter(([key, value]) => key.startsWith("channel_") && value === "on")
     .map(([key]) => key.replace("channel_", ""));
 
-  // DEBUG LOGGING
-  console.log("Incoming form data:", {
-    discord_id: stringDiscordId,
-    date_of_birth,
-    age,
-    gender,
-    country,
-    updatingFields: {
+  try {
+    const user = await User.findOne({ discord_id: stringDiscordId });
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const updateData = {
       physical,
       mental,
       social,
@@ -65,48 +64,34 @@ router.post("/submit", async (req, res) => {
       style,
       spiritual,
       additional,
-      date_of_birth: new Date(date_of_birth),
-      country,
-      gender,
       identity_completed: true,
       channels,
-    },
-  });
+    };
 
-  try {
-    const updated = await User.findOneAndUpdate(
-      { discord_id: stringDiscordId },
-      {
-        $set: {
-          physical,
-          mental,
-          social,
-          love,
-          career,
-          creative,
-          travel,
-          family,
-          style,
-          spiritual,
-          additional,
-          date_of_birth: new Date(date_of_birth),
-          country,
-          gender,
-          identity_completed: true,
-          channels,
-        },
-      },
-      { new: true }
-    );
-
-    if (!updated) {
-      console.warn("No user found to update for discord_id:", stringDiscordId);
-      return res.status(404).json({ error: "User not found" });
+    // ONLY set country if it's blank or "unknown"
+    if (!user.country || user.country === "unknown") {
+      updateData.country = country;
     }
 
-    res.json({ message: "Profile updated", user: updated });
+    // ONLY set gender if it's blank or "unknown"
+    if (!user.gender || user.gender === "unknown") {
+      updateData.gender = gender;
+    }
+
+    // ONLY set DOB if it's invalid
+    const defaultDob = new Date("1000-01-01");
+    if (!user.date_of_birth || new Date(user.date_of_birth).getFullYear() <= 1900) {
+      updateData.date_of_birth = birthDate;
+    }
+
+    const updated = await User.updateOne(
+      { discord_id: stringDiscordId },
+      { $set: updateData }
+    );
+
+    res.json({ message: "Profile updated", updated });
   } catch (err) {
-    console.error("MongoDB update error:", err);
+    console.error("Update error:", err);
     res.status(500).json({ error: "Something went wrong" });
   }
 });
