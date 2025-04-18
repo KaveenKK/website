@@ -39,13 +39,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Mount Routes
+// Serve static frontend from /public folder
+app.use(express.static(path.join(__dirname, "public")));
+
+// Mount API routes
 app.use("/api", profileRoutes);
 app.use("/api", authRoutes);
 
-// Submit form (normal users)
+// Submit form route
 app.post("/api/submit", async (req, res) => {
   try {
+    console.log("🔥 API HIT – Full body:", req.body);
+
     const {
       discord_id,
       physical,
@@ -59,12 +64,25 @@ app.post("/api/submit", async (req, res) => {
       style,
       spiritual,
       additional,
+      date_of_birth,
+      gender,
+      country,
       ...rest
     } = req.body;
 
     if (!discord_id) return res.status(400).send("Missing discord_id");
 
-    // Extract selected channels
+    // Age validation
+    const birthDate = new Date(date_of_birth);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+
+    if (age < 13) return res.status(403).send("You must be at least 13");
+    if (age > 100) return res.status(400).send("Enter a valid age under 100");
+
+    // Extract checked channels
     const channels = Object.entries(rest)
       .filter(([key, value]) => key.startsWith("channel_") && value === "on")
       .map(([key]) => key.replace("channel_", ""));
@@ -84,86 +102,37 @@ app.post("/api/submit", async (req, res) => {
           style,
           spiritual,
           additional,
+          gender,
+          country,
+          date_of_birth: birthDate,
+          identity_completed: true,
           channels,
         },
       },
       { new: true, upsert: true }
     );
 
-    // HTML Success Response
-    const successMessage = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Submission Successful</title>
-  <style>
-    body {
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      color: white;
-    }
-    .container {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 40px;
-      border-radius: 20px;
-      text-align: center;
-      backdrop-filter: blur(15px);
-      -webkit-backdrop-filter: blur(15px);
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-    }
-    h1 {
-      margin-bottom: 20px;
-      font-size: 32px;
-    }
-    p {
-      font-size: 20px;
-    }
-    a {
-      display: inline-block;
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: rgba(255, 255, 255, 0.2);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 12px;
-      text-decoration: none;
-      color: white;
-      font-weight: 600;
-    }
-    a:hover {
-      background: rgba(255, 255, 255, 0.3);
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Submission Successful!</h1>
-    <p>Your profile has been updated.</p>
-    <p>Return to the Discord server and use <strong>/getroles</strong> to unlock channels.</p>
-    <a href="https://discord.com">Go to Discord</a>
-  </div>
-</body>
-</html>
-    `;
-
-    res.status(200).send(successMessage);
+    res.status(200).send(`
+      <html>
+        <head><title>Success</title></head>
+        <body style="font-family: sans-serif; background: #0f2027; color: white; display: flex; align-items: center; justify-content: center; height: 100vh;">
+          <div style="text-align: center;">
+            <h1>Submission Successful</h1>
+            <p>Your profile has been updated.</p>
+            <a href="https://discord.com" style="color: lightblue;">Return to Discord</a>
+          </div>
+        </body>
+      </html>
+    `);
   } catch (err) {
     console.error("❌ Error saving data:", err);
     res.status(500).send("❌ Failed to save");
   }
 });
 
-// Serve static files
-app.use(express.static(__dirname));
-
-// Homepage
+// Homepage fallback
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "index.html"));
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
 // Start server
