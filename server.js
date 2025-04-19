@@ -24,7 +24,7 @@ import User from './models/User.js';
 dns.setDefaultResultOrder('ipv4first');
 
 // Connect to MongoDB
-gmongoose.connect(process.env.MONGODB_URI, {
+mongoose.connect(process.env.MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   serverSelectionTimeoutMS: 10000,
