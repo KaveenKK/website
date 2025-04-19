@@ -39,9 +39,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static frontend from /public folder
-app.use(express.static(path.join(__dirname, "public")));
-
 // Mount API routes
 app.use("/api", profileRoutes);
 app.use("/api", authRoutes);
@@ -130,9 +127,9 @@ app.post("/api/submit", async (req, res) => {
   }
 });
 
-// Homepage fallback
+// Homepage fallback (no public folder, just index.html in root)
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 // Start server
