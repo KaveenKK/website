@@ -1,142 +1,115 @@
-import dotenv from "dotenv";
-if (!process.env.MONGODB_URI) dotenv.config();
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="images/mylogo_nevengi_circle.webp" type="image/jpg">
+    <title>Nevengi – Mental Fitness & Accountability Coaching</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" />
+    <style>
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000; /* Ensure the modal is in front of other elements */
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+            padding-top: 60px;
+        }
+        .modal-content {
+            background-color: #000000;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            z-index: 1001; /* Ensure the modal content is in front */
+            color: black; /* Change text color to black */
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
 
-console.log("🚀 Using Mongo URI:", process.env.MONGODB_URI);
+        /* Glassmorphism effect for cards */
+        .feature, .pricing-option {
+            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: saturate(180%) blur(40px);
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transform: scale(1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-import mongoose from "mongoose";
-import dns from "dns";
-dns.setDefaultResultOrder("ipv4first");
+        .feature:hover, .pricing-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="nevengi-brand">
+                <img src="images/mylogo_nevengi_circle.webp" alt="Nevengi Logo" class="logo-icon" />
+                <h1 class="brand-name">N E V E N G I</h1>
+            </div>
+              
+            <p>Inner Silence & Outer Growth</p>
+            <p class="highlight">The Only Practical Self Improvement Platform</p>
+            <a href="https://discord.gg/SYtbqPMqju" class="btn">Join Discord to Get Started</a>
+            <a href="introduction_coaching.html" class="btn">Become a Coach</a>
+        </div>
 
-const uri = process.env.MONGODB_URI;
+    </header>
 
-mongoose.connect(uri, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  serverSelectionTimeoutMS: 10000,
-})
-  .then(() => {
-    console.log("✅ MongoDB connected");
-  })
-  .catch((err) => {
-    console.error("❌ MongoDB error:", err.message);
-  });
+    <section class="how-it-works container">
+        <h2>Going to Gym ? What about mental fitness ?</h2>
+        <div class="features">
+            <div class="feature">
+                <img src="images/neuro.webp" alt="Brain">
+                <h3>Neuroplasticity Training 🧠</h3>
+                <div class="feature-content">Rewire your brain using evidence-based cognitive behavioral techniques.</div>
+            </div>
+            <div class="feature">
+                <img src="images/commmune.webp" alt="Community">
+                <h3>Community Accountability 🤝</h3>
+                <div class="feature-content">Stay motivated with real-time feedback and peer support within the Discord.</div>
+            </div>
+            <div class="feature">
+                <img src="images/goalss.webp" alt="Goal">
+                <h3>Goal-Oriented Structure 🎯</h3>
+                <div class="feature-content">Set measurable goals and achieve them step-by-step with guided support.</div>
+            </div>
+            <div class="feature">
+                <img src="images/stoic&zen.webp" alt="Mindfulness">
+                <h3>Philosophical Mindfulness 🧘‍♂️</h3>
+                <div class="feature-content">Integrate Stoic and Zen principles to build mental resilience.</div>
+            </div>
+        </div>
+    </section>
 
-import express from "express";
-import cors from "cors";
-import path from "path";
-import { fileURLToPath } from "url";
-
-import authRoutes from "./routes/auth.js";
-import profileRoutes from "./routes/profile.js";
-import User from "./models/User.js";
-
-const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from /public folder
-app.use(express.static(path.join(__dirname, "public")));
-
-// API routes
-app.use("/api", profileRoutes);
-app.use("/api", authRoutes);
-
-// Handle form submission
-app.post("/api/submit", async (req, res) => {
-  try {
-    console.log("🔥 API HIT – Full body:", req.body);
-
-    const {
-      discord_id,
-      physical,
-      mental,
-      social,
-      love,
-      career,
-      creative,
-      travel,
-      family,
-      style,
-      spiritual,
-      additional,
-      date_of_birth,
-      gender,
-      country,
-      ...rest
-    } = req.body;
-
-    if (!discord_id) return res.status(400).send("Missing discord_id");
-
-    // Age validation
-    const birthDate = new Date(date_of_birth);
-    const today = new Date();
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const m = today.getMonth() - birthDate.getMonth();
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-
-    if (age < 13) return res.status(403).send("You must be at least 13");
-    if (age > 100) return res.status(400).send("Enter a valid age under 100");
-
-    // Extract selected channels
-    const channels = Object.entries(rest)
-      .filter(([key, value]) => key.startsWith("channel_") && value === "on")
-      .map(([key]) => key.replace("channel_", ""));
-
-    const updatedUser = await User.findOneAndUpdate(
-      { discord_id },
-      {
-        $set: {
-          physical,
-          mental,
-          social,
-          love,
-          career,
-          creative,
-          travel,
-          family,
-          style,
-          spiritual,
-          additional,
-          gender,
-          country,
-          date_of_birth: birthDate,
-          identity_completed: true,
-          channels,
-        },
-      },
-      { new: true, upsert: true }
-    );
-
-    res.status(200).send(`
-      <html>
-        <head><title>Success</title></head>
-        <body style="font-family: sans-serif; background: #0f2027; color: white; display: flex; align-items: center; justify-content: center; height: 100vh;">
-          <div style="text-align: center;">
-            <h1>Submission Successful</h1>
-            <p>Your profile has been updated.</p>
-            <a href="https://discord.com" style="color: lightblue;">Return to Discord</a>
-          </div>
-        </body>
-      </html>
-    `);
-  } catch (err) {
-    console.error("❌ Error saving data:", err);
-    res.status(500).send("❌ Failed to save");
-  }
-});
-
-// Homepage fallback
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-});
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Nevengi. All Rights Reserved.</p>
+        </div>
+    </footer>
+    <button onclick="window.location.href='Nevengi City.html'">Nevengi City</button>
+</body>
+</html>
