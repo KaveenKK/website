@@ -1,62 +1,205 @@
+
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Coach Dashboard</title>
+  <title>Coach Profile Setup</title>
   <style>
     body {
-      font-family: sans-serif;
-      padding: 30px;
-      background: #f4f4f4;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 40px;
+      background: #eef1f8;
     }
     .container {
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
     h1 {
-      color: #222;
+      color: #333;
+      text-align: center;
     }
-    p {
-      line-height: 1.6;
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    button {
+      margin-top: 25px;
+      padding: 14px 24px;
+      font-size: 16px;
+      background-color: #008cba;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #ccc;
+      cursor: not-allowed;
+    }
+    .illustration {
+      width: 100%;
+      max-height: 180px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      font-weight: bold;
+      background: #f8f9fc;
+      border-left: 5px solid #00c853;
+      color: #444;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Welcome, <span id="name">Coach</span></h1>
-    <p><strong>Email:</strong> <span id="email">Loading...</span></p>
-    <p><strong>Bio:</strong> <span id="bio">Loading...</span></p>
-    <p><strong>Specialties:</strong> <span id="specialties">Loading...</span></p>
-    <p><strong>Experience:</strong> <span id="experience">Loading...</span></p>
+    <h1>Coach Profile Setup</h1>
+    <img class="illustration" src="https://cdn.pixabay.com/photo/2023/02/28/17/56/ai-generated-7822831_1280.png" alt="AI Coach Illustration" />
+
+    <form id="profileForm">
+      <label>Name:</label>
+      <input type="text" name="name" required>
+
+      <label>Age:</label>
+      <input type="number" name="age">
+
+      <label>Bio:</label>
+      <textarea name="bio" rows="3"></textarea>
+
+      <label>Specialties (comma-separated):</label>
+      <input type="text" name="specialties">
+
+      <label>Experience:</label>
+      <textarea name="experience" rows="3"></textarea>
+
+      <label>Profile Picture URL:</label>
+      <input type="text" name="profile_picture" placeholder="https://example.com/pic.jpg">
+
+      <label>Instagram:</label>
+      <input type="text" name="instagram">
+
+      <label>Twitter:</label>
+      <input type="text" name="twitter">
+
+      <label>LinkedIn:</label>
+      <input type="text" name="linkedin">
+
+      <label>Discord Tag:</label>
+      <input type="text" name="discord">
+
+      <label>Monthly Subscription Price ($0–$20):</label>
+      <input type="number" name="monthly_price_usd" min="0" max="20" step="0.01" id="usdInput">
+      <p><strong>Visible Price to Users:</strong> <span id="mapleDisplay">0</span> Maples</p>
+
+      <div class="status" id="approvalStatus">Status: Loading...</div>
+
+      <button type="submit" id="publishBtn" disabled>Publish Profile</button>
+    </form>
   </div>
 
   <script>
     const token = new URLSearchParams(window.location.search).get('token');
-
     if (!token) {
-      document.body.innerHTML = "<h2>No token found. Please log in again.</h2>";
-    } else {
-      fetch("/api/profile", {
-        headers: {
-          Authorization: "Bearer " + token
-        }
-      })
-      .then(res => res.json())
-      .then(data => {
-        document.getElementById("name").innerText = data.name || "Coach";
-        document.getElementById("email").innerText = data.email || "Not available";
-        document.getElementById("bio").innerText = data.bio || "Not set";
-        document.getElementById("specialties").innerText = data.specialties?.join(", ") || "Not listed";
-        document.getElementById("experience").innerText = data.experience || "Not added";
-      })
-      .catch(err => {
-        console.error("Failed to fetch profile:", err);
-        document.body.innerHTML = "<h2>Failed to load profile. Try logging in again.</h2>";
-      });
+      document.body.innerHTML = "<h2>Unauthorized: No token found</h2>";
     }
+
+    const mapleDisplay = document.getElementById('mapleDisplay');
+    const usdInput = document.getElementById('usdInput');
+    usdInput.addEventListener('input', () => {
+      const usd = parseFloat(usdInput.value) || 0;
+      const maples = Math.round((usd / 0.3) * 10);
+      mapleDisplay.textContent = maples;
+    });
+
+    const statusDiv = document.getElementById("approvalStatus");
+    const publishBtn = document.getElementById("publishBtn");
+
+    async function loadCoachData() {
+      const res = await fetch("/api/profile", {
+        headers: { Authorization: "Bearer " + token }
+      });
+      const data = await res.json();
+
+      if (data.name) document.querySelector("[name='name']").value = data.name;
+      if (data.age) document.querySelector("[name='age']").value = data.age;
+      if (data.bio) document.querySelector("[name='bio']").value = data.bio;
+      if (data.specialties) document.querySelector("[name='specialties']").value = data.specialties.join(', ');
+      if (data.experience) document.querySelector("[name='experience']").value = data.experience;
+      if (data.profile_picture) document.querySelector("[name='profile_picture']").value = data.profile_picture;
+
+      if (data.social_links) {
+        document.querySelector("[name='instagram']").value = data.social_links.instagram || "";
+        document.querySelector("[name='twitter']").value = data.social_links.twitter || "";
+        document.querySelector("[name='linkedin']").value = data.social_links.linkedin || "";
+        document.querySelector("[name='discord']").value = data.social_links.discord || "";
+      }
+
+      if (data.monthly_price_usd) {
+        document.querySelector("[name='monthly_price_usd']").value = data.monthly_price_usd;
+        usdInput.dispatchEvent(new Event('input'));
+      }
+
+      if (data.approved) {
+        statusDiv.textContent = "✅ Approved: You can publish your profile";
+        publishBtn.disabled = false;
+      } else {
+        statusDiv.textContent = "⏳ Awaiting approval by Nevengi team";
+        publishBtn.disabled = true;
+      }
+    }
+
+    loadCoachData();
+
+    document.getElementById("profileForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const data = Object.fromEntries(formData.entries());
+
+      data.specialties = data.specialties.split(",").map(s => s.trim());
+      data.social_links = {
+        instagram: data.instagram,
+        twitter: data.twitter,
+        linkedin: data.linkedin,
+        discord: data.discord
+      };
+      delete data.instagram;
+      delete data.twitter;
+      delete data.linkedin;
+      delete data.discord;
+
+      data.monthly_price_usd = parseFloat(data.monthly_price_usd);
+      data.monthly_price_maples = Math.round((data.monthly_price_usd / 0.3) * 10);
+
+      const res = await fetch("/api/profile", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(data)
+      });
+
+      if (res.ok) {
+        alert("✅ Profile saved!");
+        window.location.reload();
+      } else {
+        alert("❌ Failed to save profile.");
+      }
+    });
   </script>
 </body>
 </html>
