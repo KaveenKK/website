@@ -19,42 +19,74 @@ router.get("/profile", authMiddleware, async (req, res) => {
 // POST /api/profile → Update coach info
 router.post("/profile", authMiddleware, async (req, res) => {
   try {
-    const updates = req.body;
+    const body = req.body;
+    const updates = {};
 
-    // Optional: only allow certain fields to be updated
-    const allowedFields = [
-      "birthdate",
-      "bio",
-      "specialties",
-      "experience",
-      "social_links",
-      "paypal",
-      "monthly_price_usd",
-      "monthly_price_maples",
-      "profile_picture"
-    ];
-
-    const filteredUpdates = {};
-    for (let key of allowedFields) {
-      if (updates.hasOwnProperty(key)) {
-        filteredUpdates[key] = updates[key];
-      }
+    // birthdate: only if valid non-empty string
+    if (body.birthdate && typeof body.birthdate === "string") {
+      const d = new Date(body.birthdate);
+      if (!isNaN(d)) updates.birthdate = d;
     }
 
-    const updatedCoach = await Coach.findByIdAndUpdate(req.user.id, filteredUpdates, {
-      new: true,
-      runValidators: true
-    });
+    // simple text fields
+    if (body.bio && body.bio.trim()) updates.bio = body.bio.trim();
+    if (body.experience && body.experience.trim()) updates.experience = body.experience.trim();
 
-    if (!updatedCoach) return res.status(404).json({ error: "Coach not found" });
+    // specialties: array of non-empty strings
+    if (Array.isArray(body.specialties)) {
+      const specs = body.specialties
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+      if (specs.length) updates.specialties = specs;
+    }
 
-    res.json({
-      success: true,
-      updatedCoach
-    });
+    // social_links: only non-empty entries
+    if (body.social_links && typeof body.social_links === "object") {
+      const sl = {};
+      ["instagram", "twitter", "linkedin", "discord"].forEach(key => {
+        const val = body.social_links[key];
+        if (val && typeof val === "string" && val.trim()) {
+          sl[key] = val.trim();
+        }
+      });
+      if (Object.keys(sl).length) updates.social_links = sl;
+    }
+
+    // paypal
+    if (body.paypal && typeof body.paypal === "string" && body.paypal.trim()) {
+      updates.paypal = body.paypal.trim();
+    }
+
+    // numeric fields
+    if (body.monthly_price_usd != null && !isNaN(parseFloat(body.monthly_price_usd))) {
+      updates.monthly_price_usd = parseFloat(body.monthly_price_usd);
+    }
+    if (body.monthly_price_maples != null && !isNaN(parseInt(body.monthly_price_maples, 10))) {
+      updates.monthly_price_maples = parseInt(body.monthly_price_maples, 10);
+    }
+
+    // profile_picture URL
+    if (body.profile_picture && typeof body.profile_picture === "string" && body.profile_picture.trim()) {
+      updates.profile_picture = body.profile_picture.trim();
+    }
+
+    // if nothing to update
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ error: "No valid fields to update" });
+    }
+
+    // fetch, merge, save
+    const coach = await Coach.findById(req.user.id);
+    if (!coach) return res.status(404).json({ error: "Coach not found" });
+
+    Object.assign(coach, updates);
+    await coach.save();
+
+    res.json({ success: true, updatedCoach: coach });
   } catch (err) {
     console.error("❌ Failed to update profile:", err);
-    res.status(500).json({ error: "Failed to update profile" });
+    // send the real error message for debugging (remove or sanitize in production)
+    res.status(500).json({ error: err.message });
   }
 });
 
