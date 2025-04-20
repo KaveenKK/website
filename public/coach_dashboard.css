@@ -1,0 +1,149 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    background: #f2f4f8;
+  }
+  
+  /* Tabs */
+  .tabs {
+    display: flex;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .tab {
+    padding: 15px 25px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+    border-bottom: 3px solid transparent;
+  }
+  .tab.active {
+    color: #008cba;
+    border-bottom: 3px solid #008cba;
+  }
+  
+  /* Content area */
+  .tab-content {
+    display: none;
+    max-width: 900px;
+    margin: 20px auto;
+    background: white;
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.1);
+  }
+  .tab-content.active {
+    display: block;
+  }
+  
+  h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 0;
+  }
+  
+  /* Profile form */
+  .profile-section {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ccc;
+  }
+  .upload-label {
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  input[type="file"] {
+    display: block;
+    margin-top: 5px;
+  }
+  label {
+    margin-top: 15px;
+    display: block;
+    font-weight: 600;
+  }
+  input, textarea, select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    margin-top: 5px;
+    font-size: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+  }
+  button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: #008cba;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    margin: 10px 5px 0 0;
+    cursor: pointer;
+  }
+  button:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+  }
+  .status {
+    margin-top: 20px;
+    padding: 12px;
+    background: #f1f5f9;
+    border-left: 6px solid #007bff;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  /* Course slides */
+  .course-slide {
+    display: none;
+    text-align: center;
+  }
+  .course-slide.active {
+    display: block;
+  }
+  .course-slide img {
+    max-width: 100%;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  
+  /* Subscribers & Invites lists */
+  ul {
+    list-style: none;
+    padding: 0;
+  }
+  li {
+    background: #eef;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 6px;
+  }
+  
+  /* Earnings chart */
+  #earningsChart {
+    max-width: 100%;
+  }
+  
+  /* Legal notice */
+  .legal {
+    background: #fff3cd;
+    padding: 15px;
+    border-left: 5px solid #ffeeba;
+    margin-top: 20px;
+    border-radius: 6px;
+  }
+  
+  /* Starter course controls */
+  .slide-controls {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
