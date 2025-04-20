@@ -1,13 +1,19 @@
-document.addEventListener("DOMContentLoaded", function() {
+// script.js
+
+document.addEventListener("DOMContentLoaded", async function() {
+    console.log("⚡ DOMContentLoaded fired – starting initialization");
+  
     // Tab functionality
     const tabs = document.querySelectorAll('.tab');
     tabs.forEach(t => {
       t.addEventListener('click', () => {
+        console.log("🔖 Tab clicked:", t.dataset.tab);
         window.showTab(t.dataset.tab);
       });
     });
   
     window.showTab = function(tabId) {
+      console.log("👉 showTab:", tabId);
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
       document.getElementById(tabId).classList.add('active');
@@ -16,39 +22,52 @@ document.addEventListener("DOMContentLoaded", function() {
   
     // Load coach data
     const token = new URLSearchParams(window.location.search).get('token');
+    console.log("🔑 Retrieved token:", token);
     let courseCompleted = false;
     let profileData = {};
   
     async function loadCoachData() {
-      const res = await fetch("/api/profile", {
-        headers: { "Authorization": "Bearer " + token }
-      });
-      profileData = await res.json();
+      console.log("⏳ Calling /api/profile...");
+      try {
+        const res = await fetch("/api/profile", {
+          headers: { "Authorization": "Bearer " + token }
+        });
+        console.log("📬 /api/profile status:", res.status);
+        profileData = await res.json();
+        console.log("📦 profileData:", profileData);
+      } catch (err) {
+        console.error("❌ Error fetching profile data:", err);
+        alert("Failed to load profile data—see console for details.");
+        return;
+      }
   
       // Greeting
       document.getElementById('welcomeGreeting').textContent = `Welcome, ${profileData.name}`;
   
       // Profile fields
-      if (profileData.profile_picture) {
-        document.getElementById('profilePic').src = profileData.profile_picture;
+      try {
+        if (profileData.profile_picture) {
+          document.getElementById('profilePic').src = profileData.profile_picture;
+        }
+        if (profileData.birthdate) {
+          document.getElementById('birthdate').value = profileData.birthdate.split('T')[0];
+        }
+        document.querySelector("[name='bio']").value = profileData.bio || "";
+        document.querySelector("[name='specialties']").value = (profileData.specialties || []).join(', ');
+        document.querySelector("[name='experience']").value = profileData.experience || "";
+        document.querySelector("[name='instagram']").value = profileData.social_links.instagram || "";
+        document.querySelector("[name='twitter']").value = profileData.social_links.twitter || "";
+        document.querySelector("[name='linkedin']").value = profileData.social_links.linkedin || "";
+        document.querySelector("[name='discordTag']").value = profileData.social_links.discord || "";
+        document.querySelector("[name='paypal']").value = profileData.paypal || "";
+        document.getElementById('usdInput').value = profileData.monthly_price_usd || 0;
+        document.getElementById('usdInput').dispatchEvent(new Event('input'));
+      } catch (err) {
+        console.error("⚠️ Error populating form fields:", err);
       }
-      if (profileData.birthdate) {
-        document.getElementById('birthdate').value = profileData.birthdate.split('T')[0];
-      }
-      document.querySelector("[name='bio']").value = profileData.bio || "";
-      document.querySelector("[name='specialties']").value = (profileData.specialties || []).join(', ');
-      document.querySelector("[name='experience']").value = profileData.experience || "";
-      document.querySelector("[name='instagram']").value = profileData.social_links.instagram || "";
-      document.querySelector("[name='twitter']").value = profileData.social_links.twitter || "";
-      document.querySelector("[name='linkedin']").value = profileData.social_links.linkedin || "";
-      document.querySelector("[name='discordTag']").value = profileData.social_links.discord || "";
-      document.querySelector("[name='paypal']").value = profileData.paypal || "";
-      document.getElementById('usdInput').value = profileData.monthly_price_usd || 0;
-      document.getElementById('usdInput').dispatchEvent(new Event('input'));
   
       // Approval & Publish
-      const apr = profileData.approved;
-      const pub = profileData.published;
+      const apr = profileData.approved, pub = profileData.published;
       const statusDiv = document.getElementById('approvalStatus');
       const publishBtn = document.getElementById('publishBtn');
       if (!apr) {
@@ -82,11 +101,13 @@ document.addEventListener("DOMContentLoaded", function() {
   
     // Profile picture upload preview
     document.getElementById('picUpload').addEventListener('change', e => {
+      console.log("🖼️ Pic upload changed");
       const file = e.target.files[0];
       if (!file) return;
       const reader = new FileReader();
       reader.onload = () => {
         document.getElementById('profilePic').src = reader.result;
+        console.log("👀 Previewing new profile picture");
       };
       reader.readAsDataURL(file);
     });
@@ -96,13 +117,16 @@ document.addEventListener("DOMContentLoaded", function() {
       const usd = parseFloat(document.getElementById('usdInput').value) || 0;
       const maples = Math.round((usd / 0.3) * 10);
       document.getElementById('mapleDisplay').textContent = maples;
+      console.log(`💲 USD ${usd} → 🍁 Maples ${maples}`);
     });
   
     // Save profile
     document.getElementById('saveBtn').addEventListener('click', async () => {
+      console.log("💾 Save button clicked");
       const dob = new Date(document.getElementById('birthdate').value);
       const age = new Date().getFullYear() - dob.getFullYear();
       if (age < 18 || age > 80) {
+        console.warn("🚫 Invalid age:", age);
         return alert('Age must be between 18 and 80');
       }
   
@@ -123,37 +147,54 @@ document.addEventListener("DOMContentLoaded", function() {
         monthly_price_maples: Math.round((parseFloat(form.monthly_price_usd.value) / 0.3) * 10),
         profile_picture: document.getElementById('profilePic').src
       };
+      console.log("📤 Saving data:", data);
   
-      const res = await fetch('/api/profile', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify(data)
-      });
+      try {
+        const res = await fetch('/api/profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify(data)
+        });
+        console.log("📬 /api/profile POST status:", res.status);
   
-      if (res.ok) {
-        alert('✅ Profile saved!');
-        await loadCoachData();
-      } else {
-        alert('❌ Failed to save profile.');
+        if (res.ok) {
+          alert('✅ Profile saved!');
+          await loadCoachData();
+        } else {
+          const errText = await res.text();
+          console.error("❌ Save failed:", errText);
+          alert('❌ Failed to save profile. See console for details.');
+        }
+      } catch (err) {
+        console.error("🔥 Exception during save:", err);
+        alert('❌ Error saving profile. See console for details.');
       }
     });
   
     // Publish profile
     document.getElementById('publishBtn').addEventListener('click', async () => {
-      const res = await fetch('/api/profile/publish', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer ' + token
+      console.log("🚀 Publish button clicked");
+      try {
+        const res = await fetch('/api/profile/publish', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        console.log("📬 /api/profile/publish status:", res.status);
+  
+        if (res.ok) {
+          alert('🚀 Profile published!');
+          await loadCoachData();
+        } else {
+          const errText = await res.text();
+          console.error("❌ Publish failed:", errText);
+          alert('❌ Failed to publish profile. See console.');
         }
-      });
-      if (res.ok) {
-        alert('🚀 Profile published!');
-        await loadCoachData();
-      } else {
-        alert('❌ Failed to publish.');
+      } catch (err) {
+        console.error("🔥 Exception during publish:", err);
+        alert('❌ Error publishing profile. See console.');
       }
     });
   
@@ -161,11 +202,13 @@ document.addEventListener("DOMContentLoaded", function() {
     let currentSlide = 0;
     const slides = document.querySelectorAll('.course-slide');
     document.getElementById('nextBtn').addEventListener('click', () => {
+      console.log("➡️ Next slide");
       slides[currentSlide].classList.remove('active');
       currentSlide = Math.min(currentSlide + 1, slides.length - 1);
       slides[currentSlide].classList.add('active');
     });
     document.getElementById('completeCourseBtn').addEventListener('click', () => {
+      console.log("✅ Course completed button clicked");
       courseCompleted = true;
       if (profileData.approved) {
         document.getElementById('publishBtn').disabled = false;
@@ -175,6 +218,7 @@ document.addEventListener("DOMContentLoaded", function() {
   
     // Earnings chart rendering
     function renderEarningsChart(data) {
+      console.log("📊 Rendering earnings chart, data:", data);
       const canvas = document.getElementById('earningsChart');
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0,0,canvas.width,canvas.height);
@@ -195,6 +239,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   
     // Initialize
-    loadCoachData();
+    try {
+      await loadCoachData();
+      console.log("✅ Initialization complete");
+    } catch (err) {
+      console.error("🚨 Error during initialization:", err);
+    }
   });
   
