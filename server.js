@@ -48,7 +48,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ----- API ROUTES -----
 // Authentication endpoints
-app.use('/api/auth', authRoutes);
+app.use('/', authRoutes);
 // User/profile endpoints
 app.use('/api/profile', profileRoutes);
 
