@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Coach Dashboard</title>
   <style>
     body {
@@ -8,11 +9,13 @@
       margin: 0;
       background: #f2f4f8;
     }
+    /* Tabs */
     .tabs {
       display: flex;
       background: #fff;
       border-bottom: 1px solid #ddd;
       justify-content: center;
+      flex-wrap: wrap;
     }
     .tab {
       padding: 15px 25px;
@@ -25,7 +28,9 @@
       color: #008cba;
       border-bottom: 3px solid #008cba;
     }
-    .dashboard {
+    /* Content area */
+    .tab-content {
+      display: none;
       max-width: 900px;
       margin: 20px auto;
       background: white;
@@ -33,170 +38,370 @@
       border-radius: 16px;
       box-shadow: 0 6px 16px rgba(0,0,0,0.1);
     }
-    h1 {
-      text-align: center;
-      color: #333;
-    }
-    .profile-section {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    .profile-pic {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 3px solid #ccc;
-    }
-    .upload-label {
-      font-weight: bold;
-      margin-top: 10px;
-    }
-    input[type="file"] {
+    .tab-content.active {
       display: block;
     }
-    label {
-      margin-top: 20px;
-      display: block;
-      font-weight: 600;
-    }
-    input, textarea {
-      width: 100%;
+    h1 { text-align: center; color: #333; margin-top: 0; }
+    /* Profile form */
+    .profile-section { display: flex; gap: 20px; flex-wrap: wrap; }
+    .profile-pic { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 3px solid #ccc; }
+    .upload-label { font-weight: bold; margin-top: 10px; }
+    input[type="file"] { display: block; margin-top: 5px; }
+    label { margin-top: 15px; display: block; font-weight: 600; }
+    input, textarea, select {
+      width: calc(100% - 20px);
       padding: 10px;
       margin-top: 5px;
       font-size: 15px;
       border: 1px solid #ccc;
       border-radius: 10px;
     }
-    .status {
-      margin-top: 20px;
-      padding: 12px;
-      font-weight: bold;
-      background: #f1f5f9;
-      border-left: 6px solid #007bff;
-      color: #333;
-    }
     button {
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: #008cba;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      margin-top: 30px;
-      cursor: pointer;
+      padding: 12px 24px; font-size: 16px;
+      background-color: #008cba; color: white;
+      border: none; border-radius: 8px;
+      margin: 10px 5px 0 0; cursor: pointer;
     }
     button:disabled {
-      background-color: #aaa;
-      cursor: not-allowed;
+      background-color: #aaa; cursor: not-allowed;
     }
+    .status {
+      margin-top: 20px; padding: 12px;
+      background: #f1f5f9; border-left: 6px solid #007bff;
+      color: #333; font-weight: bold;
+    }
+    /* Course slides */
+    .course-slide { display: none; text-align: center; }
+    .course-slide.active { display: block; }
+    .course-slide img { max-width: 100%; border-radius: 12px; margin-bottom: 20px; }
+    /* Subscribers & Invites lists */
+    ul { list-style: none; padding: 0; }
+    li { background: #eef; margin: 5px 0; padding: 10px; border-radius: 6px; }
+    /* Earnings chart */
+    #earningsChart { max-width: 100%; }
+    /* Legal notice */
+    .legal { background: #fff3cd; padding: 15px; border-left: 5px solid #ffeeba; margin-top: 20px; border-radius: 6px; }
   </style>
 </head>
 <body>
+  <!-- Tabs -->
   <div class="tabs">
-    <div class="tab active">Dashboard</div>
-    <div class="tab">Messages</div>
-    <div class="tab">Settings</div>
+    <div class="tab active" data-tab="dashboard">Dashboard</div>
+    <div class="tab" data-tab="subscribers">Subscribers</div>
+    <div class="tab" data-tab="invites">Invites</div>
+    <div class="tab" data-tab="earnings">Earnings</div>
+    <div class="tab" data-tab="starterCourse">Starter Course</div>
   </div>
 
-  <div class="dashboard">
-    <h1>Welcome, Coach</h1>
-
+  <!-- Dashboard -->
+  <section id="dashboard" class="tab-content active">
+    <h1 id="welcomeGreeting">Welcome, Coach</h1>
     <div class="profile-section">
-      <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Profile Picture" class="profile-pic" id="profilePicDisplay">
       <div>
-        <label class="upload-label">Upload New Profile Picture</label>
-        <input type="file" id="profilePicInput" accept="image/*">
+        <img id="profilePic" class="profile-pic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture">
+        <label class="upload-label">Change Photo</label>
+        <input type="file" id="picUpload" accept="image/*">
+      </div>
+      <div style="flex:1">
+        <form id="profileForm">
+          <label>Birth Date (18–80 years):</label>
+          <input type="date" name="birthdate" id="birthdate" required>
+
+          <label>Bio:</label>
+          <textarea name="bio" rows="3"></textarea>
+
+          <label>Specialties (comma-separated):</label>
+          <input type="text" name="specialties">
+
+          <label>Experience:</label>
+          <textarea name="experience" rows="3"></textarea>
+
+          <label>Instagram:</label>
+          <input type="url" name="instagram" placeholder="https://instagram.com/username">
+
+          <label>Twitter:</label>
+          <input type="url" name="twitter" placeholder="https://twitter.com/username">
+
+          <label>LinkedIn:</label>
+          <input type="url" name="linkedin" placeholder="https://linkedin.com/in/username">
+
+          <label>Discord Tag:</label>
+          <input type="text" name="discordTag" placeholder="User#1234">
+
+          <label>PayPal Email (for payouts):</label>
+          <input type="email" name="paypal">
+
+          <label>Monthly Subscription Price ($0–$20):</label>
+          <input type="number" name="monthly_price_usd" id="usdInput" min="0" max="20" step="0.01" value="0">
+          <p><strong>Visible Price to Users:</strong> <span id="mapleDisplay">0</span> 🍁</p>
+
+          <div class="status" id="approvalStatus">Loading approval status…</div>
+
+          <button type="button" id="saveBtn">Save Profile</button>
+          <button type="button" id="publishBtn" disabled>Publish Profile</button>
+        </form>
       </div>
     </div>
+    <div class="legal">
+      <p><strong>Legal Notice:</strong> You are responsible for your own taxes. Nevengi is not liable for reporting or paying taxes on your earnings. Ensure you comply with local laws.</p>
+    </div>
+  </section>
 
-    <label for="birthDate">Birth Date:</label>
-    <input type="date" id="birthDate" name="birthDate">
-    <div id="ageWarning" style="color: red; display: none;">Age must be between 18 and 80.</div>
+  <!-- Subscribers -->
+  <section id="subscribers" class="tab-content">
+    <h1>Your Subscribers</h1>
+    <ul id="subscriberList">
+      <li>Loading subscribers…</li>
+    </ul>
+  </section>
 
-    <label>Experience:</label>
-    <textarea id="experience" rows="4"></textarea>
+  <!-- Invites -->
+  <section id="invites" class="tab-content">
+    <h1>Invited Members</h1>
+    <ul id="inviteList">
+      <li>Loading invited members…</li>
+    </ul>
+  </section>
 
-    <label>Instagram:</label>
-    <input type="text" id="instagram">
+  <!-- Earnings -->
+  <section id="earnings" class="tab-content">
+    <h1>Earnings Overview</h1>
+    <canvas id="earningsChart" width="600" height="300"></canvas>
+  </section>
 
-    <label>Twitter:</label>
-    <input type="text" id="twitter">
-
-    <label>LinkedIn:</label>
-    <input type="text" id="linkedin">
-
-    <label>Discord Tag:</label>
-    <input type="text" id="discord">
-
-    <label>Monthly Price ($0 - $20):</label>
-    <input type="number" id="monthlyPrice" min="0" max="20" step="0.01">
-    <p><strong>Users will see:</strong> <span id="mapleAmount">0</span> <span style="font-weight: bold;">🍁 Maples</span></p>
-
-    <div class="status" id="approvalStatus">Checking approval status...</div>
-    <button id="saveBtn">Save Profile</button>
-    <button id="publishBtn" disabled>Publish Profile</button>
-  </div>
+  <!-- Starter Course -->
+  <section id="starterCourse" class="tab-content">
+    <h1>Starter Course for Coaches</h1>
+    <div id="courseSlides">
+      <div class="course-slide active">
+        <img src="https://cdn.pixabay.com/photo/2023/02/28/17/56/ai-generated-7822831_1280.png" alt="Intro">
+        <p>Welcome to Nevengi Coaching! Learn how the platform works and your responsibilities.</p>
+      </div>
+      <div class="course-slide">
+        <img src="https://cdn.pixabay.com/photo/2023/03/01/01/39/ai-generated-7823305_1280.png" alt="Payment">
+        <p>Users pay monthly and receive Maples. You keep 30% of your price, the rest goes to Nevengi.</p>
+      </div>
+      <div class="course-slide">
+        <img src="https://cdn.pixabay.com/photo/2023/01/14/16/01/ai-generated-7717546_1280.jpg" alt="Expectations">
+        <p>Be professional, responsive, and respectful. Abuse or ghosting leads to removal.</p>
+      </div>
+      <div class="course-slide">
+        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135820.png" alt="Legal">
+        <p><strong>Important:</strong> You must handle your own taxes. Payouts go to your PayPal account.</p>
+      </div>
+      <div class="course-slide">
+        <p><strong>Final Step:</strong> Click below to confirm you’ve completed and understood the starter course &amp; terms.</p>
+        <button id="completeCourseBtn">✅ Complete Course</button>
+      </div>
+    </div>
+    <div style="text-align:center; margin-top:20px;">
+      <button id="nextBtn">Next</button>
+    </div>
+  </section>
 
   <script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Tab functionality
+    const tabs = document.querySelectorAll('.tab');
+    tabs.forEach(t => {
+      t.addEventListener('click', () => {
+        const id = t.dataset.tab;
+        window.showTab(id);
+      });
+    });
+
+    window.showTab = function(tabId) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
+    };
+
+    // Load coach data
     const token = new URLSearchParams(window.location.search).get('token');
-    const profilePicDisplay = document.getElementById('profilePicDisplay');
+    let courseCompleted = false;
+    let profileData = {};
 
-    document.getElementById('monthlyPrice').addEventListener('input', (e) => {
-      const usd = parseFloat(e.target.value) || 0;
-      if (usd > 20) e.target.value = 20;
-      document.getElementById('mapleAmount').textContent = Math.round((usd / 0.3) * 10);
+    async function loadCoachData() {
+      const res = await fetch("/api/profile", {
+        headers: { "Authorization": "Bearer " + token }
+      });
+      profileData = await res.json();
+
+      // Greeting
+      document.getElementById('welcomeGreeting').textContent = `Welcome, ${profileData.name}`;
+
+      // Profile fields
+      if (profileData.profile_picture) {
+        document.getElementById('profilePic').src = profileData.profile_picture;
+      }
+      if (profileData.birthdate) {
+        document.getElementById('birthdate').value = profileData.birthdate.split('T')[0];
+      }
+      document.querySelector("[name='bio']").value = profileData.bio || "";
+      document.querySelector("[name='specialties']").value = (profileData.specialties || []).join(', ');
+      document.querySelector("[name='experience']").value = profileData.experience || "";
+      document.querySelector("[name='instagram']").value = profileData.social_links.instagram || "";
+      document.querySelector("[name='twitter']").value = profileData.social_links.twitter || "";
+      document.querySelector("[name='linkedin']").value = profileData.social_links.linkedin || "";
+      document.querySelector("[name='discordTag']").value = profileData.social_links.discord || "";
+      document.querySelector("[name='paypal']").value = profileData.paypal || "";
+      document.getElementById('usdInput').value = profileData.monthly_price_usd || 0;
+      document.getElementById('usdInput').dispatchEvent(new Event('input'));
+
+      // Approval & Publish
+      const apr = profileData.approved;
+      const pub = profileData.published;
+      const statusDiv = document.getElementById('approvalStatus');
+      const publishBtn = document.getElementById('publishBtn');
+      if (!apr) {
+        statusDiv.textContent = "⏳ Awaiting approval by Nevengi team";
+        publishBtn.disabled = true;
+      } else if (apr && !pub) {
+        statusDiv.textContent = "✅ Approved: Ready to publish";
+        publishBtn.disabled = false;
+      } else {
+        statusDiv.textContent = "🚀 Profile Published";
+        publishBtn.disabled = true;
+      }
+
+      // Subscribers
+      const subs = profileData.subscribers || [];
+      const subList = document.getElementById('subscriberList');
+      subList.innerHTML = subs.length
+        ? subs.map(u => `<li>${u.username} (${u.date})</li>`).join('')
+        : '<li>No subscribers yet</li>';
+
+      // Invites
+      const invs = profileData.invites || [];
+      const invList = document.getElementById('inviteList');
+      invList.innerHTML = invs.length
+        ? invs.map(u => `<li>${u.username} joined ${u.date}</li>`).join('')
+        : '<li>No invited members yet</li>';
+
+      // Earnings chart
+      const earnings = profileData.earnings || [];
+      renderEarningsChart(earnings);
+    }
+
+    // Profile picture upload preview
+    document.getElementById('picUpload').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('profilePic').src = reader.result;
+      };
+      reader.readAsDataURL(file);
     });
 
-    document.getElementById('birthDate').addEventListener('change', () => {
-      const birthDate = new Date(document.getElementById('birthDate').value);
-      const age = new Date().getFullYear() - birthDate.getFullYear();
-      document.getElementById('ageWarning').style.display = (age < 18 || age > 80) ? 'block' : 'none';
+    // Price → Maple conversion
+    document.getElementById('usdInput').addEventListener('input', () => {
+      const usd = parseFloat(document.getElementById('usdInput').value) || 0;
+      const maples = Math.round((usd / 0.3) * 10);
+      document.getElementById('mapleDisplay').textContent = maples;
     });
 
+    // Save profile
     document.getElementById('saveBtn').addEventListener('click', async () => {
-      const experience = document.getElementById('experience').value;
-      const instagram = document.getElementById('instagram').value;
-      const twitter = document.getElementById('twitter').value;
-      const linkedin = document.getElementById('linkedin').value;
-      const discord = document.getElementById('discord').value;
-      const birthDate = document.getElementById('birthDate').value;
-      const monthlyPrice = parseFloat(document.getElementById('monthlyPrice').value) || 0;
+      // Validate age
+      const dob = new Date(document.getElementById('birthdate').value);
+      const age = new Date().getFullYear() - dob.getFullYear();
+      if (age < 18 || age > 80) {
+        return alert('Age must be between 18 and 80');
+      }
 
-      const profilePic = profilePicDisplay.src;
-
-      const mapleAmount = Math.round((monthlyPrice / 0.3) * 10);
-
+      const form = document.getElementById('profileForm');
       const data = {
-        experience,
-        profile_picture: profilePic,
-        birth_date: birthDate,
-        social_links: { instagram, twitter, linkedin, discord },
-        monthly_price_usd: monthlyPrice,
-        monthly_price_maples: mapleAmount
+        birthdate: form.birthdate.value,
+        bio: form.bio.value,
+        specialties: form.specialties.value.split(',').map(s => s.trim()),
+        experience: form.experience.value,
+        social_links: {
+          instagram: form.instagram.value,
+          twitter: form.twitter.value,
+          linkedin: form.linkedin.value,
+          discord: form.discordTag.value
+        },
+        paypal: form.paypal.value,
+        monthly_price_usd: parseFloat(form.monthly_price_usd.value),
+        monthly_price_maples: Math.round((parseFloat(form.monthly_price_usd.value) / 0.3) * 10),
+        profile_picture: document.getElementById('profilePic').src
       };
 
-      const res = await fetch("/api/profile", {
-        method: "POST",
+      const res = await fetch('/api/profile', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + token
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
         },
         body: JSON.stringify(data)
       });
 
       if (res.ok) {
-        alert("✅ Profile saved!");
-        window.location.reload();
+        alert('✅ Profile saved!');
+        await loadCoachData();
       } else {
-        alert("❌ Failed to save profile.");
+        alert('❌ Failed to save profile.');
       }
     });
 
-    document.getElementById('publishBtn').addEventListener('click', () => {
-      alert('Publishing profile...');
+    // Publish profile
+    document.getElementById('publishBtn').addEventListener('click', async () => {
+      const res = await fetch('/api/profile/publish', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + token
+        }
+      });
+      if (res.ok) {
+        alert('🚀 Profile published!');
+        await loadCoachData();
+      } else {
+        alert('❌ Failed to publish.');
+      }
     });
+
+    // Starter Course navigation
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('.course-slide');
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      slides[currentSlide].classList.remove('active');
+      currentSlide = Math.min(currentSlide + 1, slides.length - 1);
+      slides[currentSlide].classList.add('active');
+    });
+    document.getElementById('completeCourseBtn').addEventListener('click', () => {
+      courseCompleted = true;
+      if (profileData.approved) {
+        document.getElementById('publishBtn').disabled = false;
+      }
+      alert("✅ You’ve completed the starter course!");
+    });
+
+    // Earnings chart rendering
+    function renderEarningsChart(data) {
+      const canvas = document.getElementById('earningsChart');
+      const ctx = canvas.getContext('2d');
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      if (!data.length) {
+        ctx.fillStyle = '#888';
+        ctx.fillText('No earnings data yet', 10, 50);
+        return;
+      }
+      const max = Math.max(...data.map(d => d.amount));
+      const barWidth = (canvas.width - 40) / data.length;
+      data.forEach((d, i) => {
+        const barHeight = (d.amount / max) * (canvas.height - 40);
+        ctx.fillStyle = '#008cba';
+        ctx.fillRect(20 + i*barWidth, canvas.height - barHeight - 20, barWidth*0.6, barHeight);
+        ctx.fillStyle = '#333';
+        ctx.fillText(d.month, 20 + i*barWidth, canvas.height - 5);
+      });
+    }
+
+    // Initialize
+    loadCoachData();
+  });
   </script>
 </body>
 </html>
