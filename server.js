@@ -50,7 +50,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ----- API ROUTES -----
 // Authentication endpoints
-app.use('/', authRoutes);
+app.use('/auth', authRoutes);
 // User/profile for coaches endpoints
 app.use('/api', profileRoutes);
 //for general users
