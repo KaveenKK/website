@@ -1,44 +1,82 @@
-<ul id="pendingList"></ul>
-<script>
-  const API = "https://www.nevengi.com/api/admin";
-  const token = "YOUR_ADMIN_JWT";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    h1 { color: #333; }
+    .coach-item { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-left: 10px; padding: 6px 12px; }
+    #pendingContainer { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+  <p>Ensure you have your admin JWT stored in <code>localStorage.token</code>.</p>
+  <button id="loadBtn">Load Pending Coaches</button>
+  <div id="pendingContainer"></div>
 
-  // 1. Fetch pending coaches
-  fetch(`${API}/coaches/pending`, {
-    headers: { Authorization: "Bearer " + token }
-  })
-    .then(r => r.json())
-    .then(list => {
-      const ul = document.getElementById("pendingList");
-      ul.innerHTML = list
-        .map(coach => `
-          <li>
-            ${coach.name} (${coach._id})
-            <button data-id="${coach._id}">Approve</button>
-          </li>
-        `)
-        .join("");
+  <script>
+    // If your API lives on a different host, set it here:
+    const API_BASE = ""; // e.g. "https://nevengi-api.onrender.com"
 
-      // 2. Wire up approve buttons
-      ul.querySelectorAll("button").forEach(btn => {
-        btn.addEventListener("click", () => {
-          const id = btn.dataset.id;
-          fetch(`${API}/coaches/${id}/approve`, {
-            method: "POST",
-            headers: {
-              Authorization: "Bearer " + token
-            }
-          })
-            .then(r => r.json())
-            .then(res => {
-              if (res.success) {
-                btn.textContent = "Approved";
-                btn.disabled = true;
-              } else {
-                alert("Error: " + res.error);
-              }
-            });
+    function getToken() {
+      let token = localStorage.getItem('token');
+      if (!token) {
+        token = prompt("Enter your admin JWT token:");
+        if (token) localStorage.setItem('token', token);
+      }
+      return token;
+    }
+
+    document.getElementById('loadBtn').addEventListener('click', async () => {
+      const token = getToken();
+      if (!token) return alert('Admin token required');
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/coaches/pending`, {
+          headers: { Authorization: "Bearer " + token }
         });
-      });
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const coaches = await res.json();
+
+        const container = document.getElementById('pendingContainer');
+        container.innerHTML = '';
+        if (!coaches.length) {
+          container.textContent = 'No pending coaches.';
+          return;
+        }
+
+        coaches.forEach(coach => {
+          const div = document.createElement('div');
+          div.className = 'coach-item';
+          div.innerHTML = `
+            <strong>${coach.name || coach._id}</strong> (ID: ${coach._id})
+            <button data-id="${coach._id}">Approve</button>
+          `;
+          container.appendChild(div);
+
+          div.querySelector('button').addEventListener('click', async e => {
+            const id = e.target.dataset.id;
+            try {
+              const res2 = await fetch(`${API_BASE}/api/admin/coaches/${id}/approve`, {
+                method: 'POST',
+                headers: { Authorization: "Bearer " + token }
+              });
+              if (!res2.ok) throw new Error(`Status ${res2.status}`);
+              e.target.textContent = 'Approved';
+              e.target.disabled = true;
+            } catch (err) {
+              alert('Error approving coach: ' + err.message);
+            }
+          });
+        });
+      } catch (err) {
+        console.error(err);
+        alert('Error loading pending coaches: ' + err.message);
+      }
     });
-</script>
+  </script>
+</body>
+</html>
