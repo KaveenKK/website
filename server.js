@@ -50,7 +50,7 @@ app.use(express.urlencoded({ extended: true }));
 // Authentication endpoints
 app.use('/', authRoutes);
 // User/profile endpoints
-app.use('/api/profile', profileRoutes);
+app.use('/api', profileRoutes);
 
 // Form submission endpoint
 app.post('/api/submit', async (req, res) => {
