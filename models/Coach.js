@@ -1,18 +1,24 @@
 import mongoose from "mongoose";
 
+// Sub-schema for ratings
+const ratingSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  rating: { type: Number, required: true, min: 1, max: 5 }
+}, { _id: false });
+
 const coachSchema = new mongoose.Schema({
   discord_id:    { type: String, unique: true, required: true },
   email:         { type: String, required: true },
   name:          { type: String, required: true },
   age:           { type: Number },
-  bio:           { type: String },           // if you still need this
+  bio:           { type: String },
   specialties:   [String],
 
   // ────────────────────────────────────────────────────────
   // New fields for your dashboard & Maple system
   approved: {
     type: Boolean,
-    default: false                      // coaches start un‑approved
+    default: false  // coaches start un‑approved
   },
   profile_picture: {
     type: String,
@@ -26,7 +32,7 @@ const coachSchema = new mongoose.Schema({
   },
   experience: {
     type: String,
-    default: ""                         // coach bio/summary
+    default: ""  // coach bio/summary
   },
   monthly_price_usd: {
     type: Number,
@@ -36,10 +42,16 @@ const coachSchema = new mongoose.Schema({
   },
   monthly_price_maples: {
     type: Number,
-    default: 0                          // auto‑calculated
+    default: 0  // auto‑calculated
   },
-  // ────────────────────────────────────────────────────────
+  
+  // Subscribers: users who have subscribed to this coach
+  subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
+  
+  // Ratings given by users
+  ratings: [ratingSchema],
 
+  // ────────────────────────────────────────────────────────
   createdAt: {
     type: Date,
     default: Date.now

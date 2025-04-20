@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nevengi User Dashboard</title>
+  <style>
+    /* Basic Reset */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f9f9f9; color: #333; }
+    header { background: #008cba; color: white; padding: 1rem; text-align: center; }
+    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+    .hidden { display: none; }
+    button { background: #008cba; color: white; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+    nav { display: flex; gap: 1rem; margin-bottom: 1rem; }
+    nav button { flex: 1; }
+    section { display: none; }
+    section.active { display: block; }
+    h2 { margin-bottom: 1rem; }
+    ul { list-style: none; }
+    li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    /* Explore Coaches */
+    .coach-item { display: flex; justify-content: space-between; align-items: center; }
+    .coach-info { flex: 1; }
+    .coach-action button { margin-left: 0.5rem; }
+    /* Rewards Shop */
+    #shopify-collection { display: flex; gap: 1rem; flex-wrap: wrap; }
+    /* Leaderboard */
+    #leaderboard li { display: flex; justify-content: space-between; }
+    /* XP/Maples */
+    .status-box { background: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    /* Pricing Plans */
+    .pricing-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 1rem; }
+    .pricing-option { background: white; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .recommended-label { background: gold; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Nevengi Dashboard</h1>
+  </header>
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="container">
+    <h2>Login with Discord</h2>
+    <button id="loginBtn">Login with Discord</button>
+  </div>
+
+  <!-- Main Dashboard -->
+  <div id="dashboard" class="container hidden">
+    <nav>
+      <button data-tab="explore">Explore Coaches</button>
+      <button data-tab="rewards">Rewards Shop</button>
+      <button data-tab="leaderboard">Leaderboard</button>
+      <button data-tab="status">My XP & Maples</button>
+      <button data-tab="plans">Pricing Plans</button>
+    </nav>
+
+    <!-- Explore Coaches -->
+    <section id="explore">
+      <h2>Explore Coaches</h2>
+      <ul id="coachList"></ul>
+    </section>
+
+    <!-- Rewards Shop (Shopify) -->
+    <section id="rewards">
+      <h2>Rewards Shop</h2>
+      <div id="shopify-collection"></div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section id="leaderboard">
+      <h2>Leaderboard</h2>
+      <ul id="leaderboardList"></ul>
+    </section>
+
+    <!-- XP & Maples -->
+    <section id="status">
+      <h2>My Status</h2>
+      <div class="status-box">
+        <p><strong>XP:</strong> <span id="xpAmount">0</span></p>
+        <p><strong>Maples:</strong> <span id="mapleAmount">0</span></p>
+      </div>
+    </section>
+
+    <!-- Pricing Plans (PayPal Subscriptions) -->
+    <section id="plans">
+      <h2>Pricing Plans</h2>
+      <div class="pricing-options">
+        <div class="pricing-option">
+          <h3>I'm Broke</h3>
+          <p>$13.99/month</p>
+          <ul>
+            <li>Basic resources</li>
+            <li>Community Access</li>
+            <li>Check-ins every 2 weeks</li>
+          </ul>
+          <div id="paypal-button-container-P-59B647217R330650PM7OIJXY-1"></div>
+        </div>
+        <div class="pricing-option">
+          <h3>Let's Go</h3>
+          <p>$23.99/month</p>
+          <span class="recommended-label">Recommended</span>
+          <ul>
+            <li>Most resources</li>
+            <li>Premium Community</li>
+            <li>Weekly Check-ins</li>
+          </ul>
+          <div id="paypal-button-container-P-59B647217R330650PM7OIJXY-2"></div>
+        </div>
+        <div class="pricing-option">
+          <h3>I'm Serious</h3>
+          <p>$37.99/month</p>
+          <span class="recommended-label">VIP</span>
+          <ul>
+            <li>All resources</li>
+            <li>VIP Community</li>
+            <li>2× Weekly Check-ins</li>
+            <li>Priority Support</li>
+          </ul>
+          <div id="paypal-button-container-P-59B647217R330650PM7OIJXY-3"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- PayPal SDK -->
+  <script src="https://www.paypal.com/sdk/js?client-id=AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ&vault=true&intent=subscription"></script>
+
+  <!-- Dashboard Logic -->
+  <script>
+    const CLIENT_ID = 'AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ';
+    const API_BASE = '';// e.g. 'https://api.nevengi.com'
+
+    // Login flow
+    document.getElementById('loginBtn').addEventListener('click', () => {
+      window.location.href = API_BASE + '/auth/discord';
+    });
+
+    // After OAuth redirect, server should include ?token=JWT
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('token')) {
+      localStorage.setItem('token', params.get('token'));
+      history.replaceState({}, '', window.location.pathname);
+    }
+
+    const token = localStorage.getItem('token');
+    if (token) {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+    }
+
+    // Tab navigation
+    document.querySelectorAll('nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(btn.dataset.tab).classList.add('active');
+      });
+    });
+    // Activate first tab
+    document.querySelector('nav button').click();
+
+    // Fetch and render coaches
+    async function loadCoaches() {
+      const res = await fetch(`${API_BASE}/api/coaches`, { headers: { Authorization: 'Bearer ' + token } });
+      const list = await res.json();
+      const ul = document.getElementById('coachList');
+      ul.innerHTML = list.map(c => `
+        <li class="coach-item">
+          <div class="coach-info"><strong>${c.name}</strong> – ${c.specialties.join(', ')}</div>
+          <div class="coach-action">
+            <button onclick="subscribe('${c._id}')">Subscribe</button>
+            <button onclick="rate('${c._id}')">Rate</button>
+          </div>
+        </li>
+      `).join('');
+    }
+
+    // Subscribe/rate stubs
+    async function subscribe(coachId) {
+      // call your API to subscribe
+      alert('Subscribed to ' + coachId);
+    }
+    function rate(coachId) {
+      const rating = prompt('Rate out of 5');
+      if (!rating) return;
+      // send rating to API
+      alert('Rated ' + coachId + ' as ' + rating);
+    }
+
+    // Fetch leaderboard
+    async function loadLeaderboard() {
+      const res = await fetch(`${API_BASE}/api/leaderboard`, { headers: { Authorization: 'Bearer ' + token } });
+      const data = await res.json();
+      const ul = document.getElementById('leaderboardList');
+      ul.innerHTML = data.map(u => `<li>${u.username} <span>${u.xp}</span></li>`).join('');
+    }
+
+    // Fetch status
+    async function loadStatus() {
+      const res = await fetch(`${API_BASE}/api/status`, { headers: { Authorization: 'Bearer ' + token } });
+      const st = await res.json();
+      document.getElementById('xpAmount').textContent = st.xp;
+      document.getElementById('mapleAmount').textContent = st.maples;
+    }
+
+    // Shopify Buy SDK (shopify integration placeholder)
+    async function loadShop() {
+      // Initialize Shopify Buy SDK here and render collection
+      document.getElementById('shopify-collection').textContent = 'Shop items will appear here';
+    }
+
+    // PayPal Buttons
+    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-P-59B647217R330650PM7OIJXY-1');
+    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-P-59B647217R330650PM7OIJXY-2');
+    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-P-59B647217R330650PM7OIJXY-3');
+
+    // Initialize all
+    if (token) {
+      loadCoaches();
+      loadLeaderboard();
+      loadStatus();
+      loadShop();
+    }
+  </script>
+</body>
+</html>
