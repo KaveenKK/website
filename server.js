@@ -19,6 +19,7 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import User from './models/User.js';
+import adminRoutes from "./routes/admin.js";
 
 // Prefer IPv4 to avoid potential DNS v6 issues
 dns.setDefaultResultOrder('ipv4first');
@@ -51,6 +52,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', authRoutes);
 // User/profile endpoints
 app.use('/api', profileRoutes);
+
+// mount admin
+app.use('/api/admin', adminRoutes);
 
 // Form submission endpoint
 app.post('/api/submit', async (req, res) => {

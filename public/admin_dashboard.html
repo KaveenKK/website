@@ -1,0 +1,44 @@
+<ul id="pendingList"></ul>
+<script>
+  const API = "https://www.nevengi.com/api/admin";
+  const token = "YOUR_ADMIN_JWT";
+
+  // 1. Fetch pending coaches
+  fetch(`${API}/coaches/pending`, {
+    headers: { Authorization: "Bearer " + token }
+  })
+    .then(r => r.json())
+    .then(list => {
+      const ul = document.getElementById("pendingList");
+      ul.innerHTML = list
+        .map(coach => `
+          <li>
+            ${coach.name} (${coach._id})
+            <button data-id="${coach._id}">Approve</button>
+          </li>
+        `)
+        .join("");
+
+      // 2. Wire up approve buttons
+      ul.querySelectorAll("button").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const id = btn.dataset.id;
+          fetch(`${API}/coaches/${id}/approve`, {
+            method: "POST",
+            headers: {
+              Authorization: "Bearer " + token
+            }
+          })
+            .then(r => r.json())
+            .then(res => {
+              if (res.success) {
+                btn.textContent = "Approved";
+                btn.disabled = true;
+              } else {
+                alert("Error: " + res.error);
+              }
+            });
+        });
+      });
+    });
+</script>
