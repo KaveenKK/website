@@ -78,7 +78,7 @@ router.get("/discord/user/callback", async (req, res) => {
 
     // Redirect to user dashboard with token & discord_id
     return res.redirect(
-      `${process.env.FRONTEND_URL}/user_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
+     `/user_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
     );
   } catch (err) {
     console.error("OAuth User Error:", err.response?.data || err.message);
@@ -141,7 +141,7 @@ router.get("/discord/callback", async (req, res) => {
 
     // Redirect to coach dashboard with token & discord_id
     return res.redirect(
-      `${process.env.FRONTEND_URL}/coach_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
+      `/coach_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
     );
   } catch (err) {
     console.error("Discord auth error:", err.response?.data || err.message);
