@@ -13,14 +13,14 @@ const DISCORD_API = "https://discord.com/api";
 router.get("/discord/user", (req, res) => {
   const params = new URLSearchParams({
     client_id: process.env.DISCORD_CLIENT_ID,
-    redirect_uri: process.env.DISCORD_USER_REDIRECT_URI,  // new one
+    redirect_uri: process.env.DISCORD_USER_REDIRECT_URI,
     response_type: "code",
     scope: "identify email"
   });
   res.redirect(`${DISCORD_API}/oauth2/authorize?${params.toString()}`);
 });
 
-// Mount this at /auth/discord (for coaches)
+// COACH Discord Login
 router.get("/discord", (req, res) => {
   const params = new URLSearchParams({
     client_id: process.env.DISCORD_CLIENT_ID,
@@ -31,35 +31,32 @@ router.get("/discord", (req, res) => {
   res.redirect(`${DISCORD_API}/oauth2/authorize?${params.toString()}`);
 });
 
-// STEP 2 - Callback endpoint
-
-// USER callback
+// STEP 2 - Callback endpoint for USERS
 router.get("/discord/user/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) return res.redirect('/login');
 
   try {
-    // Token exchange
-    const tokenRes = await axios.post(`${DISCORD_API}/oauth2/token`, new URLSearchParams({
-      client_id: process.env.DISCORD_CLIENT_ID,
-      client_secret: process.env.DISCORD_CLIENT_SECRET,
-      grant_type: "authorization_code",
-      code,
-      redirect_uri: process.env.DISCORD_USER_REDIRECT_URI,
-      scope: "identify email"
-    }).toString(), {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" }
-    });
+    const tokenRes = await axios.post(
+      `${DISCORD_API}/oauth2/token`,
+      new URLSearchParams({
+        client_id: process.env.DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: process.env.DISCORD_USER_REDIRECT_URI,
+        scope: "identify email"
+      }).toString(),
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
 
     const accessToken = tokenRes.data.access_token;
 
-    // Fetch user info
     const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     const discordUser = userRes.data;
 
-    // Create or find user
     let user = await User.findOne({ discord_id: discordUser.id });
     if (!user) {
       user = await User.create({
@@ -73,25 +70,30 @@ router.get("/discord/user/callback", async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '7d' });
-    return res.redirect(`${process.env.FRONTEND_URL}/user_dashboard.html?token=${token}&discord_id=${user.discord_id}`);
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Redirect to user dashboard with token & discord_id
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/user_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
+    );
   } catch (err) {
-    console.error("OAuth User Error:", err.message);
+    console.error("OAuth User Error:", err.response?.data || err.message);
     return res.status(500).send("OAuth failed");
   }
 });
 
-
-
-// Mount this at /auth/discord/callback
+// STEP 2 - Callback endpoint for COACHES
 router.get("/discord/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) {
-    return res.redirect('/login'); // or your login page
+    return res.redirect('/login');
   }
 
   try {
-    // Exchange code for token
     const tokenRes = await axios.post(
       `${DISCORD_API}/oauth2/token`,
       new URLSearchParams({
@@ -107,13 +109,11 @@ router.get("/discord/callback", async (req, res) => {
 
     const accessToken = tokenRes.data.access_token;
 
-    // Fetch user info
     const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     const discordUser = userRes.data;
 
-    // Find or create coach
     let coach = await Coach.findOne({ discord_id: discordUser.id });
     if (!coach) {
       coach = await Coach.create({
@@ -129,19 +129,20 @@ router.get("/discord/callback", async (req, res) => {
         experience: "",
         monthly_price_usd: 0,
         monthly_price_maples: 0,
-        role: "coach" // set default role
+        role: "coach"
       });
     }
 
-    // Issue JWT including role
     const token = jwt.sign(
       { id: coach._id, role: coach.role || 'coach' },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
-    // Redirect with JWT
-    return res.redirect(`${process.env.FRONTEND_URL}/coach_dashboard.html?token=${token}`);
+    // Redirect to coach dashboard with token & discord_id
+    return res.redirect(
+      `${process.env.FRONTEND_URL}/coach_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
+    );
   } catch (err) {
     console.error("Discord auth error:", err.response?.data || err.message);
     if (err.response?.status === 429) {

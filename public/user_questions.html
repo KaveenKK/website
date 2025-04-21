@@ -452,7 +452,7 @@
 
       const data = await res.json();
       if (res.ok) {
-        alert("✅ Profile submitted successfully!");
+        alert("✅ Profile submitted successfully! Redirecting to your dashboard...");
         window.location.href = "/user_dashboard.html"; // or a thank you page
       } else {
         alert("❌ Submission error: " + (data.error || "Unknown issue"));
