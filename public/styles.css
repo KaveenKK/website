@@ -26,6 +26,32 @@ html {
     }
 }
   
+.top-login-bar {
+    width: 100%;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.4); /* semi-transparent dark background */
+    color: #fff;
+    text-align: center;
+    font-size: 0.9rem;
+    font-weight: 500;
+    backdrop-filter: blur(6px);
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.top-login-bar a.login-btn {
+    color: #00ff9c;
+    text-decoration: underline;
+    font-weight: bold;
+    margin-left: 5px;
+    transition: color 0.3s ease;
+}
+
+.top-login-bar a.login-btn:hover {
+    color: #ffffff;
+}
+
 
 body {
     font-family: 'Arial', sans-serif;
@@ -79,6 +105,7 @@ body {
 }
   
 .header {
+    margin-top: 0px;
     /*background: linear-gradient(135deg, #000000 30%, #243d30);*/
     /*color: #fff;*/
     padding: 100px 20px;
@@ -92,7 +119,7 @@ body {
     background: rgba(255, 255, 255, 0.1); /* Light background with transparency */
     border: 1px solid rgba(255, 255, 255, 0.2); /* Light border */
     backdrop-filter: blur(10px); /* Blur effect */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); /* Subtle shadow */
     /*padding: 20px;*/
     /*border-radius: 20px;*/
 }
