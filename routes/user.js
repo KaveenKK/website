@@ -48,8 +48,8 @@ router.post("/submit", async (req, res) => {
     .map(([key]) => key.replace('channel_', ''));
 
   try {
-    console.log("🧪🧪🧪 YES – This backend is being used");
-    const updated = await User.updateOne(
+    console.log("🧪🧪🧪 Upserting user profile");
+    const user = await User.findOneAndUpdate(
       { discord_id: stringDiscordId },
       {
         $set: {
@@ -70,12 +70,13 @@ router.post("/submit", async (req, res) => {
           identity_completed: true,
           channels,
         },
-      }
+      },
+      { upsert: true, new: true }
     );
-    res.json({ message: "Profile updated", updated });
+    return res.json({ message: "Profile updated", user });
   } catch (err) {
     console.error("Update error:", err);
-    res.status(500).json({ error: "Something went wrong" });
+    return res.status(500).json({ error: "Something went wrong" });
   }
 });
 
@@ -87,10 +88,10 @@ router.get('/coaches', authMiddleware, async (req, res) => {
   try {
     const coaches = await Coach.find({ approved: true })
       .select('name specialties monthly_price_maples profile_picture');
-    res.json(coaches);
+    return res.json(coaches);
   } catch (err) {
     console.error('❌ Error fetching coaches:', err);
-    res.status(500).json({ error: 'Failed to fetch coaches' });
+    return res.status(500).json({ error: 'Failed to fetch coaches' });
   }
 });
 
@@ -118,10 +119,10 @@ router.post('/subscribe', authMiddleware, async (req, res) => {
     user.subscriptions.push(coachId);
     await user.save();
 
-    res.json({ success: true, coachId, remainingMaples: user.maples });
+    return res.json({ success: true, coachId, remainingMaples: user.maples });
   } catch (err) {
     console.error('❌ Subscription error:', err);
-    res.status(500).json({ error: 'Failed to subscribe' });
+    return res.status(500).json({ error: 'Failed to subscribe' });
   }
 });
 
@@ -137,16 +138,16 @@ router.post('/rate', authMiddleware, async (req, res) => {
     const coach = await Coach.findById(coachId);
     if (!coach) return res.status(404).json({ error: 'Coach not found' });
 
-    coach.ratings = coach.ratings || [];
+    // Replace any previous rating by this user
     coach.ratings = coach.ratings.filter(r => r.user.toString() !== userId);
     coach.ratings.push({ user: userId, rating: Number(rating) });
     await coach.save();
 
     const avg = coach.ratings.reduce((sum, r) => sum + r.rating, 0) / coach.ratings.length;
-    res.json({ success: true, averageRating: avg.toFixed(2) });
+    return res.json({ success: true, averageRating: avg.toFixed(2) });
   } catch (err) {
     console.error('❌ Rating error:', err);
-    res.status(500).json({ error: 'Failed to rate coach' });
+    return res.status(500).json({ error: 'Failed to rate coach' });
   }
 });
 
@@ -160,10 +161,10 @@ router.get('/leaderboard', authMiddleware, async (req, res) => {
       .sort({ xp: -1 })
       .limit(10)
       .select('username xp');
-    res.json(topUsers);
+    return res.json(topUsers);
   } catch (err) {
     console.error('❌ Leaderboard error:', err);
-    res.status(500).json({ error: 'Failed to fetch leaderboard' });
+    return res.status(500).json({ error: 'Failed to fetch leaderboard' });
   }
 });
 
@@ -175,10 +176,10 @@ router.get('/status', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.user.id).select('xp maples');
     if (!user) return res.status(404).json({ error: 'User not found' });
-    res.json({ xp: user.xp || 0, maples: user.maples || 0 });
+    return res.json({ xp: user.xp || 0, maples: user.maples || 0 });
   } catch (err) {
     console.error('❌ Status error:', err);
-    res.status(500).json({ error: 'Failed to fetch status' });
+    return res.status(500).json({ error: 'Failed to fetch status' });
   }
 });
 

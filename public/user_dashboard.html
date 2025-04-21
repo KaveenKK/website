@@ -96,7 +96,7 @@
             <li>Community Access</li>
             <li>Check-ins every 2 weeks</li>
           </ul>
-          <div id="paypal-button-container-P-59B647217R330650PM7OIJXY-1"></div>
+          <div id="paypal-button-container-1"></div>
         </div>
         <div class="pricing-option">
           <h3>Let's Go</h3>
@@ -107,7 +107,7 @@
             <li>Premium Community</li>
             <li>Weekly Check-ins</li>
           </ul>
-          <div id="paypal-button-container-P-59B647217R330650PM7OIJXY-2"></div>
+          <div id="paypal-button-container-2"></div>
         </div>
         <div class="pricing-option">
           <h3>I'm Serious</h3>
@@ -119,7 +119,7 @@
             <li>2× Weekly Check-ins</li>
             <li>Priority Support</li>
           </ul>
-          <div id="paypal-button-container-P-59B647217R330650PM7OIJXY-3"></div>
+          <div id="paypal-button-container-3"></div>
         </div>
       </div>
     </section>
@@ -130,22 +130,25 @@
 
   <!-- Dashboard Logic -->
   <script>
-    const CLIENT_ID = 'AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ';
-    const API_BASE = '';// e.g. 'https://api.nevengi.com'
+    const API_BASE = '';
 
     // Login flow
     document.getElementById('loginBtn').addEventListener('click', () => {
-      window.location.href = API_BASE + '/auth/discord';
+      window.location.href = '/auth/discord/user';
     });
 
-    // After OAuth redirect, server should include ?token=JWT
+    // Handle OAuth callback
     const params = new URLSearchParams(window.location.search);
     if (params.has('token')) {
-      localStorage.setItem('token', params.get('token'));
+      localStorage.setItem('userToken', params.get('token'));
+      localStorage.setItem('discordId', params.get('discord_id'));
       history.replaceState({}, '', window.location.pathname);
     }
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('userToken');
+    const discordId = localStorage.getItem('discordId');
+
+    // Show dashboard if logged in
     if (token) {
       document.getElementById('loginScreen').classList.add('hidden');
       document.getElementById('dashboard').classList.remove('hidden');
@@ -158,15 +161,13 @@
         document.getElementById(btn.dataset.tab).classList.add('active');
       });
     });
-    // Activate first tab
     document.querySelector('nav button').click();
 
-    // Fetch and render coaches
+    // Load Explore Coaches
     async function loadCoaches() {
       const res = await fetch(`${API_BASE}/api/coaches`, { headers: { Authorization: 'Bearer ' + token } });
       const list = await res.json();
-      const ul = document.getElementById('coachList');
-      ul.innerHTML = list.map(c => `
+      document.getElementById('coachList').innerHTML = list.map(c => `
         <li class="coach-item">
           <div class="coach-info"><strong>${c.name}</strong> – ${c.specialties.join(', ')}</div>
           <div class="coach-action">
@@ -177,27 +178,25 @@
       `).join('');
     }
 
-    // Subscribe/rate stubs
-    async function subscribe(coachId) {
-      // call your API to subscribe
+    function subscribe(coachId) {
+      // TODO: call subscribe endpoint
       alert('Subscribed to ' + coachId);
     }
     function rate(coachId) {
       const rating = prompt('Rate out of 5');
       if (!rating) return;
-      // send rating to API
+      // TODO: call rate endpoint
       alert('Rated ' + coachId + ' as ' + rating);
     }
 
-    // Fetch leaderboard
+    // Load Leaderboard
     async function loadLeaderboard() {
       const res = await fetch(`${API_BASE}/api/leaderboard`, { headers: { Authorization: 'Bearer ' + token } });
       const data = await res.json();
-      const ul = document.getElementById('leaderboardList');
-      ul.innerHTML = data.map(u => `<li>${u.username} <span>${u.xp}</span></li>`).join('');
+      document.getElementById('leaderboardList').innerHTML = data.map(u => `<li>${u.username} <span>${u.xp}</span></li>`).join('');
     }
 
-    // Fetch status
+    // Load Status
     async function loadStatus() {
       const res = await fetch(`${API_BASE}/api/status`, { headers: { Authorization: 'Bearer ' + token } });
       const st = await res.json();
@@ -205,18 +204,17 @@
       document.getElementById('mapleAmount').textContent = st.maples;
     }
 
-    // Shopify Buy SDK (shopify integration placeholder)
+    // Load Rewards Shop placeholder
     async function loadShop() {
-      // Initialize Shopify Buy SDK here and render collection
       document.getElementById('shopify-collection').textContent = 'Shop items will appear here';
     }
 
-    // PayPal Buttons
-    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-P-59B647217R330650PM7OIJXY-1');
-    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-P-59B647217R330650PM7OIJXY-2');
-    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-P-59B647217R330650PM7OIJXY-3');
+    // Render PayPal buttons
+    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-1');
+    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-2');
+    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-3');
 
-    // Initialize all
+    // Initialize data
     if (token) {
       loadCoaches();
       loadLeaderboard();
