@@ -104,7 +104,7 @@
 <body>
   <div class="card">
     <h2>Complete Your Profile</h2>
-    <form id="multiStepForm" action="https://www.nevengi.com/api/submit" method="POST">
+    <form id="multiStepForm">
 
       <input type="hidden" id="discord_id" name="discord_id" value="" />
 
@@ -431,8 +431,38 @@
 
     nextStep(); // Everything is valid — go to the next step
   }
-
-
   </script>
+
+
+  <script>
+   document.getElementById("multiStepForm").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Stop the default ugly page reload
+
+    const formData = new FormData(this);
+    const payload = Object.fromEntries(formData.entries());
+
+    try {
+      const res = await fetch("/api/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        alert("✅ Profile submitted successfully!");
+        window.location.href = "/user_dashboard.html"; // or a thank you page
+      } else {
+        alert("❌ Submission error: " + (data.error || "Unknown issue"));
+      }
+    } catch (err) {
+      console.error("🚨 Submission failed:", err);
+      alert("Something went wrong. Please try again.");
+    }
+   });
+  </script>
+
 </body>
 </html>
