@@ -107,19 +107,29 @@ router.post('/subscribe', authMiddleware, async (req, res) => {
     const coach = await Coach.findById(coachId);
     if (!coach) return res.status(404).json({ error: 'Coach not found' });
 
-    if (coach.subscribers.includes(userId)) {
-      return res.status(400).json({ error: 'Already subscribed' });
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // Check duplicate
+    if (user.my_coaches.some(c => c.coach_id.toString() === coachId)) {
+      return res.status(400).json({ error: 'Already subscribed to this coach' });
     }
+
+    // Add to user.my_coaches
+    user.my_coaches.push({
+      coach_id: coach._id,
+      coach_name: coach.name
+    });
+
+    // Deduct maples
+    user.maples = (user.maples || 0) - coach.monthly_price_maples;
+    await user.save();
+
+    // Add subscriber to coach
     coach.subscribers.push(userId);
     await coach.save();
 
-    const user = await User.findById(userId);
-    user.maples = (user.maples || 0) - coach.monthly_price_maples;
-    user.subscriptions = user.subscriptions || [];
-    user.subscriptions.push(coachId);
-    await user.save();
-
-    return res.json({ success: true, coachId, remainingMaples: user.maples });
+    return res.json({ success: true, my_coaches: user.my_coaches });
   } catch (err) {
     console.error('❌ Subscription error:', err);
     return res.status(500).json({ error: 'Failed to subscribe' });
@@ -127,9 +137,51 @@ router.post('/subscribe', authMiddleware, async (req, res) => {
 });
 
 /**
+ * POST /api/unsubscribe
+ * Remove subscription
+ */
+router.post('/unsubscribe', authMiddleware, async (req, res) => {
+  const { coachId } = req.body;
+  const userId = req.user.id;
+  try {
+    const coach = await Coach.findById(coachId);
+    if (!coach) return res.status(404).json({ error: 'Coach not found' });
+
+    const user = await User.findById(userId);
+    if (!user) return res.status(404).json({ error: 'User not found' });
+
+    // Remove from user.my_coaches
+    user.my_coaches = user.my_coaches.filter(c => c.coach_id.toString() !== coachId);
+    await user.save();
+
+    // Remove from coach.subscribers
+    coach.subscribers = coach.subscribers.filter(id => id.toString() !== userId);
+    await coach.save();
+
+    return res.json({ success: true, my_coaches: user.my_coaches });
+  } catch (err) {
+    console.error('❌ Unsubscribe error:', err);
+    return res.status(500).json({ error: 'Failed to unsubscribe' });
+  }
+});
+
+/**
+ * GET /api/my_coaches
+ * Returns list of this user's subscribed coaches
+ */
+router.get('/my_coaches', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('my_coaches');
+    return res.json(user.my_coaches || []);
+  } catch (err) {
+    console.error('❌ My coaches error:', err);
+    return res.status(500).json({ error: 'Failed to fetch your coaches' });
+  }
+});
+
+/**
  * POST /api/rate
  * Add a rating for a coach
- * Body: { coachId: string, rating: number }
  */
 router.post('/rate', authMiddleware, async (req, res) => {
   const { coachId, rating } = req.body;

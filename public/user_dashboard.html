@@ -178,6 +178,15 @@
       `).join('');
     }
 
+  async function loadMyCoaches() {
+    const res = await fetch('/api/my_coaches', {
+     headers: { Authorization: 'Bearer ' + localStorage.getItem('userToken') }
+    });
+    const data = await res.json();
+    const ul = document.getElementById('myCoachesList');
+    ul.innerHTML = data.map(c => `<li>${c.coach_name}</li>`).join('');
+  }
+
     function subscribe(coachId) {
       // TODO: call subscribe endpoint
       alert('Subscribed to ' + coachId);
@@ -220,6 +229,7 @@
       loadLeaderboard();
       loadStatus();
       loadShop();
+      loadMyCoaches();
     }
   </script>
 </body>

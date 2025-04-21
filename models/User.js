@@ -30,11 +30,19 @@ const userSchema = new mongoose.Schema({
   additional: { type: String, default: null },
   channels: { type: [String], default: [] },
 
-  // New fields for user dashboard
+  // Dashboard metrics
   xp: { type: Number, default: 0 },
   maples: { type: Number, default: 0 },
+
+  // Legacy subscriptions by coach ID
   subscriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Coach' }],
 
+  // Subscribed coaches with names and timestamps
+  my_coaches: [{
+    coach_id:    { type: mongoose.Schema.Types.ObjectId, ref: 'Coach', required: true },
+    coach_name:  { type: String,                 required: true },
+    subscribed_at: { type: Date,                 default: Date.now }
+  }]
 }, {
   timestamps: true
 });
