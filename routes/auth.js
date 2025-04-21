@@ -2,6 +2,7 @@ import express from "express";
 import axios from "axios";
 import jwt from "jsonwebtoken";
 import Coach from "../models/Coach.js";
+import User from "../models/User.js";
 import authMiddleware from "../middleware/authMiddleware.js"; // if needed for logout, etc.
 
 const router = express.Router();
