@@ -9,8 +9,10 @@
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
       font-family: 'Helvetica Neue', Arial, sans-serif;
-      background: #e4f7e4;
+      background: linear-gradient(135deg, #e4f7e4 60%, #d6e4ff 90%, #e4d6ff);
+      background-attachment: fixed;
       color: #26474d;
+      background-repeat: no-repeat;
     }
     a, button { text-decoration: none; }
     button {
@@ -24,7 +26,39 @@
       transition: background-color 0.3s;
     }
     button:hover { background-color: rgba(36,77,38,0.1); }
-    .option img { width: 24px; height: 24px; margin-right: 0.5rem; }
+    .option {
+      flex: 1 1 200px;         /* each button grows/shrinks, min‑width 200px */
+      max-width: 250px; 
+      display: flex;
+      flex-direction: column;   /* stack image + label */
+      align-items: center;
+      gap: 0.5rem;              /* space between img and text */
+      padding: 1rem;
+      cursor: pointer;
+      border-radius: 12px;
+      transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+    .options-row {
+      display: flex;
+      flex-direction: row;     /* horizontal stacking */
+      flex-wrap: wrap;         /* wrap to next line on small screens */
+      gap: 1rem;               /* space between buttons */
+      justify-content: center; /* center them in the container */
+      margin-top: 1rem;
+    }
+
+    .option:hover {
+      transform: scale(1.03);
+      background-color: rgba(36,77,38,0.1);
+    }
+
+    .option-img {
+      width: 120px;    /* make your icons big */
+      height: auto;    /* keep aspect ratio */
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
 
     .logo-img {
     height: 80px;
@@ -47,7 +81,7 @@
     }
 
     /* Header */
-    header { width: 100%; margin-bottom: 2rem; }
+    header { width: 100%; margin-bottom: 2rem; margin-top: 2rem;}
     header .glass {
       display: flex;
       justify-content: space-between;
@@ -91,7 +125,7 @@
       -webkit-backdrop-filter: blur(10px);
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      padding: 0.5rem 0;
+      padding: 0.5rem 0.2rem;
       z-index: 1100;
     }
     #login-menu button {
@@ -131,9 +165,9 @@
     .scroll-container { display: flex; overflow-x: auto; gap: 1rem; padding: 1rem 2rem; max-width: 1200px; margin: 2rem auto; }
     .scroll-container::-webkit-scrollbar { height: 8px; }
     .scroll-container::-webkit-scrollbar-thumb { background: rgba(38,77,38,0.4); border-radius: 4px; }
-    .card-scroll { flex: 0 0 auto; width: 200px; background: rgb(128, 189, 240); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 1rem; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .card-scroll { flex: 0 0 auto; width: 200px; background: rgb(252,251,247,0.7); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 1rem; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
     .card-scroll img { width: 100%; border-radius: 12px; margin-bottom: 0.5rem; }
-    .card-scroll p { font-size: 0.9rem; color: #d9ddea; }
+    .card-scroll p { font-size: 0.9rem; color: #15181c; }
 
     /* Embedded Questionnaire */
     #questionnaire {
@@ -174,19 +208,25 @@
       <div class="logo">
         <a href="/" class="logo-link">
           <img src="images/glowinglogonowback.png" alt="Nevengi" class="logo-img" />
-          <span class="logo-text">Nevengi</span>
+          <span class="logo-text">Nevengi™</span>
         </a>
       </div>
       <nav>
         <div class="login-wrapper">
           <a href="#" id="login-link">Login</a>
           <div id="login-menu">
-            <button onclick="location.href='/auth/discord/user'">👤User Login</button>
-            <button onclick="location.href='//auth/discord'">🎓Coach Login</button>
+            <button onclick="location.href='/auth/discord/user'">
+                <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+                User Login
+            </button>
+              
+            <button onclick="location.href='/auth/discord'">
+                <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+                Coach Login
+            </button>
+              
           </div>
         </div>
-        <a href="#">Challenges</a>
-        <a href="#">Profile</a>
       </nav>
     </div>
   </header>
@@ -243,23 +283,49 @@
     const questions = [
       {
         text: 'Who are you?',
-        image: 'assets/question-user-or-coach.png',
         options: [
-          { label: 'I am a user', img: 'assets/user-icon.png', next: 0 },
-          { label: 'I want to be a coach', img: 'assets/coach-icon.png', next: 1 },
+          { label: 'I am a user', 
+            img: 'images/usernobk.png',
+            action: () => showUserMessage()
+          },  
+          { 
+            label: 'I want to be a coach',
+            img: 'images/coachnobk.png',
+            next: 1 
+           },
         ]
       },
       {
         text: 'Do you have 5000+ followers on any platform?',
-        image: 'assets/followers-check.png',
         options: [
-          { label: 'Yes, I do', img: 'assets/yes-icon.png', action: () => window.location.href = '/coach-dashboard.html' },
-          { label: 'No, not yet', img: 'assets/no-icon.png', action: () => showFinalUserMessage() }
+          { label: 'Yes, I do',
+            img: 'images/happymascot.png',
+            action: () => window.location.href = '/introduction_coaching.html' 
+          },
+          {
+            label: 'No, not yet',
+            img: 'images/sadmascot2d.png',
+            action: () => showFinalUserMessage() 
+          }
         ]
       }
     ];
 
+    
+
+
     let currentIndex = null;
+
+    function showUserMessage() {
+      questionnaire.innerHTML = `
+       <button class="back-btn" onclick="goBack()">← Back</button>
+       <img class="question-img" src="assets/nevengi-welcome.png" alt="Welcome" />
+       <h2>You were told to be strong, work hard, stay confident, and never give up.🤦‍♂️</h2>
+       <p> But did any of those surface-level tips actually help you take action? Everyone knows these things🤷‍♂️. what we need is a practical system. That’s exactly why we built Nevengi.</p>
+       <button class="btn-primary" onclick="showFinalUserMessage()">Yeah, makes sense</button>
+     `;
+   }
+
 
     function showQuestion(index) {
       currentIndex = index;
@@ -272,12 +338,12 @@
       const q = questions[index];
       questionnaire.innerHTML = `
         <button class="back-btn" onclick="goBack()">← Back</button>
-        <img class="question-img" src="${q.image}" alt="Question" />
         <h2>${q.text}</h2>
-        <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div class="options-row">
           ${q.options.map((opt, i) => `
             <button class="option glass" onclick="handleOptionClick(${index}, ${i})">
-              <img src="${opt.img}" alt="" />${opt.label}
+              <img class="option-img" src="${opt.img}" alt="" />
+              <span>${opt.label}</span>
             </button>
           `).join('')}
         </div>
@@ -301,7 +367,7 @@
     function showFinalUserMessage() {
       questionnaire.innerHTML = `
         <button class="back-btn" onclick="goBack()">← Back</button>
-        <img class="question-img" src="assets/nevengi-welcome.png" alt="Welcome" />
+        <img class="question-img" src="images/mylogo_nevengi_circle.webp" alt="Welcome" />
         <h2>Welcome to Nevengi!</h2>
         <p>Join a powerful community of self-improvers and access daily challenges, rewards, and coaching support to transform your life.</p>
         <a href="${discordLink}" class="btn-primary">Join our Discord</a>
