@@ -1,126 +1,338 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="images/mylogo_nevengi_circle.webp" type="image/jpg">
-    <title>Nevengi – Mental Fitness & Accountability Coaching</title>
-    <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" />
-    <style>
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000; /* Ensure the modal is in front of other elements */
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-            padding-top: 60px;
-        }
-        .modal-content {
-            background-color: #000000;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
-            z-index: 1001; /* Ensure the modal content is in front */
-            color: black; /* Change text color to black */
-        }
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Nevengi</title>
+  <style>
+    /* Reset & base */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: #e4f7e4;
+      color: #26474d;
+    }
+    a, button { text-decoration: none; }
+    button {
+      cursor: pointer;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      padding: 0.5rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      transition: background-color 0.3s;
+    }
+    button:hover { background-color: rgba(36,77,38,0.1); }
+    .option img { width: 24px; height: 24px; margin-right: 0.5rem; }
 
-        /* Glassmorphism effect for cards */
-        .feature, .pricing-option {
-            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: saturate(180%) blur(40px);
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transform: scale(1);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+    .logo-img {
+    height: 80px;
+    width: auto;
+    filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.5));
+    transition: transform 0.3s ease;
+    }
+  
+    .logo-img:hover {
+    transform: scale(1.05);
+    }
+  
 
-        .feature:hover, .pricing-option:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
-        }
-    </style>
+    /* Glassmorphism Utility */
+    .glass {
+      background: rgba(252,251,247,0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px;
+    }
+
+    /* Header */
+    header { width: 100%; margin-bottom: 2rem; }
+    header .glass {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+      position: relative;
+      z-index: 1000;
+    }
+    .logo { font-size: 1.75rem; font-weight: bold; color: #1b351b; letter-spacing: 1px; }
+    nav { display: flex; align-items: center; }
+    nav a { margin-left: 1.5rem; font-size: 1rem; color: #264d26; padding: 0.5rem 1rem; border-radius: 8px; transition: background-color 0.3s, color 0.3s; }
+    nav a:hover { background-color: rgba(36,77,38,0.1); color: #1b351b; }
+    .login-wrapper { position: relative; }
+
+    .logo-text {
+      font-size: 2rem; /* Larger than 1.75rem for better balance */
+      font-weight: bold;
+      color: #272f36;
+      letter-spacing: 1px;
+      line-height: 1;
+    }
+
+    .logo-link {
+     display: flex;
+     align-items: center;
+     gap: 0.75rem;
+     text-decoration: none;
+    }
+
+    /* Login menu */
+    #login-menu {
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: rgba(255,255,255,0.8);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 0.5rem 0;
+      z-index: 1100;
+    }
+    #login-menu button {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 1rem;
+      background: transparent;
+      text-align: left;
+      color: #264d26;
+    }
+    #login-menu button:hover { background: rgba(36,77,38,0.1); color: #1b351b; }
+
+    /* Hero */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+    .hero.glass { padding: 2rem; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+    .hero-text, .hero-img {
+      transition: none; /* disable slow fade */
+    }
+    .hero-text.hidden, .hero-img.hidden {
+      display: none; /* instant hide */
+    }
+    .hero-text h1 { font-size: 3rem; margin-bottom: 0.5rem; line-height: 1.2; letter-spacing: 1px; }
+    .hero-text p { font-size: 1.125rem; margin-bottom: 1.5rem; }
+    .btn-primary { background: #80bdf0; color: #fff; border-radius: 24px; padding: 0.75rem 2rem; font-weight: bold; }
+    .hero-img img { max-width: 60%; height: auto; display: block; }
+
+    /* Scrollable cards */
+    .scroll-container { display: flex; overflow-x: auto; gap: 1rem; padding: 1rem 2rem; max-width: 1200px; margin: 2rem auto; }
+    .scroll-container::-webkit-scrollbar { height: 8px; }
+    .scroll-container::-webkit-scrollbar-thumb { background: rgba(38,77,38,0.4); border-radius: 4px; }
+    .card-scroll { flex: 0 0 auto; width: 200px; background: rgb(128, 189, 240); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; padding: 1rem; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+    .card-scroll img { width: 100%; border-radius: 12px; margin-bottom: 0.5rem; }
+    .card-scroll p { font-size: 0.9rem; color: #d9ddea; }
+
+    /* Embedded Questionnaire */
+    #questionnaire {
+      display: none;
+      width: 100%;
+      margin-top: 2rem;
+      text-align: center;
+    }
+    #questionnaire h2 { margin-bottom: 1rem; color: #264d26; }
+    #questionnaire img.question-img { max-width: 80px; margin-bottom: 1rem; }
+    #questionnaire .btn-primary { margin-top: 1rem; }
+    #questionnaire .back-btn {
+      background: transparent;
+      color: #264d26;
+      margin-bottom: 1rem;
+      font-size: 0.9rem;
+    }
+    #questionnaire .back-btn:hover {
+      text-decoration: underline;
+    }
+
+    footer { height: 4rem; }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .hero { flex-direction: column; text-align: center; }
+      .hero-text, .hero-img { max-width: 100%; }
+      .scroll-container { padding: 1rem; }
+      .card-scroll { width: 150px; }
+      #questionnaire { margin: 1rem; }
+    }
+  </style>
 </head>
 <body>
-    <!-- Replace your current top-login-bar with this -->
-    <div class="top-login-bar">
-      <a href="/auth/discord/user" class="btn login-btn user-btn">
-        👤 Login as a User
-      </a>
-      <a href="/auth/discord" class="btn login-btn coach-btn">
-        🎓 Login as a Coach
-      </a>
+
+  <header>
+    <div class="glass">
+      <div class="logo">
+        <a href="/" class="logo-link">
+          <img src="images/glowinglogonowback.png" alt="Nevengi" class="logo-img" />
+          <span class="logo-text">Nevengi</span>
+        </a>
+      </div>
+      <nav>
+        <div class="login-wrapper">
+          <a href="#" id="login-link">Login</a>
+          <div id="login-menu">
+            <button onclick="location.href='/user-login.html'">User Login</button>
+            <button onclick="location.href='/coach-login.html'">Coach Login</button>
+          </div>
+        </div>
+        <a href="#">Challenges</a>
+        <a href="#">Profile</a>
+      </nav>
     </div>
-  
-       
-    <header class="header">
-        <div class="container">
-            <div class="nevengi-brand">
-                <img src="images/mylogo_nevengi_circle.webp" alt="Nevengi Logo" class="logo-icon" />
-                <h1 class="brand-name">N E V E N G I</h1>
-            </div>
-              
-            <p>Inner Silence & Outer Growth</p>
-            <p class="highlight">The Only Practical Self Improvement Platform</p>
-            <a href="https://discord.gg/SYtbqPMqju" class="btn">Join Discord as a User</a>
-            <a href="introduction_coaching.html" class="btn">Start My Coaching Business</a>
-        </div>
+  </header>
 
-    </header>
+    <!-- Scrollable Feature Cards -->
+  <section class="scroll-container">
+    <div class="card-scroll">
+      <img src="images/dopamine.png" alt="feature 1" />
+      <p>One More motivational video<br> and I will do it ?</p>
+    </div>
+    <div class="card-scroll">
+      <img src="images/quotes.png" alt="Feature 2" />
+      <p>Let me Save all these quotes</p>
+    </div>
+    <div class="card-scroll">
+      <img src="images/suffer.png" alt="Feature 3" />
+      <p>Let me suffer more, so I will win</p>
+    </div>
+    <div class="card-scroll">
+      <img src="assets/feature4.png" alt="Feature 4" />
+      <p>Community Support</p>
+    </div>
+  </section>
 
-    <section class="how-it-works container">
-        <h2>Going to Gym ? What about mental fitness ?</h2>
-        <div class="features">
-            <div class="feature">
-                <img src="images/neuro.webp" alt="Brain">
-                <h3>Neuroplasticity Training 🧠</h3>
-                <div class="feature-content">Rewire your brain using evidence-based cognitive behavioral techniques.</div>
-            </div>
-            <div class="feature">
-                <img src="images/commmune.webp" alt="Community">
-                <h3>Community Accountability 🤝</h3>
-                <div class="feature-content">Stay motivated with real-time feedback and peer support within the Discord.</div>
-            </div>
-            <div class="feature">
-                <img src="images\goalss.webp" alt="Goal">
-                <h3>Goal-Oriented Structure 🎯</h3>
-                <div class="feature-content">Set measurable goals and achieve them step-by-step with guided support.</div>
-            </div>
-            <div class="feature">
-                <img src="images\stoic&zen.webp" alt="Mindfulness">
-                <h3>Philosophical Mindfulness 🧘‍♂️</h3>
-                <div class="feature-content">Integrate Stoic and Zen principles to build mental resilience.</div>
-            </div>
-        </div>
-    </section>
+  <section class="hero glass" id="hero">
+    <!-- Hero Intro -->
+    <div class="hero-text" id="hero-text">
+      <h1>Unlock the<br> All-Rounder.</h1>
+      <p>Tired of saving quotes and watching motivational videos?<br>
+        It’s time to stop dreaming and get practical.<br>
+        <br>
+        Unlock the All-Rounder.</p>
+      <button class="btn-primary" id="start-btn">Get Started</button>
+    </div>
+    <div class="hero-img" id="hero-img">
+      <img src="images/mascot.webp" alt="Nevengi Character" />
+    </div>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Nevengi. All Rights Reserved.</p>
+    <!-- Embedded Questionnaire -->
+    <div id="questionnaire" class="glass"></div>
+  </section>
+
+  <footer></footer>
+
+  <script>
+    const discordLink = 'https://discord.gg/your-server';
+    const startBtn = document.getElementById('start-btn');
+    const questionnaire = document.getElementById('questionnaire');
+    const heroText = document.getElementById('hero-text');
+    const heroImg = document.getElementById('hero-img');
+
+    const questions = [
+      {
+        text: 'Who are you?',
+        image: 'assets/question-user-or-coach.png',
+        options: [
+          { label: 'I am a user', img: 'assets/user-icon.png', next: 0 },
+          { label: 'I want to be a coach', img: 'assets/coach-icon.png', next: 1 },
+        ]
+      },
+      {
+        text: 'Do you have 5000+ followers on any platform?',
+        image: 'assets/followers-check.png',
+        options: [
+          { label: 'Yes, I do', img: 'assets/yes-icon.png', action: () => window.location.href = '/coach-dashboard.html' },
+          { label: 'No, not yet', img: 'assets/no-icon.png', action: () => showFinalUserMessage() }
+        ]
+      }
+    ];
+
+    let currentIndex = null;
+
+    function showQuestion(index) {
+      currentIndex = index;
+      // instantly hide hero intro
+      heroText.classList.add('hidden');
+      heroImg.classList.add('hidden');
+      // show questionnaire
+      questionnaire.style.display = 'block';
+
+      const q = questions[index];
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button>
+        <img class="question-img" src="${q.image}" alt="Question" />
+        <h2>${q.text}</h2>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          ${q.options.map((opt, i) => `
+            <button class="option glass" onclick="handleOptionClick(${index}, ${i})">
+              <img src="${opt.img}" alt="" />${opt.label}
+            </button>
+          `).join('')}
         </div>
-    </footer>
-    <button onclick="window.location.href='Nevengi City.html'">Nevengi City</button>
+      `;
+    }
+
+    function handleOptionClick(qIndex, oIndex) {
+      const opt = questions[qIndex].options[oIndex];
+      if (opt.hasOwnProperty('next')) {
+        const next = opt.next;
+        if (next < questions.length) {
+          showQuestion(next);
+        } else {
+          showFinalUserMessage();
+        }
+      } else if (opt.action) {
+        opt.action();
+      }
+    }
+
+    function showFinalUserMessage() {
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button>
+        <img class="question-img" src="assets/nevengi-welcome.png" alt="Welcome" />
+        <h2>Welcome to Nevengi!</h2>
+        <p>Join a powerful community of self-improvers and access daily challenges, rewards, and coaching support to transform your life.</p>
+        <a href="${discordLink}" class="btn-primary">Join our Discord</a>
+      `;
+    }
+
+    function goBack() {
+      if (currentIndex === 0) {
+        // back to welcome
+        questionnaire.style.display = 'none';
+        heroText.classList.remove('hidden');
+        heroImg.classList.remove('hidden');
+        currentIndex = null;
+      } else if (currentIndex > 0) {
+        showQuestion(currentIndex - 1);
+      }
+    }
+
+    // Login menu toggle
+    document.getElementById('login-link').addEventListener('click', e => {
+      e.preventDefault();
+      const menu = document.getElementById('login-menu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+    document.addEventListener('click', e => {
+      const menu = document.getElementById('login-menu');
+      if (!menu.contains(e.target) && e.target.id !== 'login-link') {
+        menu.style.display = 'none';
+      }
+    });
+
+    // Start questionnaire
+    startBtn.addEventListener('click', () => showQuestion(0));
+  </script>
 </body>
 </html>
