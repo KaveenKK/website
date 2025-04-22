@@ -177,7 +177,7 @@
       text-align: center;
     }
     #questionnaire h2 { margin-bottom: 1rem; color: #264d26; }
-    #questionnaire img.question-img { max-width: 80px; margin-bottom: 1rem; }
+    #questionnaire img.question-img { max-width: 100px; margin-bottom: 1rem; }
     #questionnaire .btn-primary { margin-top: 1rem; }
     #questionnaire .back-btn {
       background: transparent;
@@ -318,8 +318,8 @@
 
     function showUserMessage() {
       questionnaire.innerHTML = `
-       <button class="back-btn" onclick="goBack()">← Back</button>
-       <img class="question-img" src="assets/nevengi-welcome.png" alt="Welcome" />
+       <button class="back-btn" onclick="goBack()">← Back</button><br>
+       <img class="question-img" src="images/manthink.jpg" alt="Welcome" />
        <h2>You were told to be strong, work hard, stay confident, and never give up.🤦‍♂️</h2>
        <p> But did any of those surface-level tips actually help you take action? Everyone knows these things🤷‍♂️. what we need is a practical system. That’s exactly why we built Nevengi.</p>
        <button class="btn-primary" onclick="showFinalUserMessage()">Yeah, makes sense</button>
@@ -366,10 +366,10 @@
 
     function showFinalUserMessage() {
       questionnaire.innerHTML = `
-        <button class="back-btn" onclick="goBack()">← Back</button>
+        <button class="back-btn" onclick="goBack()">← Back</button><br>
         <img class="question-img" src="images/mylogo_nevengi_circle.webp" alt="Welcome" />
         <h2>Welcome to Nevengi!</h2>
-        <p>Join a powerful community of self-improvers and access daily challenges, rewards, and coaching support to transform your life.</p>
+        <p>Join a powerful community of self-improvers and access daily challenges, rewards, and coaching support to transform your life.</p><br>
         <a href="${discordLink}" class="btn-primary">Join our Discord</a>
       `;
     }
