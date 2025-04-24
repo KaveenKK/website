@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YR1B2Z51N0"></script>
+  <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+
+     gtag('config', 'G-YR1B2Z51N0');
+  </script>
+  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Nevengi</title>
@@ -234,6 +244,10 @@
     <!-- Scrollable Feature Cards -->
   <section class="scroll-container">
     <div class="card-scroll">
+      <h2>Your Story =></h2>
+    </div>
+
+    <div class="card-scroll">
       <img src="images/motivationfake.png" alt="feature 1" />
       <p>One More motivational video<br> and I will do it ?</p>
     </div>
@@ -289,10 +303,15 @@
             action: () => showUserMessage()
           },  
           { 
-            label: 'I want to be a coach',
+            label: 'I am an influencer',
             img: 'images/coachnobk.png',
             next: 1 
-           },
+          },
+          { 
+            label: 'Startup/ Company',
+            img: 'images/coachnobk.png',
+            next: 2 
+          },
         ]
       },
       {
