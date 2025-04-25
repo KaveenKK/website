@@ -10,7 +10,7 @@
 
      gtag('config', 'G-YR1B2Z51N0');
   </script>
-  
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Nevengi</title>
@@ -209,6 +209,27 @@
       .card-scroll { width: 150px; }
       #questionnaire { margin: 1rem; }
     }
+    .footer-brand p {
+      font-size: 0.9rem;
+    }
+    /* Footer base */
+    .footer {
+      padding: 2rem 1rem;
+      background: rgba(252, 251, 247, 0.7);
+      backdrop-filter: blur(10px);
+      margin-top: 2rem;
+      color: #26474d;
+    }
+    /* Container to center & space columns */
+    .footer-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2rem;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
   </style>
 </head>
 <body>
@@ -217,7 +238,7 @@
     <div class="glass">
       <div class="logo">
         <a href="/" class="logo-link">
-          <img src="images/glowinglogonowback.png" alt="Nevengi" class="logo-img" />
+          <img src="images/glowinglogonowback.webp" alt="Nevengi" class="logo-img" />
           <span class="logo-text">Nevengi™</span>
         </a>
       </div>
@@ -268,10 +289,11 @@
   <section class="hero glass" id="hero">
     <!-- Hero Intro -->
     <div class="hero-text" id="hero-text">
-      <h1>Unlock the<br> All-Rounder.</h1>
+      <h1>Unlock the<br> All-Rounder.</h1><br>
       <p>Tired of saving quotes and watching motivational videos?<br>
         It’s time to stop dreaming and get practical.<br>
         <br>
+        <p> Already have a follow base ? Join Nevengi as an influencer & Earn While you help people</p>
         Unlock the All-Rounder.</p>
       <button class="btn-primary" id="start-btn">Get Started</button>
     </div>
@@ -283,9 +305,13 @@
     <div id="questionnaire" class="glass"></div>
   </section>
 
-  <footer class="footer">
-    <div class="container">
-        <p><br>&copy;<br>   2025 Nevengi. All Rights Reserved.</p>
+  <!-- footer start -->
+  <footer class="footer glass">
+    <div class="footer-container">
+      <!-- 1. Brand & copyright -->
+      <div class="footer-col footer-brand">
+        <p>© 2025 Nevengi. All Rights Reserved.</p>
+      </div>
 
   <script>
     const discordLink = 'https://discord.gg/SYtbqPMqju';
@@ -310,7 +336,7 @@
           { 
             label: 'Startup/ Company',
             img: 'images/coachnobk.png',
-            next: 2 
+            action: () => showCompanyMessage()
           },
         ]
       },
@@ -318,7 +344,7 @@
         text: 'Do you have 5000+ followers on any platform?',
         options: [
           { label: 'Yes, I do',
-            img: 'images/happymascot.png',
+            img: 'images/happymascot.webp',
             action: () => window.location.href = '/introduction_coaching.html' 
           },
           {
@@ -392,6 +418,27 @@
         <a href="${discordLink}" class="btn-primary">Join our Discord</a>
       `;
     }
+
+    function showCompanyMessage() {
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button><br>
+        <h2 style="text-align: center;">Support your employees’ growth 🚀</h2>
+        <img class="question-img" src="images/companyoffer.png" alt="Company Offer" style="width: 250px; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+        <br>
+        <div style="text-align: left; padding: 0 20px;">
+        <p>⚡Offer your employees free access to Nevengi’s self-improvement system and watch them grow stronger, smarter, and more productive.</p>
+        <p><strong>Minimum:</strong> 6 months per employee</p><br>
+        <p>To get started, email us at <a href="mailto:nevengiteam@gmail.com">team@nevengi.com</a> with:</p>
+        <p><strong>📌Number of employees</p>
+        <p><strong>📌 Time period:</strong> How long will they have access? (Minimum 6 months)</p><br>
+        <p>We’ll get back to you within 24 hours with a quote</p><br>
+        <div style="text-align: center;">
+         <a href="mailto:nevengiteam@gmail.com" class="btn-primary">Contact Us Now</a>
+        </div>
+
+     `;
+    }
+
 
     function goBack() {
       if (currentIndex === 0) {

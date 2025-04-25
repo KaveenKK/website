@@ -8,7 +8,7 @@ import authMiddleware from "../middleware/authMiddleware.js"; // if needed for l
 const router = express.Router();
 const DISCORD_API = "https://discord.com/api";
 
-// STEP 1 - Redirect to Discord OAuth2
+// STEP 1 – Redirect to Discord OAuth2
 // USER Discord Login
 router.get("/discord/user", (req, res) => {
   const params = new URLSearchParams({
@@ -31,12 +31,13 @@ router.get("/discord", (req, res) => {
   res.redirect(`${DISCORD_API}/oauth2/authorize?${params.toString()}`);
 });
 
-// STEP 2 - Callback endpoint for USERS
+// STEP 2 – Callback endpoint for USERS
 router.get("/discord/user/callback", async (req, res) => {
   const code = req.query.code;
   if (!code) return res.redirect('/login');
 
   try {
+    // Exchange code for access token
     const tokenRes = await axios.post(
       `${DISCORD_API}/oauth2/token`,
       new URLSearchParams({
@@ -49,14 +50,15 @@ router.get("/discord/user/callback", async (req, res) => {
       }).toString(),
       { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
     );
-
     const accessToken = tokenRes.data.access_token;
 
+    // Fetch user info from Discord
     const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     const discordUser = userRes.data;
 
+    // Find or create our User record
     let user = await User.findOne({ discord_id: discordUser.id });
     if (!user) {
       user = await User.create({
@@ -70,6 +72,15 @@ router.get("/discord/user/callback", async (req, res) => {
       });
     }
 
+    // Only issue a JWT once they've completed identity check
+    if (!user.identity_completed) {
+      // Redirect them to a "complete your registration" page
+      return res.redirect(
+        `/complete-registration.html?discord_id=${encodeURIComponent(discordUser.id)}`
+      );
+    }
+
+    // At this point identity_completed === true, so we can sign the token
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
@@ -78,7 +89,7 @@ router.get("/discord/user/callback", async (req, res) => {
 
     // Redirect to user dashboard with token & discord_id
     return res.redirect(
-     `/user_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
+      `/user_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
     );
   } catch (err) {
     console.error("OAuth User Error:", err.response?.data || err.message);
@@ -86,14 +97,13 @@ router.get("/discord/user/callback", async (req, res) => {
   }
 });
 
-// STEP 2 - Callback endpoint for COACHES
+// STEP 2 – Callback endpoint for COACHES
 router.get("/discord/callback", async (req, res) => {
   const code = req.query.code;
-  if (!code) {
-    return res.redirect('/login');
-  }
+  if (!code) return res.redirect('/login');
 
   try {
+    // Exchange code for access token
     const tokenRes = await axios.post(
       `${DISCORD_API}/oauth2/token`,
       new URLSearchParams({
@@ -106,14 +116,15 @@ router.get("/discord/callback", async (req, res) => {
       }).toString(),
       { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
     );
-
     const accessToken = tokenRes.data.access_token;
 
+    // Fetch coach info from Discord
     const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
     const discordUser = userRes.data;
 
+    // Find or create our Coach record
     let coach = await Coach.findOne({ discord_id: discordUser.id });
     if (!coach) {
       coach = await Coach.create({
@@ -133,6 +144,7 @@ router.get("/discord/callback", async (req, res) => {
       });
     }
 
+    // Sign JWT for coach
     const token = jwt.sign(
       { id: coach._id, role: coach.role || 'coach' },
       process.env.JWT_SECRET,
