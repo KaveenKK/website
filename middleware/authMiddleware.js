@@ -4,8 +4,8 @@ import User from "../models/User.js";
 import Coach from "../models/Coach.js";
 
 /**
- * Verifies JWT from Authorization header, loads the full user/coach record,
- * checks identity completion (for users), and attaches the profile to req.user.
+ * Verifies JWT, loads profile (for user/coach) or grants access for admin,
+ * checks identity completion (for users), attaches req.user.
  */
 export default async function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization || req.headers.Authorization;
@@ -19,7 +19,7 @@ export default async function authMiddleware(req, res, next) {
       .json({ error: "No token provided or malformed Authorization header" });
   }
 
-  const token = authHeader.slice(7).trim(); // remove "Bearer " prefix
+  const token = authHeader.slice(7).trim();
   let decoded;
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -30,8 +30,14 @@ export default async function authMiddleware(req, res, next) {
     return res.status(401).json({ error: "Invalid token" });
   }
 
-  // Determine model based on role in token: treat 'admin' same as 'coach'
-  const Model = decoded.role === "coach" || decoded.role === "admin" ? Coach : User;
+  // Directly allow admin without DB lookup
+  if (decoded.role === "admin") {
+    req.user = { id: decoded.id, role: "admin" };
+    return next();
+  }
+
+  // Determine model for user or coach
+  const Model = decoded.role === "coach" ? Coach : User;
 
   try {
     const profile = await Model.findById(decoded.id);
@@ -39,7 +45,7 @@ export default async function authMiddleware(req, res, next) {
       return res.status(401).json({ error: "User not found" });
     }
 
-    // For regular users, enforce identity check
+    // For regular users, enforce identity completion
     if (decoded.role === "user" && !profile.identity_completed) {
       return res.status(401).json({
         error:
@@ -47,7 +53,6 @@ export default async function authMiddleware(req, res, next) {
       });
     }
 
-    // Attach full profile and role to req.user
     req.user = profile;
     req.user.role = decoded.role;
     next();
@@ -59,7 +64,6 @@ export default async function authMiddleware(req, res, next) {
 
 /**
  * Middleware factory to enforce user roles
- * @param {string|string[]} expectedRoles - role or array of roles allowed
  */
 export function roleCheck(expectedRoles) {
   const roles = Array.isArray(expectedRoles)
