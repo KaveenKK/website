@@ -30,8 +30,8 @@ export default async function authMiddleware(req, res, next) {
     return res.status(401).json({ error: "Invalid token" });
   }
 
-  // Determine model based on role in token
-  const Model = decoded.role === "coach" ? Coach : User;
+  // Determine model based on role in token: treat 'admin' same as 'coach'
+  const Model = decoded.role === "coach" || decoded.role === "admin" ? Coach : User;
 
   try {
     const profile = await Model.findById(decoded.id);
@@ -47,8 +47,9 @@ export default async function authMiddleware(req, res, next) {
       });
     }
 
-    // Attach full profile to req.user
+    // Attach full profile and role to req.user
     req.user = profile;
+    req.user.role = decoded.role;
     next();
   } catch (dbErr) {
     console.error("Auth middleware DB error:", dbErr);
