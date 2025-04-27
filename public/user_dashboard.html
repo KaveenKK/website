@@ -100,7 +100,11 @@
       <div class="pricing-options">
         <div class="pricing-option">
           <h3>I'm Broke</h3>
-          <p>$13.99/month</p>
+          <p>
+            <span class="price-usd" data-usd="13.99">$13.99</span>
+            <span class="local-price"></span>
+            / month
+          </p>
           <ul>
             <li>Basic resources</li>
             <li>Community Access</li>
@@ -110,7 +114,11 @@
         </div>
         <div class="pricing-option">
           <h3>Let's Go</h3>
-          <p>$23.99/month</p>
+          <p>
+            <span class="price-usd" data-usd="23.99">$23.99</span>
+            <span class="local-price"></span>
+            / month
+          </p>
           <span class="recommended-label">Recommended</span>
           <ul>
             <li>Most resources</li>
@@ -121,7 +129,11 @@
         </div>
         <div class="pricing-option">
           <h3>I'm Serious</h3>
-          <p>$37.99/month</p>
+          <p>
+            <span class="price-usd" data-usd="37.99">$37.99</span>
+            <span class="local-price"></span>
+            / month
+          </p>
           <span class="recommended-label">VIP</span>
           <ul>
             <li>All resources</li>
@@ -232,6 +244,31 @@
     paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-1');
     paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-2');
     paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-3');
+
+    // ───────── Local-currency price labels ──────────
+    const RATES = { USD:1, EUR:0.93, GBP:0.80, CAD:1.36 };  // update as you like
+    const locale   = navigator.language || 'en-US';
+    const userCcy  = new Intl.NumberFormat(locale, {
+       style: 'currency',
+       currency: 'USD'
+    }).resolvedOptions().currency;  // e.g. "EUR", "GBP", etc.
+
+    document.querySelectorAll('.pricing-option').forEach(opt => {
+      const usdEl = opt.querySelector('.price-usd');
+      const localEl = opt.querySelector('.local-price');
+      const usd = parseFloat(usdEl.dataset.usd);
+      if (!usd || userCcy === 'USD') {
+        localEl.textContent = '';
+        return;
+      }
+      const rate = RATES[userCcy] || 1;
+      const converted = usd * rate;
+      localEl.textContent = ` (${new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency: userCcy
+      }).format(converted)})`;
+    });
+
 
     // Initialize data
     if (token) {
