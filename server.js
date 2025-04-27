@@ -20,6 +20,7 @@ import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
 import User from './models/User.js';
 import adminRoutes from "./routes/admin.js";
+import webhookRoutes from './routes/webhook.js';   // ← ES import
 import userRoutes from "./routes/user.js";
 
 // Prefer IPv4 to avoid potential DNS v6 issues
@@ -42,7 +43,7 @@ const app = express();
 // Compute __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const webhookRoutes = require('./routes/webhook');
+
 
 
 
