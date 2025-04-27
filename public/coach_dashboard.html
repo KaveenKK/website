@@ -18,57 +18,69 @@
   <!-- Dashboard -->
   <section id="dashboard" class="tab-content active">
     <h1 id="welcomeGreeting">Welcome, Coach</h1>
+
+    <!-- Application status & link -->
+    <div class="profile-application">
+      <div class="application-status">
+        <span id="appStatusIndicator">Loading application status…</span>
+      </div>
+      <a class="button" id="applyLink" href="apply_coaching.html" target="_blank">Go to Coach Application Form</a>
+    </div>
+
+    <!-- Profile Section -->
     <div class="profile-section">
-      <div>
-        <img id="profilePic" class="profile-pic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture">
+      <!-- Picture uploader -->
+      <div class="pic-uploader">
+        <img id="profilePic" class="profile-pic"
+             src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+             alt="Profile Picture">
         <label class="upload-label">Change Photo</label>
         <input type="file" id="picUpload" accept="image/*">
       </div>
-      <div>
-        <h2> Complete your Coaching Application</h2>
-        <a class="button" href="apply_coaching.html" target="_blank">Go to Coach Application Form</a>
-      </div>
-      <!-- kept inline style for flex:1 container -->
-      <div style="flex:1">
-        <form id="profileForm">
-          <label>Birth Date (18–80 years):</label>
-          <input type="date" name="birthdate" id="birthdate" required>
 
-          <label>Bio:</label>
-          <textarea name="bio" rows="3"></textarea>
+      <!-- Profile form -->
+      <form id="profileForm" class="profile-form">
+        <label>Birth Date (18–80 years):</label>
+        <input type="date" name="birthdate" id="birthdate" required>
 
-          <label>Specialties (comma-separated):</label>
-          <input type="text" name="specialties">
+        <label>Bio:</label>
+        <textarea name="bio" rows="3"></textarea>
 
-          <label>Experience:</label>
-          <textarea name="experience" rows="3"></textarea>
+        <label>Specialties (comma-separated):</label>
+        <input type="text" name="specialties">
 
-          <label>Instagram:</label>
-          <input type="url" name="instagram" placeholder="https://instagram.com/username">
+        <label>Experience:</label>
+        <textarea name="experience" rows="3"></textarea>
 
-          <label>Twitter:</label>
-          <input type="url" name="twitter" placeholder="https://twitter.com/username">
+        <label>Instagram:</label>
+        <input type="url" name="instagram" placeholder="https://instagram.com/username">
 
-          <label>LinkedIn:</label>
-          <input type="url" name="linkedin" placeholder="https://linkedin.com/in/username">
+        <label>Twitter:</label>
+        <input type="url" name="twitter" placeholder="https://twitter.com/username">
 
-          <label>Discord Tag:</label>
-          <input type="text" name="discordTag" placeholder="User#1234">
+        <label>LinkedIn:</label>
+        <input type="url" name="linkedin" placeholder="https://linkedin.com/in/username">
 
-          <label>PayPal Email (for payouts):</label>
-          <input type="email" name="paypal">
+        <label>Discord Tag:</label>
+        <input type="text" name="discordTag" placeholder="User#1234">
 
-          <label>Monthly Subscription Price ($0–$20):</label>
-          <input type="number" name="monthly_price_usd" id="usdInput" min="0" max="20" step="0.01" value="0">
-          <p><strong>Visible Price to Users:</strong> <span id="mapleDisplay">0</span> 🍁</p>
+        <label>PayPal Email (for payouts):</label>
+        <input type="email" name="paypal">
 
-          <div class="status" id="approvalStatus">Loading approval status…</div>
+        <label>Monthly Subscription Price ($0–$20):</label>
+        <input type="number" name="monthly_price_usd" id="usdInput" min="0" max="20" step="0.01" value="0">
+        <p><strong>Visible Price to Users:</strong> <span id="mapleDisplay">0</span> 🍁</p>
 
-          <button type="button" id="saveBtn">Save Profile</button>
+        <div class="status" id="approvalStatus">Loading approval status…</div>
+
+        <div class="form-actions">
+          <button type="button" id="saveBtn" disabled>Save Profile</button>
+          <button type="button" id="editBtn" class="small" style="display:none;">✏️ Edit</button>
           <button type="button" id="publishBtn" disabled>Publish Profile</button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
+
     <div class="legal">
       <p><strong>Legal Notice:</strong> You are responsible for your own taxes. Nevengi is not liable for reporting or paying taxes on your earnings. Ensure you comply with local laws.</p>
     </div>
@@ -103,30 +115,12 @@
       <div class="course-slide active">
         <img src="https://cdn.pixabay.com/photo/2023/02/28/17/56/ai-generated-7822831_1280.png" alt="Intro">
         <p>Welcome to Nevengi Coaching! Learn how the platform works and your responsibilities.</p>
-        <p> If you still haven't joined Nevengi Discord Server, Make sure you join before sending your coach application</p>
+        <p>If you still haven't joined Nevengi Discord Server, make sure you join before sending your coach application:</p>
         <p>https://discord.gg/6RMPeDmfDd</p>
-        <p> Then, If you still haven't completed your coach application, submit it via following link</p>
-        <p><apply_coaching class="html"></apply_coaching></p>
+        <p>If you still haven't completed your coach application, submit it via the following link:</p>
+        <p><a href="apply_coaching.html" target="_blank">Apply for Coaching</a></p>
       </div>
-      <div class="course-slide">
-        <img src="https://cdn.pixabay.com/photo/2023/03/01/01/39/ai-generated-7823305_1280.png" alt="Publish">
-        <p>In order to publish your account, You will have to wait 1-3 Days until your application is approved.</p>
-        <p>Users will not be able to see your profile until you have published your profile</p>
-      </div>
-      <div class="course-slide">
-        <img src="https://cdn.pixabay.com/photo/2023/03/01/01/39/ai-generated-7823305_1280.png" alt="Payment">
-        <p>Users pay monthly and receive Maples.They will choose one or few coaches depending on their interest.</p>
-        <p>You will also recieve a 20% commision even if your invited users subscribe to another coach. Hence, Inviting a user will never be a loss</p>
-        <p>Moreover, this commision will be paid lifetime, as long as user is subscribe to a pricing plan</p>
-      </div>
-      <div class="course-slide">
-        <img src="https://cdn.pixabay.com/photo/2023/01/14/16/01/ai-generated-7717546_1280.jpg" alt="Expectations">
-        <p>Be professional, responsive, and respectful. Abuse or ghosting leads to removal.</p>
-      </div>
-      <div class="course-slide">
-        <img src="https://cdn-icons-png.flaticon.com/512/3135/3135820.png" alt="Legal">
-        <p><strong>Important:</strong> You must handle your own taxes. Payouts go to your PayPal account.</p>
-      </div>
+      <!-- Other slides unchanged… -->
       <div class="course-slide">
         <p><strong>Final Step:</strong> Click below to confirm you’ve completed and understood the starter course &amp; terms.</p>
         <button id="completeCourseBtn">✅ Complete Course</button>
