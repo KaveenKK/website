@@ -1,11 +1,13 @@
-// public/js/paypal-buttons.js
-// LIVE plan for “I’m Broke”
-const PLAN_ID = 'P-31V66906BF6463352NAHKF3Y';
-const CONTAINER = '#paypal-button-container-plan-basic';
+// LIVE plan ID for your “Basic” tier
+const PLAN_ID_BASIC = 'P-31V66906BF6463352NAHKF3Y';
 
+/**
+ * Renders PayPal buttons once the SDK is loaded.
+ * Call this from your HTML (see above).
+ */
 export function renderPayPalButtons () {
   if (!window.paypal) {
-    console.error('PayPal SDK not yet loaded');
+    console.error('PayPal SDK not loaded');
     return;
   }
 
@@ -17,31 +19,32 @@ export function renderPayPalButtons () {
       label:   'subscribe'
     },
 
-    createSubscription (_, actions) {
-      return actions.subscription.create({
-        plan_id: PLAN_ID,
+    // Create the subscription when the buyer clicks the button
+    createSubscription: (_data, actions) =>
+      actions.subscription.create({
+        plan_id: PLAN_ID_BASIC,
         quantity: 1
-      });
-    },
+      }),
 
-    onApprove ({ subscriptionID, payerID }) {
-      // Notify your server that the user is now subscribed
+    // Client-side confirmation (and notify your back-end)
+    onApprove: ({ subscriptionID }) => {
+      console.log('Subscription ID', subscriptionID);
       fetch('/api/subscribed', {
-        method:  'POST',
+        method: 'POST',
         headers: { 'Content-Type':'application/json' },
-        body: JSON.stringify({ subscriptionID, plan_id: PLAN_ID })
+        body: JSON.stringify({ subscriptionID, plan_id: PLAN_ID_BASIC })
       })
-      .then(() => alert('✅ Subscription complete!'))
+      .then(() => alert('✅ Subscription active!'))
       .catch(err => {
-        console.error('Server notify failed', err);
-        alert('Payment succeeded but we failed to record it—contact support.');
+        console.error('Notify failed', err);
+        alert('Payment succeeded but we could not record it—please contact support.');
       });
     },
 
-    onError (err) {
+    onError: err => {
       console.error('PayPal error', err);
       alert('Payment failed—please try again.');
     }
 
-  }).render(CONTAINER);
+  }).render('#paypal-button-container-plan-basic');
 }
