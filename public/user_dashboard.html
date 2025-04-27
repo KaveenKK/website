@@ -148,7 +148,27 @@
   </div>
 
   <!-- PayPal SDK -->
-  <script src="https://www.paypal.com/sdk/js?client-id=AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ&vault=true&intent=subscription"></script>
+  <!-- place this once, near the end of <body> -->
+  <script
+   src="https://www.paypal.com/sdk/js?
+       client-id=AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ
+       &vault=true
+       &intent=subscription
+       &enable-funding=card,applepay,googlepay"
+  ></script>
+  <div id="paypal-button-container-plan-basic"></div>
+
+  <!-- PayPal SDK include (same as step 1) -->
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ&vault=true&intent=subscription&enable-funding=card,applepay,googlepay"></script>
+
+  <!-- Load and run your module -->
+  <script type="module">
+    import { renderPayPalButtons } from '/js/paypal-buttons.js';
+    renderPayPalButtons();
+  </script>
+
+
 
   <!-- Dashboard Logic -->
   <script>
@@ -239,11 +259,6 @@
     async function loadShop() {
       document.getElementById('shopify-collection').textContent = 'Shop items will appear here';
     }
-
-    // Render PayPal buttons
-    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-1');
-    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-2');
-    paypal.Buttons({ style: { layout: 'vertical' } }).render('#paypal-button-container-3');
 
     // ───────── Local-currency price labels ──────────
     const RATES = { USD:1, EUR:0.93, GBP:0.80, CAD:1.36 };  // update as you like
