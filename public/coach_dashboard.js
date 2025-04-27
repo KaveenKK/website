@@ -15,9 +15,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     alert('You must log in first');
     return window.location.href = '/auth/discord';
   }
-  console.log("🔑 Using JWT token", token);
 
-  // Helper to call API
+  // API helper
   const api = (path, opts = {}) => {
     opts.headers = Object.assign({}, opts.headers, {
       'Authorization': 'Bearer ' + token,
@@ -42,153 +41,113 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
   showTab('dashboard');
 
-  // UI elements for gating & read-only toggle
-  const saveBtn            = document.getElementById('saveBtn');
-  const editBtn            = document.getElementById('editBtn');
+  // UI elements
+  const saveBtn = document.getElementById('saveBtn');
+  const editBtn = document.getElementById('editBtn');
   const appStatusIndicator = document.getElementById('appStatusIndicator');
-  const applyLink          = document.getElementById('applyLink');
-  const form               = document.getElementById('profileForm');
-
-  // Disable or enable form controls
-  function setFormReadOnly(readOnly) {
-    Array.from(form.elements).forEach(el => {
-      if (el.id === 'completeCourseBtn') return;
-      el.disabled = readOnly;
-    });
-    saveBtn.style.display = readOnly ? 'none' : 'inline-block';
-    editBtn.style.display = readOnly ? 'inline-block' : 'none';
-  }
+  const applyLink = document.getElementById('applyLink');
+  const form = document.getElementById('profileForm');
 
   let profileData = {};
+  let editingMode = false;
 
-  // Load coach profile and update UI
+  // Toggle form readonly/edit mode
+  function updateFormState() {
+    if (!profileData.application_completed) {
+      // Application pending: lock and hide edit/save
+      form.querySelectorAll('input, textarea, select').forEach(el => el.disabled = true);
+      saveBtn.style.display = 'none';
+      editBtn.style.display = 'none';
+      applyLink.style.display = 'inline-block';
+      appStatusIndicator.textContent = '❗ Application pending';
+      return;
+    }
+    // Application completed
+    applyLink.style.display = 'none';
+    appStatusIndicator.textContent = '✅ Application completed';
+    if (editingMode) {
+      // In edit mode: unlock fields, show save
+      form.querySelectorAll('input, textarea, select').forEach(el => el.disabled = false);
+      saveBtn.style.display = 'inline-block';
+      editBtn.style.display = 'none';
+    } else {
+      // View mode: lock fields, show edit
+      form.querySelectorAll('input, textarea, select').forEach(el => el.disabled = true);
+      saveBtn.style.display = 'none';
+      editBtn.style.display = 'inline-block';
+    }
+  }
+
+  // Load and render profile
   async function loadCoachData() {
     try {
-      console.log('⏳ Fetching profile');
       const res = await api('/profile');
       profileData = await res.json();
-      console.log('📦 Profile data', profileData);
     } catch (err) {
       console.error('Failed loading profile', err);
       return;
     }
-
-    // Greeting & picture
+    // Populate fields
     document.getElementById('welcomeGreeting').textContent = `Welcome, ${profileData.name}`;
-    if (profileData.profile_picture) {
-      document.getElementById('profilePic').src = profileData.profile_picture;
-    }
-    if (profileData.birthdate) {
-      document.getElementById('birthdate').value = profileData.birthdate.split('T')[0];
-    }
-
-    // Application gating & status
-    if (!profileData.application_completed) {
-      appStatusIndicator.textContent = '❗ Application pending';
-      applyLink.style.display = 'inline-block';
-      saveBtn.disabled       = true;
-      setFormReadOnly(true);
-    } else {
-      appStatusIndicator.textContent = '✅ Application completed';
-      applyLink.style.display = 'none';
-      saveBtn.disabled       = false;
-      setFormReadOnly(false);
-    }
-
-    // Subscribers & invites
-    const subList = document.getElementById('subscriberList');
-    subList.innerHTML = (profileData.subscribers || [])
-      .map(u => `<li>${u.username} (${u.date})</li>`).join('')
-      || '<li>No subscribers yet</li>';
-    const invList = document.getElementById('inviteList');
-    invList.innerHTML = (profileData.invites || [])
-      .map(u => `<li>${u.username} joined ${u.date}</li>`).join('')
-      || '<li>No invites yet</li>';
-
-    // Earnings chart
-    renderEarningsChart(profileData.earnings || []);
+    if (profileData.profile_picture) document.getElementById('profilePic').src = profileData.profile_picture;
+    if (profileData.birthdate) document.getElementById('birthdate').value = profileData.birthdate.split('T')[0];
+    form.bio.value = profileData.bio || '';
+    form.specialties.value = (profileData.specialties||[]).join(', ');
+    form.experience.value = profileData.experience || '';
+    form.instagram.value = profileData.instagram || '';
+    form.twitter.value = profileData.twitter || '';
+    form.linkedin.value = profileData.linkedin || '';
+    form.discordTag.value = profileData.discordTag || '';
+    form.paypal.value = profileData.paypal || '';
+    form.monthly_price_usd.value = profileData.monthly_price_usd || 0;
+    document.getElementById('mapleDisplay').textContent = Math.round((profileData.monthly_price_usd/0.3)*10);
+    // Update form state based on data
+    updateFormState();
   }
 
-  // Profile picture preview
+  // Picture preview
   document.getElementById('picUpload').addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => document.getElementById('profilePic').src = reader.result;
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader(); reader.onload = () => document.getElementById('profilePic').src = reader.result;
     reader.readAsDataURL(file);
   });
-
-  // Maple price mapping
+  // Price mapping
   document.getElementById('usdInput').addEventListener('input', e => {
     const usd = parseFloat(e.target.value) || 0;
-    document.getElementById('mapleDisplay').textContent = Math.round((usd / 0.3) * 10);
+    document.getElementById('mapleDisplay').textContent = Math.round((usd/0.3)*10);
   });
 
-  // Save profile
+  // Save
   saveBtn.addEventListener('click', async () => {
-    if (!profileData.application_completed) {
-      return alert('Please submit your coach application first.');
-    }
     const payload = {
       birthdate: form.birthdate.value,
-      bio:       form.bio.value,
-      specialties: form.specialties.value.split(',').map(s => s.trim()),
-      profile_picture: document.getElementById('profilePic').src
+      bio: form.bio.value,
+      specialties: form.specialties.value.split(',').map(s=>s.trim()),
+      experience: form.experience.value,
+      instagram: form.instagram.value,
+      twitter: form.twitter.value,
+      linkedin: form.linkedin.value,
+      discordTag: form.discordTag.value,
+      paypal: form.paypal.value,
+      monthly_price_usd: parseFloat(form.monthly_price_usd.value)
     };
-
     try {
-      const res = await api('/profile', {
-        method: 'POST',
-        body:   JSON.stringify(payload)
-      });
+      const res = await api('/profile', { method:'POST', body: JSON.stringify(payload) });
       if (!res.ok) throw await res.text();
       alert('✅ Profile saved');
-      await loadCoachData();  // reload data first
-      setFormReadOnly(true);  // then lock form
+      editingMode = false;
+      await loadCoachData();
     } catch (err) {
       console.error('Save error', err);
       alert('Failed to save profile');
     }
   });
 
-  // Edit button
+  // Edit
   editBtn.addEventListener('click', () => {
-    if (!profileData.application_completed) {
-      return alert('Please submit your coach application first.');
-    }
-    setFormReadOnly(false);
+    editingMode = true;
+    updateFormState();
   });
-
-  // Course navigation
-  const slides = document.querySelectorAll('.course-slide');
-  let slideIndex = 0;
-  document.getElementById('nextBtn').addEventListener('click', () => {
-    slides[slideIndex].classList.remove('active');
-    slideIndex = Math.min(slideIndex + 1, slides.length - 1);
-    slides[slideIndex].classList.add('active');
-  });
-
-  document.getElementById('completeCourseBtn').addEventListener('click', () => {
-    alert('✅ Course completed');
-  });
-
-  // Earnings chart renderer
-  function renderEarningsChart(data) {
-    const canvas = document.getElementById('earningsChart');
-    const ctx    = canvas.getContext('2d');
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (!data.length) {
-      ctx.fillText('No data', 10, 50);
-      return;
-    }
-    const max  = Math.max(...data.map(d => d.amount));
-    const barW = (canvas.width - 40) / data.length;
-    data.forEach((d, i) => {
-      const h = (d.amount / max) * (canvas.height - 40);
-      ctx.fillRect(20 + i * barW, canvas.height - h - 20, barW * 0.6, h);
-      ctx.fillText(d.month, 20 + i * barW, canvas.height - 5);
-    });
-  }
 
   // Initial load
   await loadCoachData();
