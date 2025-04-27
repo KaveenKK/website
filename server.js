@@ -42,6 +42,9 @@ const app = express();
 // Compute __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const webhookRoutes = require('./routes/webhook');
+
+
 
 // Express middleware
 app.use(cors());
@@ -55,6 +58,8 @@ app.use('/auth', authRoutes);
 app.use('/api', profileRoutes);
 //for general users
 app.use('/api', userRoutes);
+//tally form submission from coaches
+app.use('/api', webhookRoutes);
 
 // mount admin
 app.use('/api/admin', adminRoutes);
