@@ -10,7 +10,7 @@ const coachSchema = new mongoose.Schema({
   discord_id:    { type: String, unique: true, required: true },
   email:         { type: String, required: true },
   name:          { type: String, required: true },
-  age:           { type: Number },
+  birthdate:     { type: Date },
   bio:           { type: String },
 
 

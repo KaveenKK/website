@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         facebook: form.facebook.value.trim(),
         instagram: form.instagram.value.trim(),
         twitter: form.twitter.value.trim(),
-        linkedin: form.linkedin.valuetrim()
+        linkedin: form.linkedin.value.trim()
       },  
       paypal: form.paypal.value,
       monthly_price_usd: parseFloat(form.monthly_price_usd.value)
