@@ -45,6 +45,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const saveBtn = document.getElementById('saveBtn');
   const editBtn = document.getElementById('editBtn');
   const appStatusIndicator = document.getElementById('appStatusIndicator');
+  const approvalStatus = document.getElementById('approvalStatus');
   const applyLink = document.getElementById('applyLink');
   const form = document.getElementById('profileForm');
 
@@ -60,11 +61,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       editBtn.style.display = 'none';
       applyLink.style.display = 'inline-block';
       appStatusIndicator.textContent = '❗ Application pending';
+      approvalStatus.textContent = profileData.approved ? '✅ Approved' : '⏳ Awaiting approval';
       return;
     }
     // Application completed
     applyLink.style.display = 'none';
     appStatusIndicator.textContent = '✅ Application completed';
+    // Approval status (do not re-show approval gating)
+    approvalStatus.textContent = profileData.approved ? '✅ Approved' : '⏳ Awaiting approval';
+
     if (editingMode) {
       // In edit mode: unlock fields, show save
       form.querySelectorAll('input, textarea, select').forEach(el => el.disabled = false);
@@ -77,6 +82,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       editBtn.style.display = 'inline-block';
     }
   }
+
+  // Listen for changes to enable save in view mode
+  form.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', () => {
+      if (!editingMode && profileData.application_completed) {
+        editingMode = true;
+        updateFormState();
+      }
+    });
+  });
 
   // Load and render profile
   async function loadCoachData() {
@@ -101,7 +116,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     form.paypal.value = profileData.paypal || '';
     form.monthly_price_usd.value = profileData.monthly_price_usd || 0;
     document.getElementById('mapleDisplay').textContent = Math.round((profileData.monthly_price_usd/0.3)*10);
-    // Update form state based on data
+    // Reset editing mode after data load
+    editingMode = false;
     updateFormState();
   }
 
@@ -119,6 +135,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Save
   saveBtn.addEventListener('click', async () => {
+    if (!profileData.application_completed) {
+      return alert('Please submit your coach application first.');
+    }
     const payload = {
       birthdate: form.birthdate.value,
       bio: form.bio.value,
@@ -131,11 +150,11 @@ document.addEventListener("DOMContentLoaded", async () => {
       paypal: form.paypal.value,
       monthly_price_usd: parseFloat(form.monthly_price_usd.value)
     };
+
     try {
       const res = await api('/profile', { method:'POST', body: JSON.stringify(payload) });
       if (!res.ok) throw await res.text();
       alert('✅ Profile saved');
-      editingMode = false;
       await loadCoachData();
     } catch (err) {
       console.error('Save error', err);
@@ -145,6 +164,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Edit
   editBtn.addEventListener('click', () => {
+    if (!profileData.application_completed) {
+      return alert('Please submit your coach application first.');
+    }
     editingMode = true;
     updateFormState();
   });
