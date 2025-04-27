@@ -35,9 +35,9 @@ router.post("/profile", authMiddleware, async (req, res) => {
     // specialties: array of non-empty strings
     if (Array.isArray(body.specialties)) {
       const specs = body.specialties
-        .map(s => s.trim())
-        .filter(s => s.length > 0);
-      if (specs.length) updates.specialties = specs;
+         .map(s => typeof s === 'string' ? s.trim() : '')
+         .filter(s => s.length > 0);
+      updates.specialties = specs;
     }
 
     // social_links: only non-empty entries
@@ -60,6 +60,8 @@ router.post("/profile", authMiddleware, async (req, res) => {
     // numeric fields
     if (body.monthly_price_usd != null && !isNaN(parseFloat(body.monthly_price_usd))) {
       updates.monthly_price_usd = parseFloat(body.monthly_price_usd);
+      // derive maples at the same time
+      updates.monthly_price_maples = Math.round((updates.monthly_price_usd / 0.3) * 10);
     }
     if (body.monthly_price_maples != null && !isNaN(parseInt(body.monthly_price_maples, 10))) {
       updates.monthly_price_maples = parseInt(body.monthly_price_maples, 10);
