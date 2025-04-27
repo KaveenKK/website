@@ -60,7 +60,7 @@ app.use('/api', profileRoutes);
 //for general users
 app.use('/api', userRoutes);
 //tally form submission from coaches
-app.use('/api', webhookRoutes);
+app.use('/api/webhook', webhookRoutes);
 
 // mount admin
 app.use('/api/admin', adminRoutes);
