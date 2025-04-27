@@ -6,42 +6,95 @@
   <style>
     body { font-family: Arial, sans-serif; margin: 20px; }
     h1 { color: #333; }
-    .coach-item { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
-    button { margin-left: 10px; padding: 6px 12px; }
-    #pendingContainer { margin-top: 20px; }
+    .card { border: 1px solid #ccc; border-radius: 6px; padding: 16px; margin-bottom: 20px; }
+    label { display: block; margin: 8px 0 4px; }
+    input { padding: 8px; width: 100%; box-sizing: border-box; }
+    button { margin-top: 12px; padding: 8px 16px; }
+    #pendingContainer .coach-item { margin: 10px 0; padding: 10px; border: 1px solid #ccc; border-radius: 6px; }
+    #pendingContainer .coach-item button { margin-left: 10px; padding: 6px 12px; }
   </style>
 </head>
 <body>
   <h1>Admin Dashboard</h1>
-  <p>Ensure you have your admin JWT stored in <code>localStorage.token</code>.</p>
-  <button id="loadBtn">Load Pending Coaches</button>
-  <div id="pendingContainer"></div>
+
+  <!-- LOGIN CARD -->
+  <div id="loginCard" class="card">
+    <h2>Admin Login</h2>
+    <form id="loginForm">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required>
+
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" required>
+
+      <button type="submit">Log In</button>
+    </form>
+    <div id="loginError" style="color: red; display: none;"></div>
+  </div>
+
+  <!-- PENDING COACHES CARD -->
+  <div id="coachesCard" class="card" style="display: none;">
+    <button id="loadBtn">Load Pending Coaches</button>
+    <div id="pendingContainer"></div>
+  </div>
 
   <script>
-    // If your API lives on a different host, set it here:
-    const API_BASE = ""; // e.g. "https://nevengi-api.onrender.com"
+    const API_BASE = ""; // e.g. "https://nevengiwebbackend-production.up.railway.app"
 
-    function getToken() {
-      let token = localStorage.getItem('token');
-      if (!token) {
-        token = prompt("Enter your admin JWT token:");
-        if (token) localStorage.setItem('token', token);
-      }
-      return token;
+    // After login, we store token here
+    function setToken(token) {
+      localStorage.setItem('token', token);
+      document.getElementById('loginCard').style.display     = 'none';
+      document.getElementById('coachesCard').style.display  = 'block';
     }
 
+    // On load, check if already logged in
+    window.addEventListener('DOMContentLoaded', () => {
+      const existing = localStorage.getItem('token');
+      if (existing) {
+        document.getElementById('loginCard').style.display    = 'none';
+        document.getElementById('coachesCard').style.display = 'block';
+      }
+    });
+
+    // Handle login form
+    document.getElementById('loginForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = e.target.email.value;
+      const pass  = e.target.password.value;
+      document.getElementById('loginError').style.display = 'none';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password: pass })
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Status ${res.status}`);
+        }
+        const { token } = await res.json();
+        setToken(token);
+      } catch (err) {
+        document.getElementById('loginError').textContent = err.message;
+        document.getElementById('loginError').style.display = 'block';
+      }
+    });
+
+    // Load and display pending coaches
     document.getElementById('loadBtn').addEventListener('click', async () => {
-      const token = getToken();
-      if (!token) return alert('Admin token required');
+      const token = localStorage.getItem('token');
+      const container = document.getElementById('pendingContainer');
+      container.innerHTML = 'Loading…';
 
       try {
         const res = await fetch(`${API_BASE}/api/admin/coaches/pending`, {
-          headers: { Authorization: "Bearer " + token }
+          headers: { Authorization: 'Bearer ' + token }
         });
         if (!res.ok) throw new Error(`Status ${res.status}`);
         const coaches = await res.json();
 
-        const container = document.getElementById('pendingContainer');
         container.innerHTML = '';
         if (!coaches.length) {
           container.textContent = 'No pending coaches.';
@@ -62,7 +115,7 @@
             try {
               const res2 = await fetch(`${API_BASE}/api/admin/coaches/${id}/approve`, {
                 method: 'POST',
-                headers: { Authorization: "Bearer " + token }
+                headers: { Authorization: 'Bearer ' + token }
               });
               if (!res2.ok) throw new Error(`Status ${res2.status}`);
               e.target.textContent = 'Approved';
@@ -73,7 +126,7 @@
           });
         });
       } catch (err) {
-        console.error(err);
+        container.textContent = '';
         alert('Error loading pending coaches: ' + err.message);
       }
     });

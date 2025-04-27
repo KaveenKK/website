@@ -1,10 +1,34 @@
 // routes/admin.js
 import express from "express";
+import jwt from "jsonwebtoken";
 import Coach from "../models/Coach.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
 
 const router = express.Router();
+
+// POST /api/admin/login
+// → authenticate admin and return a JWT
+router.post("/login", (req, res) => {
+  const { email, password } = req.body;
+
+  // Validate against env vars
+  if (
+    email !== process.env.ADMIN_EMAIL ||
+    password !== process.env.ADMIN_PASSWORD
+  ) {
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
+
+  // Issue token with hard-coded admin _id
+  const token = jwt.sign(
+    { id: "6805021857ad2c95f230a900", role: "admin" },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  res.json({ token });
+});
 
 // GET /api/admin/coaches/pending
 // → list all coaches who are not yet approved
