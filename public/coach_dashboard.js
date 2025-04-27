@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const applyLink          = document.getElementById('applyLink');
   const form               = document.getElementById('profileForm');
 
-  // Disable or enable all form controls
+  // Disable or enable form controls
   function setFormReadOnly(readOnly) {
     Array.from(form.elements).forEach(el => {
       if (el.id === 'completeCourseBtn') return;
@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById('birthdate').value = profileData.birthdate.split('T')[0];
     }
 
-    // 1) Coach Application gating & status
+    // Application gating & status
     if (!profileData.application_completed) {
       appStatusIndicator.textContent = '❗ Application pending';
       applyLink.style.display = 'inline-block';
@@ -126,13 +126,16 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Save profile
   saveBtn.addEventListener('click', async () => {
+    if (!profileData.application_completed) {
+      return alert('Please submit your coach application first.');
+    }
     const payload = {
       birthdate: form.birthdate.value,
       bio:       form.bio.value,
       specialties: form.specialties.value.split(',').map(s => s.trim()),
-      // TODO: gather the rest of the fields here...
       profile_picture: document.getElementById('profilePic').src
     };
+
     try {
       const res = await api('/profile', {
         method: 'POST',
@@ -140,15 +143,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
       if (!res.ok) throw await res.text();
       alert('✅ Profile saved');
-      setFormReadOnly(true);
-      await loadCoachData();
+      await loadCoachData();  // reload data first
+      setFormReadOnly(true);  // then lock form
     } catch (err) {
       console.error('Save error', err);
       alert('Failed to save profile');
     }
   });
 
-  // Edit again (with gating)
+  // Edit button
   editBtn.addEventListener('click', () => {
     if (!profileData.application_completed) {
       return alert('Please submit your coach application first.');
