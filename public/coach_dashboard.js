@@ -43,13 +43,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   showTab('dashboard');
 
   // UI elements for gating & read-only toggle
-  const saveBtn             = document.getElementById('saveBtn');
-  const editBtn             = document.getElementById('editBtn');
-  const publishBtn          = document.getElementById('publishBtn');
-  const appStatusIndicator  = document.getElementById('appStatusIndicator');
-  const approvalStatus      = document.getElementById('approvalStatus');
-  const applyLink           = document.getElementById('applyLink');
-  const form                = document.getElementById('profileForm');
+  const saveBtn            = document.getElementById('saveBtn');
+  const editBtn            = document.getElementById('editBtn');
+  const appStatusIndicator = document.getElementById('appStatusIndicator');
+  const applyLink          = document.getElementById('applyLink');
+  const form               = document.getElementById('profileForm');
 
   // Disable or enable all form controls
   function setFormReadOnly(readOnly) {
@@ -57,8 +55,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (el.id === 'completeCourseBtn') return;
       el.disabled = readOnly;
     });
-    saveBtn.style.display   = readOnly ? 'none' : 'inline-block';
-    editBtn.style.display   = readOnly ? 'inline-block' : 'none';
+    saveBtn.style.display = readOnly ? 'none' : 'inline-block';
+    editBtn.style.display = readOnly ? 'inline-block' : 'none';
   }
 
   let profileData = {};
@@ -83,43 +81,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (profileData.birthdate) {
       document.getElementById('birthdate').value = profileData.birthdate.split('T')[0];
     }
-    // TODO: populate the rest of the form fields similarly...
 
     // 1) Coach Application gating & status
     if (!profileData.application_completed) {
       appStatusIndicator.textContent = '❗ Application pending';
-      appStatusIndicator.classList.add('pending');
       applyLink.style.display = 'inline-block';
       saveBtn.disabled       = true;
       setFormReadOnly(true);
     } else {
       appStatusIndicator.textContent = '✅ Application completed';
-      appStatusIndicator.classList.remove('pending');
       applyLink.style.display = 'none';
       saveBtn.disabled       = false;
       setFormReadOnly(false);
     }
 
-    // 2) Approval / publish status (moved to bottom)
-    if (!profileData.approved) {
-      approvalStatus.textContent = '⏳ Awaiting approval';
-      publishBtn.disabled        = true;
-    } else if (profileData.approved && !profileData.published) {
-      approvalStatus.textContent = '✅ Approved: Ready to publish';
-      publishBtn.disabled        = false;
-    } else {
-      approvalStatus.textContent = '🚀 Published';
-      publishBtn.disabled        = true;
-    }
-
     // Subscribers & invites
     const subList = document.getElementById('subscriberList');
     subList.innerHTML = (profileData.subscribers || [])
-      .map(u => `<li>${u.username} (${u.date})</li>`).join('') 
+      .map(u => `<li>${u.username} (${u.date})</li>`).join('')
       || '<li>No subscribers yet</li>';
     const invList = document.getElementById('inviteList');
     invList.innerHTML = (profileData.invites || [])
-      .map(u => `<li>${u.username} joined ${u.date}</li>`).join('') 
+      .map(u => `<li>${u.username} joined ${u.date}</li>`).join('')
       || '<li>No invites yet</li>';
 
     // Earnings chart
@@ -173,19 +156,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     setFormReadOnly(false);
   });
 
-  // Publish profile
-  publishBtn.addEventListener('click', async () => {
-    try {
-      const res = await api('/profile/publish', { method: 'POST' });
-      if (!res.ok) throw await res.text();
-      alert('🚀 Profile published');
-      await loadCoachData();
-    } catch (err) {
-      console.error('Publish error', err);
-      alert('Failed to publish');
-    }
-  });
-
   // Course navigation
   const slides = document.querySelectorAll('.course-slide');
   let slideIndex = 0;
@@ -196,7 +166,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   document.getElementById('completeCourseBtn').addEventListener('click', () => {
-    if (profileData.approved) publishBtn.disabled = false;
     alert('✅ Course completed');
   });
 
