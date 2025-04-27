@@ -75,10 +75,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       form.querySelectorAll('input, textarea, select').forEach(el => el.disabled = false);
       saveBtn.style.display = 'inline-block';
       editBtn.style.display = 'none';
+      saveBtn.style.display = 'inline-block';
+      saveBtn.disabled = false;      // ← make it clickable
+      editBtn.style.display = 'none'
     } else {
       // View mode: lock fields, show edit
       form.querySelectorAll('input, textarea, select').forEach(el => el.disabled = true);
       saveBtn.style.display = 'none';
+      editBtn.style.display = 'inline-block';
+      saveBtn.style.display = 'none';
+      saveBtn.disabled = true;       // ← keep it disabled when hidden
       editBtn.style.display = 'inline-block';
     }
   }
