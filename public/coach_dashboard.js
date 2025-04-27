@@ -113,12 +113,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (profileData.profile_picture) document.getElementById('profilePic').src = profileData.profile_picture;
     if (profileData.birthdate) document.getElementById('birthdate').value = profileData.birthdate.split('T')[0];
     form.bio.value = profileData.bio || '';
-    form.specialties.value = (profileData.specialties||[]).join(', ');
     form.experience.value = profileData.experience || '';
-    form.instagram.value = profileData.instagram || '';
-    form.twitter.value = profileData.twitter || '';
-    form.linkedin.value = profileData.linkedin || '';
-    form.discordTag.value = profileData.discordTag || '';
+    form.youtube.value  = (profileData.social_links?.youtube ) || '';
+    form.tiktok.value   = (profileData.social_links?.tiktok  ) || '';
+    form.threads.value  = (profileData.social_links?.threads ) || '';
+    form.facebook.value = (profileData.social_links?.facebook) || '';
+    form.instagram.value = (profileData.social_links?.instagram) || '';
+    form.twitter.value = (profileData.social_links?.twitter) || '';
+    form.linkedin.value = (profileData.social_links?.linkedin) || '';
     form.paypal.value = profileData.paypal || '';
     form.monthly_price_usd.value = profileData.monthly_price_usd || 0;
     document.getElementById('mapleDisplay').textContent = Math.round((profileData.monthly_price_usd/0.3)*10);
@@ -147,12 +149,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const payload = {
       birthdate: form.birthdate.value,
       bio: form.bio.value,
-      specialties: form.specialties.value.split(',').map(s=>s.trim()),
       experience: form.experience.value,
-      instagram: form.instagram.value,
-      twitter: form.twitter.value,
-      linkedin: form.linkedin.value,
-      discordTag: form.discordTag.value,
+      social_links: {
+        youtube:  form.youtube.value.trim(),
+        tiktok:   form.tiktok.value.trim(),
+        threads:  form.threads.value.trim(),
+        facebook: form.facebook.value.trim(),
+        instagram: form.instagram.value.trim(),
+        twitter: form.twitter.value.trim(),
+        linkedin: form.linkedin.valuetrim()
+      },  
       paypal: form.paypal.value,
       monthly_price_usd: parseFloat(form.monthly_price_usd.value)
     };

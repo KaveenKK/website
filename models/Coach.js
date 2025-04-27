@@ -12,7 +12,7 @@ const coachSchema = new mongoose.Schema({
   name:          { type: String, required: true },
   age:           { type: Number },
   bio:           { type: String },
-  specialties:   [String],
+
 
   // ────────────────────────────────────────────────────────
   // New fields for your dashboard & Maple system
@@ -28,7 +28,10 @@ const coachSchema = new mongoose.Schema({
     instagram: { type: String, default: null },
     twitter:   { type: String, default: null },
     linkedin:  { type: String, default: null },
-    discord:   { type: String, default: null }
+    youtube:  { type: String, default: null },
+    tiktok:   { type: String, default: null },
+    threads:  { type: String, default: null },
+    facebook: { type: String, default: null }
   },
   experience: {
     type: String,

@@ -32,18 +32,10 @@ router.post("/profile", authMiddleware, async (req, res) => {
     if (body.bio && body.bio.trim()) updates.bio = body.bio.trim();
     if (body.experience && body.experience.trim()) updates.experience = body.experience.trim();
 
-    // specialties: array of non-empty strings
-    if (Array.isArray(body.specialties)) {
-      const specs = body.specialties
-         .map(s => typeof s === 'string' ? s.trim() : '')
-         .filter(s => s.length > 0);
-      updates.specialties = specs;
-    }
-
     // social_links: only non-empty entries
     if (body.social_links && typeof body.social_links === "object") {
       const sl = {};
-      ["instagram", "twitter", "linkedin", "discord"].forEach(key => {
+      ["instagram", "twitter", "linkedin", "threads", "youtube", "facebook", "tiktok", "linkedin"].forEach(key => {
         const val = body.social_links[key];
         if (val && typeof val === "string" && val.trim()) {
           sl[key] = val.trim();
