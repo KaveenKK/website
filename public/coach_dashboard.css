@@ -48,19 +48,31 @@ h1 {
   margin-top: 0;
 }
 
+/* Card wrapper */
+.card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 20px;
+}
+
 /* Application status & link */
 .profile-application {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  max-width: 900px;
-  margin: 0 auto 20px;
-  padding: 0 30px;
 }
 
 .application-status {
   font-size: 1rem;
   font-weight: bold;
+}
+.application-status.pending {
+  color: #d35400;
+}
+.application-status:not(.pending) {
+  color: #27ae60;
 }
 
 /* Profile section */
@@ -68,8 +80,6 @@ h1 {
   display: flex;
   gap: 30px;
   flex-wrap: wrap;
-  max-width: 900px;
-  margin: 0 auto;
 }
 
 .pic-uploader {
@@ -141,7 +151,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Status messages */
+/* Status messages (approval/publish) */
 .status {
   margin-top: 20px;
   padding: 12px;

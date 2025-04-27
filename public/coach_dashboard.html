@@ -19,16 +19,18 @@
   <section id="dashboard" class="tab-content active">
     <h1 id="welcomeGreeting">Welcome, Coach</h1>
 
-    <!-- Application status & link -->
-    <div class="profile-application">
-      <div class="application-status">
-        <span id="appStatusIndicator">Loading application status…</span>
+    <!-- 1) Coach Application Status Card -->
+    <div class="profile-application card">
+      <div class="application-status" id="appStatusIndicator">
+        Loading application status…
       </div>
-      <a class="button" id="applyLink" href="apply_coaching.html" target="_blank">Go to Coach Application Form</a>
+      <a class="button" id="applyLink" href="apply_coaching.html" target="_blank">
+        Go to Coach Application Form
+      </a>
     </div>
 
-    <!-- Profile Section -->
-    <div class="profile-section">
+    <!-- 2) Profile Section Card -->
+    <div class="profile-section card">
       <!-- Picture uploader -->
       <div class="pic-uploader">
         <img id="profilePic" class="profile-pic"
@@ -71,17 +73,20 @@
         <input type="number" name="monthly_price_usd" id="usdInput" min="0" max="20" step="0.01" value="0">
         <p><strong>Visible Price to Users:</strong> <span id="mapleDisplay">0</span> 🍁</p>
 
-        <div class="status" id="approvalStatus">Loading approval status…</div>
-
+        <!-- Form actions -->
         <div class="form-actions">
           <button type="button" id="saveBtn" disabled>Save Profile</button>
           <button type="button" id="editBtn" class="small" style="display:none;">✏️ Edit</button>
           <button type="button" id="publishBtn" disabled>Publish Profile</button>
         </div>
+
+        <!-- Approval / Publish Status (moved to bottom) -->
+        <div class="status" id="approvalStatus">Loading approval status…</div>
       </form>
     </div>
 
-    <div class="legal">
+    <!-- Legal notice Card -->
+    <div class="legal card">
       <p><strong>Legal Notice:</strong> You are responsible for your own taxes. Nevengi is not liable for reporting or paying taxes on your earnings. Ensure you comply with local laws.</p>
     </div>
   </section>

@@ -43,23 +43,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   showTab('dashboard');
 
   // UI elements for gating & read-only toggle
-  const saveBtn           = document.getElementById('saveBtn');
-  const editBtn           = document.getElementById('editBtn');
-  const publishBtn        = document.getElementById('publishBtn');
-  const appStatusIndicator= document.getElementById('appStatusIndicator');
-  const applyLink         = document.getElementById('applyLink');
-  const form              = document.getElementById('profileForm');
+  const saveBtn             = document.getElementById('saveBtn');
+  const editBtn             = document.getElementById('editBtn');
+  const publishBtn          = document.getElementById('publishBtn');
+  const appStatusIndicator  = document.getElementById('appStatusIndicator');
+  const approvalStatus      = document.getElementById('approvalStatus');
+  const applyLink           = document.getElementById('applyLink');
+  const form                = document.getElementById('profileForm');
 
-  // Disable or enable all form controls (except the application link/button)
+  // Disable or enable all form controls
   function setFormReadOnly(readOnly) {
     Array.from(form.elements).forEach(el => {
-      // never disable the "Complete Course" or hidden controls if you have any
       if (el.id === 'completeCourseBtn') return;
       el.disabled = readOnly;
     });
-    // Toggle visibility of Save vs Edit
-    saveBtn.style.display = readOnly ? 'none' : 'inline-block';
-    editBtn.style.display = readOnly ? 'inline-block' : 'none';
+    saveBtn.style.display   = readOnly ? 'none' : 'inline-block';
+    editBtn.style.display   = readOnly ? 'inline-block' : 'none';
   }
 
   let profileData = {};
@@ -86,29 +85,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     // TODO: populate the rest of the form fields similarly...
 
-    // Application gating
+    // 1) Coach Application gating & status
     if (!profileData.application_completed) {
-      appStatusIndicator.textContent = '❗ You must complete the application first.';
-      saveBtn.disabled = true;
+      appStatusIndicator.textContent = '❗ Application pending';
+      appStatusIndicator.classList.add('pending');
       applyLink.style.display = 'inline-block';
+      saveBtn.disabled       = true;
       setFormReadOnly(true);
     } else {
       appStatusIndicator.textContent = '✅ Application completed';
-      saveBtn.disabled = false;
+      appStatusIndicator.classList.remove('pending');
       applyLink.style.display = 'none';
+      saveBtn.disabled       = false;
       setFormReadOnly(false);
     }
 
-    // Approval & publish status
+    // 2) Approval / publish status (moved to bottom)
     if (!profileData.approved) {
-      appStatusIndicator.textContent = '⏳ Awaiting approval';
-      publishBtn.disabled = true;
+      approvalStatus.textContent = '⏳ Awaiting approval';
+      publishBtn.disabled        = true;
     } else if (profileData.approved && !profileData.published) {
-      appStatusIndicator.textContent = '✅ Approved: Ready to publish';
-      publishBtn.disabled = false;
+      approvalStatus.textContent = '✅ Approved: Ready to publish';
+      publishBtn.disabled        = false;
     } else {
-      appStatusIndicator.textContent = '🚀 Published';
-      publishBtn.disabled = true;
+      approvalStatus.textContent = '🚀 Published';
+      publishBtn.disabled        = true;
     }
 
     // Subscribers & invites
@@ -125,7 +126,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderEarningsChart(profileData.earnings || []);
   }
 
-  // Handle profile picture preview
+  // Profile picture preview
   document.getElementById('picUpload').addEventListener('change', e => {
     const file = e.target.files[0];
     if (!file) return;
@@ -144,7 +145,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   saveBtn.addEventListener('click', async () => {
     const payload = {
       birthdate: form.birthdate.value,
-      bio: form.bio.value,
+      bio:       form.bio.value,
       specialties: form.specialties.value.split(',').map(s => s.trim()),
       // TODO: gather the rest of the fields here...
       profile_picture: document.getElementById('profilePic').src
@@ -152,11 +153,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
       const res = await api('/profile', {
         method: 'POST',
-        body: JSON.stringify(payload)
+        body:   JSON.stringify(payload)
       });
       if (!res.ok) throw await res.text();
       alert('✅ Profile saved');
-      // Lock form until they click "Edit"
       setFormReadOnly(true);
       await loadCoachData();
     } catch (err) {
@@ -165,8 +165,11 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // Edit again
+  // Edit again (with gating)
   editBtn.addEventListener('click', () => {
+    if (!profileData.application_completed) {
+      return alert('Please submit your coach application first.');
+    }
     setFormReadOnly(false);
   });
 
@@ -200,13 +203,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Earnings chart renderer
   function renderEarningsChart(data) {
     const canvas = document.getElementById('earningsChart');
-    const ctx = canvas.getContext('2d');
+    const ctx    = canvas.getContext('2d');
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     if (!data.length) {
       ctx.fillText('No data', 10, 50);
       return;
     }
-    const max = Math.max(...data.map(d => d.amount));
+    const max  = Math.max(...data.map(d => d.amount));
     const barW = (canvas.width - 40) / data.length;
     data.forEach((d, i) => {
       const h = (d.amount / max) * (canvas.height - 40);
@@ -215,6 +218,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Kick things off
+  // Initial load
   await loadCoachData();
 });
