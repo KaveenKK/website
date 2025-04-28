@@ -12,6 +12,7 @@ const coachSchema = new mongoose.Schema({
   name:          { type: String, required: true },
   birthdate:     { type: Date },
   bio:           { type: String },
+  paypal:        { type: String },
 
 
   // ────────────────────────────────────────────────────────
