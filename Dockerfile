@@ -9,7 +9,6 @@ COPY public/ /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # 3) Railway will inject the PORT env var for us
-ENV PORT 8080
 EXPOSE 8080
 
 # 4) Start NGINX in the foreground
