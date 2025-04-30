@@ -7,7 +7,6 @@
      window.dataLayer = window.dataLayer || [];
      function gtag(){dataLayer.push(arguments);}
      gtag('js', new Date());
-
      gtag('config', 'G-YR1B2Z51N0');
   </script>
   <meta charset="UTF-8" />
@@ -30,10 +29,17 @@
     h2 { margin-bottom: 1rem; }
     ul { list-style: none; }
     li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
     /* Explore Coaches */
     .coach-item { display: flex; justify-content: space-between; align-items: center; }
     .coach-info { flex: 1; }
     .coach-action button { margin-left: 0.5rem; }
+    /* Highlight the invited coach */
+    .coach-item.pinned {
+      border: 2px solid #008cba;
+      background: #e6f7ff;
+    }
+
     /* Rewards Shop */
     #shopify-collection { display: flex; gap: 1rem; flex-wrap: wrap; }
     /* Leaderboard */
@@ -99,7 +105,7 @@
       <h2>Pricing Plans</h2>
       <div class="pricing-options">
         <div class="pricing-option">
-          <h3>I'm Broke</h3>
+          <h3>I’m Broke</h3>
           <p>
             <span class="price-usd" data-usd="13.99">$13.99</span>
             <span class="local-price"></span>
@@ -113,7 +119,7 @@
           <div id="paypal-button-container-1"></div>
         </div>
         <div class="pricing-option">
-          <h3>Let's Go</h3>
+          <h3>Let’s Go</h3>
           <p>
             <span class="price-usd" data-usd="23.99">$23.99</span>
             <span class="local-price"></span>
@@ -128,7 +134,7 @@
           <div id="paypal-button-container-2"></div>
         </div>
         <div class="pricing-option">
-          <h3>I'm Serious</h3>
+          <h3>I’m Serious</h3>
           <p>
             <span class="price-usd" data-usd="37.99">$37.99</span>
             <span class="local-price"></span>
@@ -148,28 +154,18 @@
   </div>
 
   <!-- PayPal SDK -->
-  <!-- place this once, near the end of <body> -->
-  <script
-   src="https://www.paypal.com/sdk/js?
+  <script src="https://www.paypal.com/sdk/js?
        client-id=AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ
        &vault=true
        &intent=subscription
-       &enable-funding=card,applepay,googlepay"
-  ></script>
-  <div id="paypal-button-container-plan-basic"></div>
-  
+       &enable-funding=card,applepay,googlepay">
+  </script>
 
-  <!-- PayPal SDK include (same as step 1) -->
-  <script
-    src="https://www.paypal.com/sdk/js?client-id=AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ&vault=true&intent=subscription&enable-funding=card,applepay,googlepay"></script>
-
-  <!-- Load and run your module -->
+  <!-- Load and run your PayPal module -->
   <script type="module">
     import { renderPayPalButtons } from '/js/paypal-buttons.js';
     renderPayPalButtons();
   </script>
-
-
 
   <!-- Dashboard Logic -->
   <script>
@@ -189,7 +185,6 @@
     }
 
     const token = localStorage.getItem('userToken');
-    const discordId = localStorage.getItem('discordId');
 
     // Show dashboard if logged in
     if (token) {
@@ -206,49 +201,60 @@
     });
     document.querySelector('nav button').click();
 
-    // Load Explore Coaches
-    async function loadCoaches() {
-      const res = await fetch(`${API_BASE}/api/coaches`, { headers: { Authorization: 'Bearer ' + token } });
-      const list = await res.json();
-      document.getElementById('coachList').innerHTML = list.map(c => `
-        <li class="coach-item">
-          <div class="coach-info"><strong>${c.name}</strong> – ${c.specialties.join(', ')}</div>
+    // Helper: render one coach, with optional pinned styling
+    function renderCoachItem(coach, pinned = false) {
+      return `
+        <li class="coach-item${pinned ? ' pinned' : ''}">
+          <div class="coach-info">
+            ${pinned ? '<strong style="color:#008cba;">[Invited Coach]</strong> ' : ''}
+            <strong>${coach.name}</strong> – ${coach.specialties.join(', ')}
+          </div>
           <div class="coach-action">
-            <button onclick="subscribe('${c._id}')">Subscribe</button>
-            <button onclick="rate('${c._id}')">Rate</button>
+            <button onclick="subscribe('${coach._id}')">Subscribe</button>
+            <button onclick="rate('${coach._id}')">Rate</button>
           </div>
         </li>
-      `).join('');
+      `;
     }
 
-  async function loadMyCoaches() {
-    const res = await fetch('/api/my_coaches', {
-     headers: { Authorization: 'Bearer ' + localStorage.getItem('userToken') }
-    });
-    const data = await res.json();
-    const ul = document.getElementById('myCoachesList');
-    ul.innerHTML = data.map(c => `<li>${c.coach_name}</li>`).join('');
-  }
+    // Load Explore Coaches with pinned-invite logic
+    async function loadCoaches() {
+      const headers = { Authorization: 'Bearer ' + token };
 
-    function subscribe(coachId) {
-      // TODO: call subscribe endpoint
-      alert('Subscribed to ' + coachId);
-    }
-    function rate(coachId) {
-      const rating = prompt('Rate out of 5');
-      if (!rating) return;
-      // TODO: call rate endpoint
-      alert('Rated ' + coachId + ' as ' + rating);
+      // 1) Get user profile
+      const userRes = await fetch(`${API_BASE}/api/user-profile`, { headers });
+      const user = await userRes.json();
+
+      // 2) If invited, fetch that coach
+      let pinnedCoach = null;
+      if (user.referred_coach_id) {
+        const coachRes = await fetch(`${API_BASE}/api/coach/${user.referred_coach_id}`, { headers });
+        if (coachRes.ok) pinnedCoach = await coachRes.json();
+      }
+
+      // 3) Fetch all coaches
+      const allRes = await fetch(`${API_BASE}/api/coaches`, { headers });
+      const allCoaches = allRes.ok ? await allRes.json() : [];
+
+      // 4) Build list: pinned first, then the rest
+      let html = '';
+      if (pinnedCoach) html += renderCoachItem(pinnedCoach, true);
+      allCoaches.forEach(c => {
+        if (!pinnedCoach || c._id !== pinnedCoach._id) {
+          html += renderCoachItem(c);
+        }
+      });
+
+      document.getElementById('coachList').innerHTML = html;
     }
 
-    // Load Leaderboard
+    // Other loaders (leaderboard, status, shop, etc.)
     async function loadLeaderboard() {
       const res = await fetch(`${API_BASE}/api/leaderboard`, { headers: { Authorization: 'Bearer ' + token } });
       const data = await res.json();
       document.getElementById('leaderboardList').innerHTML = data.map(u => `<li>${u.username} <span>${u.xp}</span></li>`).join('');
     }
 
-    // Load Status
     async function loadStatus() {
       const res = await fetch(`${API_BASE}/api/status`, { headers: { Authorization: 'Bearer ' + token } });
       const st = await res.json();
@@ -256,43 +262,38 @@
       document.getElementById('mapleAmount').textContent = st.maples;
     }
 
-    // Load Rewards Shop placeholder
     async function loadShop() {
       document.getElementById('shopify-collection').textContent = 'Shop items will appear here';
     }
 
-    // ───────── Local-currency price labels ──────────
-    const RATES = { USD:1, EUR:0.93, GBP:0.80, CAD:1.36 };  // update as you like
-    const locale   = navigator.language || 'en-US';
-    const userCcy  = new Intl.NumberFormat(locale, {
-       style: 'currency',
-       currency: 'USD'
-    }).resolvedOptions().currency;  // e.g. "EUR", "GBP", etc.
+    function subscribe(coachId) {
+      alert('Subscribed to ' + coachId);
+    }
+    function rate(coachId) {
+      const rating = prompt('Rate out of 5');
+      if (!rating) return;
+      alert('Rated ' + coachId + ' as ' + rating);
+    }
 
+    // Pricing plan currency conversion
+    const RATES = { USD:1, EUR:0.93, GBP:0.80, CAD:1.36 };
+    const locale = navigator.language || 'en-US';
+    const userCcy = new Intl.NumberFormat(locale,{style:'currency',currency:'USD'}).resolvedOptions().currency;
     document.querySelectorAll('.pricing-option').forEach(opt => {
       const usdEl = opt.querySelector('.price-usd');
       const localEl = opt.querySelector('.local-price');
       const usd = parseFloat(usdEl.dataset.usd);
-      if (!usd || userCcy === 'USD') {
-        localEl.textContent = '';
-        return;
-      }
-      const rate = RATES[userCcy] || 1;
-      const converted = usd * rate;
-      localEl.textContent = ` (${new Intl.NumberFormat(locale, {
-        style: 'currency',
-        currency: userCcy
-      }).format(converted)})`;
+      if (!usd || userCcy==='USD') return;
+      const conv = usd * (RATES[userCcy]||1);
+      localEl.textContent = ` (${new Intl.NumberFormat(locale,{style:'currency',currency:userCcy}).format(conv)})`;
     });
 
-
-    // Initialize data
+    // Initialize all data
     if (token) {
       loadCoaches();
       loadLeaderboard();
       loadStatus();
       loadShop();
-      loadMyCoaches();
     }
   </script>
 </body>
