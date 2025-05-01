@@ -72,11 +72,7 @@ app.get('/user_dashboard', authMiddleware, (req, res) => {
 
 // Auth Check Endpoint
 app.get('/api/check-auth', authMiddleware, (req, res) => {
-    res.json({ 
-        authenticated: true, 
-        user: req.user,
-        role: req.user.role // This will be either 'user' or 'coach'
-    });
+    res.json({ authenticated: true, user: req.user });
 });
 
 // Form submission endpoint
