@@ -51,6 +51,31 @@
     .pricing-option { background: white; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .recommended-label { background: gold; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; }
   </style>
+  <script>
+    // Check authentication status on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const response = await fetch('/api/check-auth', {
+          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error('Not authenticated');
+        }
+        
+        const data = await response.json();
+        if (!data.authenticated) {
+          window.location.href = '/?error=not_authenticated';
+        }
+      } catch (error) {
+        console.error('Auth check failed:', error);
+        window.location.href = '/?error=not_authenticated';
+      }
+    });
+  </script>
 </head>
 <body>
   <header>
@@ -105,7 +130,7 @@
       <h2>Pricing Plans</h2>
       <div class="pricing-options">
         <div class="pricing-option">
-          <h3>I’m Broke</h3>
+          <h3>I'm Broke</h3>
           <p>
             <span class="price-usd" data-usd="13.99">$13.99</span>
             <span class="local-price"></span>
@@ -119,7 +144,7 @@
           <div id="paypal-button-container-1"></div>
         </div>
         <div class="pricing-option">
-          <h3>Let’s Go</h3>
+          <h3>Let's Go</h3>
           <p>
             <span class="price-usd" data-usd="23.99">$23.99</span>
             <span class="local-price"></span>
@@ -134,7 +159,7 @@
           <div id="paypal-button-container-2"></div>
         </div>
         <div class="pricing-option">
-          <h3>I’m Serious</h3>
+          <h3>I'm Serious</h3>
           <p>
             <span class="price-usd" data-usd="37.99">$37.99</span>
             <span class="local-price"></span>
