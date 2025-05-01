@@ -230,7 +230,7 @@
     async function validateToken(token, type) {
       console.log(`Validating ${type} token:`, token);
       try {
-        const response = await fetch(`/api/auth/validate-${type}`, {
+        const response = await fetch(`/auth/validate-${type}`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
