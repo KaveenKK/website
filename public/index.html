@@ -33,6 +33,18 @@
           });
       });
     }
+
+    // Check for existing tokens and redirect if logged in
+    window.addEventListener('DOMContentLoaded', () => {
+      const userToken = localStorage.getItem('userToken');
+      const coachToken = localStorage.getItem('coachToken');
+      
+      if (userToken) {
+        window.location.href = '/user_dashboard.html';
+      } else if (coachToken) {
+        window.location.href = '/coach_dashboard.html';
+      }
+    });
   </script>
 </head>
 <body>
