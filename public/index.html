@@ -38,14 +38,6 @@
                 }
               });
             });
-
-            // Handle service worker messages
-            navigator.serviceWorker.addEventListener('message', event => {
-              if (event.data && event.data.type === 'CACHE_UPDATED') {
-                console.log('Cache updated, refreshing page...');
-                window.location.reload();
-              }
-            });
           })
           .catch(err => {
             console.log('ServiceWorker registration failed: ', err);
@@ -64,9 +56,59 @@
     const oauthCode = params.get('code');
     const oauthState = params.get('state');
     
-    // If we have an OAuth code, let the auth flow handle it
+    // If we have an OAuth code, handle it directly without service worker
     if (oauthCode && oauthState) {
-      console.log('OAuth flow detected, letting auth handler process...');
+      console.log('OAuth flow detected, processing...');
+      // Clear any existing tokens
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('coachToken');
+      localStorage.removeItem('discordId');
+      
+      // Get the original auth URL from state
+      const authType = oauthState.split('_')[0]; // 'user' or 'coach'
+      const authUrl = `/auth/discord/${authType}`;
+      
+      // Make the token request directly
+      fetch(`${authUrl}?code=${oauthCode}&state=${oauthState}`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Auth request failed');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.token) {
+          // Store the token and redirect
+          if (authType === 'user') {
+            localStorage.setItem('userToken', data.token);
+            if (data.discord_id) {
+              localStorage.setItem('discordId', data.discord_id);
+            }
+            window.location.href = '/user_dashboard.html';
+          } else {
+            localStorage.setItem('coachToken', data.token);
+            window.location.href = '/coach_dashboard.html';
+          }
+        } else {
+          throw new Error('No token received');
+        }
+      })
+      .catch(error => {
+        console.error('Auth error:', error);
+        // Clear any partial state
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('coachToken');
+        localStorage.removeItem('discordId');
+        // Redirect to home page
+        window.location.href = '/';
+      });
       return;
     }
     

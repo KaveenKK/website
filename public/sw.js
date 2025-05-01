@@ -32,22 +32,17 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   
-  // Never cache OAuth, API, or authentication-related requests
+  // Completely bypass service worker for auth-related requests
   if (url.pathname.includes('/auth/') || 
       url.pathname.includes('/api/') ||
       url.searchParams.has('code') ||
       url.searchParams.has('token') ||
       url.searchParams.has('state') ||
-      event.request.headers.get('Authorization')) {
-    return fetch(event.request.clone(), {
-      cache: 'no-store',
-      headers: {
-        ...event.request.headers,
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
-    });
+      event.request.headers.get('Authorization') ||
+      url.pathname.includes('discord.com') ||
+      url.pathname.includes('oauth2')) {
+    // Use fetch directly without service worker interference
+    return fetch(event.request);
   }
 
   // For all other requests, try cache first, then network
