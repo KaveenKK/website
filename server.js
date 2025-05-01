@@ -14,8 +14,6 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import cookieParser from 'cookie-parser';
-import authMiddleware from './middleware/authMiddleware.js';
 
 // Import routers & models
 import authRoutes from './routes/auth.js';
@@ -46,11 +44,13 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Middleware
+
+
+
+// Express middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // ----- API ROUTES -----
 // Authentication endpoints
@@ -64,16 +64,6 @@ app.use('/api', webhookRoutes);
 
 // mount admin
 app.use('/api/admin', adminRoutes);
-
-// Protected Dashboard Route
-app.get('/user_dashboard', authMiddleware, (req, res) => {
-    res.sendFile('user_dashboard.html', { root: __dirname });
-});
-
-// Auth Check Endpoint
-app.get('/api/check-auth', authMiddleware, (req, res) => {
-    res.json({ authenticated: true, user: req.user });
-});
 
 // Form submission endpoint
 app.post('/api/submit', async (req, res) => {
@@ -160,11 +150,6 @@ app.get('*', (req, res, next) => {
     return res.status(404).json({ error: 'Not found' });
   }
   res.sendFile(path.join(publicPath, 'index.html'));
-});
-
-// Handle 404
-app.use((req, res) => {
-  res.status(404).sendFile(path.join(publicPath, '404.html'));
 });
 
 // Start the server
