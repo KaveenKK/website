@@ -112,6 +112,7 @@
         <p><b> Already have a follow base ?</b> Join Nevengi as an<b> Content Creator</b> & Earn While you help people</p>
         Unlock the All-Rounder.</p>
       <button class="btn-primary" id="start-btn">Get Started</button>
+      <button class="btn-primary" id="install-btn" style="margin-top: 10px;">Install App</button>
     </div>
     <div class="hero-img" id="hero-img">
       <img src="images/mascot.webp" alt="Nevengi Character" />
@@ -325,6 +326,44 @@
 
     // Start questionnaire
     startBtn.addEventListener('click', () => showQuestion(0));
+
+    // Add this to your existing script section
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later
+      deferredPrompt = e;
+      // Show the install button
+      installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) {
+        alert('App is already installed or not available for installation');
+        return;
+      }
+      // Show the install prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      // Clear the saved prompt since it can't be used again
+      deferredPrompt = null;
+      // Hide the install button
+      installBtn.style.display = 'none';
+    });
+
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('App was installed');
+      installBtn.style.display = 'none';
+    });
   </script>
 </body>
 </html>
