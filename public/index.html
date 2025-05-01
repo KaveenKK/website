@@ -58,6 +58,15 @@
       });
     }
 
+    // Add this to ensure auth endpoints are not cached
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data && event.data.type === 'SKIP_WAITING') {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+      });
+    }
+
     // Check for existing tokens and redirect if logged in
     console.log('Checking authentication status...');
     
@@ -229,6 +238,11 @@
     // Function to validate token
     async function validateToken(token, type) {
       console.log(`Validating ${type} token:`, token);
+      if (!token) {
+        console.log('No token provided for validation');
+        return false;
+      }
+      
       try {
         const response = await fetch(`/auth/validate-${type}`, {
           method: 'GET',
@@ -236,19 +250,35 @@
             'Authorization': `Bearer ${token}`,
             'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
             'Pragma': 'no-cache',
-            'Expires': '0'
-          }
+            'Expires': '0',
+            'X-Requested-With': 'XMLHttpRequest' // Prevent caching
+          },
+          credentials: 'include' // Include cookies if any
         });
+        
         console.log(`Validation response for ${type}:`, response.status);
         if (!response.ok) {
           console.log(`Token validation failed for ${type}:`, response.status);
+          // Clear invalid token
+          if (type === 'user') {
+            localStorage.removeItem('userToken');
+          } else {
+            localStorage.removeItem('coachToken');
+          }
           return false;
         }
+        
         const data = await response.json();
         console.log(`Validation data for ${type}:`, data);
         return data.valid === true;
       } catch (error) {
         console.error(`Error validating ${type} token:`, error);
+        // Clear token on error
+        if (type === 'user') {
+          localStorage.removeItem('userToken');
+        } else {
+          localStorage.removeItem('coachToken');
+        }
         return false;
       }
     }
@@ -256,18 +286,20 @@
     // Function to handle redirection
     async function handleRedirection() {
       console.log('Starting redirection check...');
-      console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
-      console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
-      console.log('URL Coach Token:', urlCoachToken ? 'exists' : 'not found');
-      console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
-      console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
       
+      // Clear URL parameters after processing
+      const clearUrlParams = () => {
+        if (window.location.search) {
+          history.replaceState({}, '', window.location.pathname);
+        }
+      };
+
       // If we have a coach token in URL, it takes highest priority
       if (urlCoachToken) {
         console.log('Found coach token in URL, storing and redirecting...');
         localStorage.setItem('coachToken', urlCoachToken);
         localStorage.removeItem('userToken'); // Clear any user token
-        history.replaceState({}, '', window.location.pathname);
+        clearUrlParams();
         window.location.href = '/coach_dashboard.html';
         return;
       }
@@ -298,7 +330,7 @@
         if (urlDiscordId) {
           localStorage.setItem('discordId', urlDiscordId);
         }
-        history.replaceState({}, '', window.location.pathname);
+        clearUrlParams();
         window.location.href = '/user_dashboard.html';
         return;
       }
