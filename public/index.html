@@ -33,18 +33,6 @@
           });
       });
     }
-
-    // Check for existing tokens and redirect if logged in
-    window.addEventListener('DOMContentLoaded', () => {
-      const userToken = localStorage.getItem('userToken');
-      const coachToken = localStorage.getItem('coachToken');
-      
-      if (userToken) {
-        window.location.href = '/user_dashboard.html';
-      } else if (coachToken) {
-        window.location.href = '/coach_dashboard.html';
-      }
-    });
   </script>
 </head>
 <body>
@@ -376,6 +364,23 @@
       console.log('App was installed');
       installBtn.style.display = 'none';
     });
+  </script>
+  <script>
+    // Check for existing tokens and redirect if logged in
+    console.log('Checking authentication status...');
+    const userToken = localStorage.getItem('userToken');
+    const coachToken = localStorage.getItem('coachToken');
+    
+    console.log('User token:', userToken ? 'exists' : 'not found');
+    console.log('Coach token:', coachToken ? 'exists' : 'not found');
+    
+    if (userToken) {
+      console.log('Redirecting to user dashboard...');
+      window.location.href = '/user_dashboard.html';
+    } else if (coachToken) {
+      console.log('Redirecting to coach dashboard...');
+      window.location.href = '/coach_dashboard.html';
+    }
   </script>
 </body>
 </html>
