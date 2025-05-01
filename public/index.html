@@ -230,6 +230,7 @@
     async function validateToken(token, type) {
       try {
         const response = await fetch(`/api/auth/validate-${type}`, {
+          method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,
             'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -237,7 +238,12 @@
             'Expires': '0'
           }
         });
-        return response.ok;
+        if (!response.ok) {
+          console.log(`Token validation failed for ${type}:`, response.status);
+          return false;
+        }
+        const data = await response.json();
+        return data.valid === true;
       } catch (error) {
         console.error(`Error validating ${type} token:`, error);
         return false;
@@ -246,22 +252,24 @@
 
     // Function to handle redirection
     async function handleRedirection() {
+      console.log('Starting redirection check...');
+      
       // If we have a coach token in URL, it takes highest priority
       if (urlCoachToken) {
-        console.log('Storing coach token from URL...');
+        console.log('Found coach token in URL, storing and redirecting...');
         localStorage.setItem('coachToken', urlCoachToken);
         localStorage.removeItem('userToken'); // Clear any user token
         history.replaceState({}, '', window.location.pathname);
-        console.log('Redirecting to coach dashboard...');
         window.location.href = '/coach_dashboard.html';
         return;
       }
 
       // If we have a stored coach token, validate it
       if (storedCoachToken) {
+        console.log('Found stored coach token, validating...');
         const isValid = await validateToken(storedCoachToken, 'coach');
         if (isValid) {
-          console.log('Redirecting to coach dashboard using stored token...');
+          console.log('Coach token valid, redirecting to coach dashboard...');
           window.location.href = '/coach_dashboard.html';
           return;
         } else {
@@ -272,22 +280,22 @@
 
       // If we have a user token in URL, handle it
       if (urlUserToken) {
-        console.log('Storing user token from URL...');
+        console.log('Found user token in URL, storing and redirecting...');
         localStorage.setItem('userToken', urlUserToken);
         if (urlDiscordId) {
           localStorage.setItem('discordId', urlDiscordId);
         }
         history.replaceState({}, '', window.location.pathname);
-        console.log('Redirecting to user dashboard...');
         window.location.href = '/user_dashboard.html';
         return;
       }
 
       // If we have a stored user token, validate it
       if (storedUserToken) {
+        console.log('Found stored user token, validating...');
         const isValid = await validateToken(storedUserToken, 'user');
         if (isValid) {
-          console.log('Redirecting to user dashboard using stored token...');
+          console.log('User token valid, redirecting to user dashboard...');
           window.location.href = '/user_dashboard.html';
           return;
         } else {
@@ -295,10 +303,15 @@
           localStorage.removeItem('userToken');
         }
       }
+
+      console.log('No valid tokens found, staying on homepage');
     }
 
     // Execute the redirection logic
-    handleRedirection();
+    document.addEventListener('DOMContentLoaded', () => {
+      console.log('DOM loaded, checking authentication...');
+      handleRedirection();
+    });
   </script>
 </head>
 <body>
