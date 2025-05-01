@@ -32,7 +32,7 @@ self.addEventListener('install', event => {
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
   
-  // Completely bypass service worker for auth-related requests
+  // For OAuth flows, completely bypass the service worker
   if (url.pathname.includes('/auth/') || 
       url.pathname.includes('/api/') ||
       url.searchParams.has('code') ||
@@ -41,7 +41,10 @@ self.addEventListener('fetch', event => {
       event.request.headers.get('Authorization') ||
       url.pathname.includes('discord.com') ||
       url.pathname.includes('oauth2')) {
-    // Use fetch directly without service worker interference
+    // Unregister the service worker during OAuth flow
+    if (url.searchParams.has('code')) {
+      self.registration.unregister();
+    }
     return fetch(event.request);
   }
 

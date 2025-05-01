@@ -21,6 +21,17 @@
   <link rel="stylesheet" href="styles.css">
 
   <script>
+    // Check if we're in a PWA context
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                 window.navigator.standalone || 
+                 document.referrer.includes('android-app://');
+
+    // OAuth state management
+    const oauthState = {
+      processing: false,
+      processedCodes: new Set()
+    };
+
     // Register service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
@@ -54,22 +65,45 @@
     const urlDiscordId = params.get('discord_id');
     const urlCoachToken = params.get('coachToken');
     const oauthCode = params.get('code');
-    const oauthState = params.get('state');
+    const oauthStateParam = params.get('state');
     
-    // If we have an OAuth code, handle it directly without service worker
-    if (oauthCode && oauthState) {
+    // If we have an OAuth code, handle it directly
+    if (oauthCode && oauthStateParam && !oauthState.processing) {
+      // Check if we've already processed this code
+      if (oauthState.processedCodes.has(oauthCode)) {
+        console.log('OAuth code already processed, ignoring...');
+        return;
+      }
+
       console.log('OAuth flow detected, processing...');
+      oauthState.processing = true;
+      oauthState.processedCodes.add(oauthCode);
+      
       // Clear any existing tokens
       localStorage.removeItem('userToken');
       localStorage.removeItem('coachToken');
       localStorage.removeItem('discordId');
       
       // Get the original auth URL from state
-      const authType = oauthState.split('_')[0]; // 'user' or 'coach'
+      const authType = oauthStateParam.split('_')[0]; // 'user' or 'coach'
       const authUrl = `/auth/discord/${authType}`;
       
+      // For PWA, we need to handle the OAuth flow differently
+      if (isPWA) {
+        console.log('PWA context detected, using alternative OAuth flow');
+        // Unregister service worker during OAuth
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistrations().then(registrations => {
+            registrations.forEach(registration => registration.unregister());
+          });
+        }
+        // Redirect to the auth URL with the code
+        window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${Date.now()}`;
+        return;
+      }
+      
       // Make the token request directly
-      fetch(`${authUrl}?code=${oauthCode}&state=${oauthState}`, {
+      fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${Date.now()}`, {
         method: 'GET',
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
@@ -108,6 +142,9 @@
         localStorage.removeItem('discordId');
         // Redirect to home page
         window.location.href = '/';
+      })
+      .finally(() => {
+        oauthState.processing = false;
       });
       return;
     }
