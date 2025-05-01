@@ -368,17 +368,40 @@
   <script>
     // Check for existing tokens and redirect if logged in
     console.log('Checking authentication status...');
-    const userToken = localStorage.getItem('userToken');
-    const coachToken = localStorage.getItem('coachToken');
     
-    console.log('User token:', userToken ? 'exists' : 'not found');
-    console.log('Coach token:', coachToken ? 'exists' : 'not found');
+    // Check URL parameters first
+    const params = new URLSearchParams(window.location.search);
+    const urlUserToken = params.get('token');
+    const urlDiscordId = params.get('discord_id');
     
-    if (userToken) {
+    // Check localStorage
+    const storedUserToken = localStorage.getItem('userToken');
+    const storedCoachToken = localStorage.getItem('coachToken');
+    
+    console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
+    console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
+    console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
+    console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
+    
+    // If we have a token in URL, store it and redirect
+    if (urlUserToken) {
+      console.log('Storing user token from URL...');
+      localStorage.setItem('userToken', urlUserToken);
+      if (urlDiscordId) {
+        localStorage.setItem('discordId', urlDiscordId);
+      }
+      history.replaceState({}, '', window.location.pathname);
       console.log('Redirecting to user dashboard...');
       window.location.href = '/user_dashboard.html';
-    } else if (coachToken) {
-      console.log('Redirecting to coach dashboard...');
+    } 
+    // If we have a stored user token, redirect
+    else if (storedUserToken) {
+      console.log('Redirecting to user dashboard using stored token...');
+      window.location.href = '/user_dashboard.html';
+    }
+    // If we have a stored coach token, redirect
+    else if (storedCoachToken) {
+      console.log('Redirecting to coach dashboard using stored token...');
       window.location.href = '/coach_dashboard.html';
     }
   </script>
