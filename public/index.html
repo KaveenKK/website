@@ -29,7 +29,9 @@
     // OAuth state management
     const oauthState = {
       processing: false,
-      processedCodes: new Set()
+      processedCodes: new Set(),
+      lastAttempt: 0,
+      retryCount: 0
     };
 
     // Register service worker
@@ -66,6 +68,7 @@
     const urlCoachToken = params.get('coachToken');
     const oauthCode = params.get('code');
     const oauthStateParam = params.get('state');
+    const isPwaAuth = params.get('pwa') === 'true';
     
     // If we have an OAuth code, handle it directly
     if (oauthCode && oauthStateParam && !oauthState.processing) {
@@ -75,8 +78,20 @@
         return;
       }
 
+      // Check rate limiting
+      const now = Date.now();
+      const timeSinceLastAttempt = now - oauthState.lastAttempt;
+      if (timeSinceLastAttempt < 5000) { // 5 second cooldown
+        console.log('Rate limit cooldown, please wait...');
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000 - timeSinceLastAttempt);
+        return;
+      }
+
       console.log('OAuth flow detected, processing...');
       oauthState.processing = true;
+      oauthState.lastAttempt = now;
       oauthState.processedCodes.add(oauthCode);
       
       // Clear any existing tokens
@@ -89,21 +104,73 @@
       const authUrl = `/auth/discord/${authType}`;
       
       // For PWA, we need to handle the OAuth flow differently
-      if (isPWA) {
+      if (isPWA || isPwaAuth) {
         console.log('PWA context detected, using alternative OAuth flow');
-        // Unregister service worker during OAuth
-        if ('serviceWorker' in navigator) {
-          navigator.serviceWorker.getRegistrations().then(registrations => {
-            registrations.forEach(registration => registration.unregister());
-          });
+        
+        // If this is a PWA auth attempt, wait a bit before proceeding
+        if (isPwaAuth) {
+          setTimeout(() => {
+            // Unregister service worker during OAuth
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+              });
+            }
+            
+            // Make the token request directly
+            fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
+              method: 'GET',
+              headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              }
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Auth request failed');
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data.token) {
+                // Store the token and redirect
+                if (authType === 'user') {
+                  localStorage.setItem('userToken', data.token);
+                  if (data.discord_id) {
+                    localStorage.setItem('discordId', data.discord_id);
+                  }
+                  window.location.href = '/user_dashboard.html';
+                } else {
+                  localStorage.setItem('coachToken', data.token);
+                  window.location.href = '/coach_dashboard.html';
+                }
+              } else {
+                throw new Error('No token received');
+              }
+            })
+            .catch(error => {
+              console.error('Auth error:', error);
+              // Clear any partial state
+              localStorage.removeItem('userToken');
+              localStorage.removeItem('coachToken');
+              localStorage.removeItem('discordId');
+              // Redirect to home page
+              window.location.href = '/';
+            })
+            .finally(() => {
+              oauthState.processing = false;
+            });
+          }, 2000); // Wait 2 seconds before making the request
+        } else {
+          // Initial PWA redirect
+          window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
         }
-        // Redirect to the auth URL with the code
-        window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${Date.now()}`;
         return;
       }
       
-      // Make the token request directly
-      fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${Date.now()}`, {
+      // Regular web flow
+      fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}`, {
         method: 'GET',
         headers: {
           'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
