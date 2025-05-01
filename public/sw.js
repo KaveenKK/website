@@ -30,6 +30,13 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
+  // Don't cache API requests or authentication-related requests
+  if (event.request.url.includes('/api/') || 
+      event.request.url.includes('/auth/') ||
+      event.request.url.includes('token')) {
+    return fetch(event.request);
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -39,4 +46,11 @@ self.addEventListener('fetch', event => {
         return fetch(event.request);
       })
   );
+});
+
+// Handle messages from the client
+self.addEventListener('message', event => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 }); 

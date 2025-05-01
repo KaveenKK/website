@@ -27,6 +27,16 @@
         navigator.serviceWorker.register('/sw.js')
           .then(registration => {
             console.log('ServiceWorker registration successful');
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New content is available, refresh the page
+                  window.location.reload();
+                }
+              });
+            });
           })
           .catch(err => {
             console.log('ServiceWorker registration failed: ', err);
@@ -364,8 +374,7 @@
       console.log('App was installed');
       installBtn.style.display = 'none';
     });
-  </script>
-  <script>
+
     // Check for existing tokens and redirect if logged in
     console.log('Checking authentication status...');
     
@@ -404,6 +413,12 @@
       console.log('Redirecting to coach dashboard using stored token...');
       window.location.href = '/coach_dashboard.html';
     }
+
+    // Add event listener for beforeunload to ensure tokens are preserved
+    window.addEventListener('beforeunload', () => {
+      // Force a sync write to localStorage
+      localStorage.setItem('lastVisit', Date.now().toString());
+    });
   </script>
 </body>
 </html>
