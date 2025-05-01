@@ -33,6 +33,71 @@
           });
       });
     }
+
+    // Check authentication status on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+        const userToken = localStorage.getItem('userToken');
+        const coachToken = localStorage.getItem('coachToken');
+        
+        if (userToken) {
+            try {
+                const response = await fetch('/api/check-auth', {
+                    headers: {
+                        'Authorization': `Bearer ${userToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated && data.user.role === 'user') {
+                        window.location.href = '/user_dashboard';
+                    }
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('userToken');
+            }
+        } else if (coachToken) {
+            try {
+                const response = await fetch('/api/check-auth', {
+                    headers: {
+                        'Authorization': `Bearer ${coachToken}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.authenticated && data.user.role === 'coach') {
+                        window.location.href = '/coach_dashboard';
+                    }
+                }
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                localStorage.removeItem('coachToken');
+            }
+        }
+    });
+
+    // Handle login
+    function handleLogin(token, role) {
+        if (role === 'user') {
+            localStorage.setItem('userToken', token);
+            window.location.href = '/user_dashboard';
+        } else if (role === 'coach') {
+            localStorage.setItem('coachToken', token);
+            window.location.href = '/coach_dashboard';
+        }
+    }
+
+    // Handle Discord auth callback
+    if (window.location.hash) {
+        const params = new URLSearchParams(window.location.hash.substring(1));
+        const token = params.get('token');
+        const role = params.get('role'); // Make sure your auth endpoint includes role
+        if (token && role) {
+            handleLogin(token, role);
+        }
+    }
   </script>
 </head>
 <body>
@@ -364,21 +429,6 @@
       console.log('App was installed');
       installBtn.style.display = 'none';
     });
-
-    // Add this to your existing script section
-    function handleLogin(token) {
-        localStorage.setItem('token', token);
-        window.location.href = '/user_dashboard';
-    }
-
-    // Add token handling to your Discord auth callback
-    if (window.location.hash) {
-        const params = new URLSearchParams(window.location.hash.substring(1));
-        const token = params.get('token');
-        if (token) {
-            handleLogin(token);
-        }
-    }
   </script>
 </body>
 </html>

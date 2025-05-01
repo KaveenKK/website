@@ -54,11 +54,16 @@
   <script>
     // Check authentication status on page load
     document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        window.location.href = '/?error=not_authenticated';
+        return;
+      }
+
       try {
         const response = await fetch('/api/check-auth', {
-          credentials: 'include',
           headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
+            'Authorization': `Bearer ${token}`
           }
         });
         
@@ -68,13 +73,21 @@
         
         const data = await response.json();
         if (!data.authenticated) {
+          localStorage.removeItem('token');
           window.location.href = '/?error=not_authenticated';
         }
       } catch (error) {
         console.error('Auth check failed:', error);
+        localStorage.removeItem('token');
         window.location.href = '/?error=not_authenticated';
       }
     });
+
+    // Handle logout
+    function handleLogout() {
+      localStorage.removeItem('token');
+      window.location.href = '/';
+    }
   </script>
 </head>
 <body>

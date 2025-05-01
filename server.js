@@ -65,14 +65,30 @@ app.use('/api', webhookRoutes);
 // mount admin
 app.use('/api/admin', adminRoutes);
 
-// Protected Dashboard Route
+// Protected Dashboard Routes
 app.get('/user_dashboard', authMiddleware, (req, res) => {
+    if (req.user.role !== 'user') {
+        return res.redirect('/?error=unauthorized');
+    }
     res.sendFile('user_dashboard.html', { root: __dirname });
+});
+
+app.get('/coach_dashboard', authMiddleware, (req, res) => {
+    if (req.user.role !== 'coach') {
+        return res.redirect('/?error=unauthorized');
+    }
+    res.sendFile('coach_dashboard.html', { root: __dirname });
 });
 
 // Auth Check Endpoint
 app.get('/api/check-auth', authMiddleware, (req, res) => {
-    res.json({ authenticated: true, user: req.user });
+    res.json({ 
+        authenticated: true, 
+        user: {
+            id: req.user.id,
+            role: req.user.role
+        }
+    });
 });
 
 // Form submission endpoint
