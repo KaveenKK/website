@@ -165,4 +165,32 @@ router.get("/discord/callback", async (req, res) => {
   }
 });
 
+// After successful Discord auth for users
+router.get('/discord/callback', async (req, res) => {
+    try {
+        // ... existing Discord auth code ...
+        
+        // After successful auth, redirect with token
+        const token = jwt.sign({ userId: user._id, role: 'user' }, process.env.JWT_SECRET);
+        res.redirect(`/?token=${token}&type=user`);
+    } catch (error) {
+        console.error('Discord auth error:', error);
+        res.redirect('/?error=auth_failed');
+    }
+});
+
+// After successful Discord auth for coaches
+router.get('/discord/coach/callback', async (req, res) => {
+    try {
+        // ... existing Discord auth code ...
+        
+        // After successful auth, redirect with token
+        const token = jwt.sign({ userId: coach._id, role: 'coach' }, process.env.JWT_SECRET);
+        res.redirect(`/?token=${token}&type=coach`);
+    } catch (error) {
+        console.error('Discord auth error:', error);
+        res.redirect('/?error=auth_failed');
+    }
+});
+
 export default router;
