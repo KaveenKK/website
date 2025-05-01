@@ -27,6 +27,7 @@
         navigator.serviceWorker.register('/sw.js')
           .then(registration => {
             console.log('ServiceWorker registration successful');
+            
             // Check for updates
             registration.addEventListener('updatefound', () => {
               const newWorker = registration.installing;
@@ -37,12 +38,121 @@
                 }
               });
             });
+
+            // Handle service worker messages
+            navigator.serviceWorker.addEventListener('message', event => {
+              if (event.data && event.data.type === 'CACHE_UPDATED') {
+                console.log('Cache updated, refreshing page...');
+                window.location.reload();
+              }
+            });
           })
           .catch(err => {
             console.log('ServiceWorker registration failed: ', err);
           });
       });
     }
+
+    // Check for existing tokens and redirect if logged in
+    console.log('Checking authentication status...');
+    
+    // Check URL parameters first
+    const params = new URLSearchParams(window.location.search);
+    const urlUserToken = params.get('token');
+    const urlDiscordId = params.get('discord_id');
+    const urlCoachToken = params.get('coachToken');
+    const oauthCode = params.get('code');
+    const oauthState = params.get('state');
+    
+    // If we have an OAuth code, let the auth flow handle it
+    if (oauthCode && oauthState) {
+      console.log('OAuth flow detected, letting auth handler process...');
+      return;
+    }
+    
+    // Check localStorage
+    const storedUserToken = localStorage.getItem('userToken');
+    const storedCoachToken = localStorage.getItem('coachToken');
+    
+    console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
+    console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
+    console.log('URL Coach Token:', urlCoachToken ? 'exists' : 'not found');
+    console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
+    console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
+    
+    // Function to validate token
+    async function validateToken(token, type) {
+      try {
+        const response = await fetch(`/api/auth/validate-${type}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        });
+        return response.ok;
+      } catch (error) {
+        console.error(`Error validating ${type} token:`, error);
+        return false;
+      }
+    }
+
+    // Function to handle redirection
+    async function handleRedirection() {
+      // If we have a coach token in URL, it takes highest priority
+      if (urlCoachToken) {
+        console.log('Storing coach token from URL...');
+        localStorage.setItem('coachToken', urlCoachToken);
+        localStorage.removeItem('userToken'); // Clear any user token
+        history.replaceState({}, '', window.location.pathname);
+        console.log('Redirecting to coach dashboard...');
+        window.location.href = '/coach_dashboard.html';
+        return;
+      }
+
+      // If we have a stored coach token, validate it
+      if (storedCoachToken) {
+        const isValid = await validateToken(storedCoachToken, 'coach');
+        if (isValid) {
+          console.log('Redirecting to coach dashboard using stored token...');
+          window.location.href = '/coach_dashboard.html';
+          return;
+        } else {
+          console.log('Invalid coach token, clearing...');
+          localStorage.removeItem('coachToken');
+        }
+      }
+
+      // If we have a user token in URL, handle it
+      if (urlUserToken) {
+        console.log('Storing user token from URL...');
+        localStorage.setItem('userToken', urlUserToken);
+        if (urlDiscordId) {
+          localStorage.setItem('discordId', urlDiscordId);
+        }
+        history.replaceState({}, '', window.location.pathname);
+        console.log('Redirecting to user dashboard...');
+        window.location.href = '/user_dashboard.html';
+        return;
+      }
+
+      // If we have a stored user token, validate it
+      if (storedUserToken) {
+        const isValid = await validateToken(storedUserToken, 'user');
+        if (isValid) {
+          console.log('Redirecting to user dashboard using stored token...');
+          window.location.href = '/user_dashboard.html';
+          return;
+        } else {
+          console.log('Invalid user token, clearing...');
+          localStorage.removeItem('userToken');
+        }
+      }
+    }
+
+    // Execute the redirection logic
+    handleRedirection();
   </script>
 </head>
 <body>
@@ -374,96 +484,6 @@
       console.log('App was installed');
       installBtn.style.display = 'none';
     });
-
-    // Check for existing tokens and redirect if logged in
-    console.log('Checking authentication status...');
-    
-    // Check URL parameters first
-    const params = new URLSearchParams(window.location.search);
-    const urlUserToken = params.get('token');
-    const urlDiscordId = params.get('discord_id');
-    const urlCoachToken = params.get('coachToken');
-    
-    // Check localStorage
-    const storedUserToken = localStorage.getItem('userToken');
-    const storedCoachToken = localStorage.getItem('coachToken');
-    
-    console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
-    console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
-    console.log('URL Coach Token:', urlCoachToken ? 'exists' : 'not found');
-    console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
-    console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
-    
-    // Function to validate token
-    async function validateToken(token, type) {
-      try {
-        const response = await fetch(`/api/auth/validate-${type}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        return response.ok;
-      } catch (error) {
-        console.error(`Error validating ${type} token:`, error);
-        return false;
-      }
-    }
-
-    // Function to handle redirection
-    async function handleRedirection() {
-      // If we have a coach token in URL, it takes highest priority
-      if (urlCoachToken) {
-        console.log('Storing coach token from URL...');
-        localStorage.setItem('coachToken', urlCoachToken);
-        localStorage.removeItem('userToken'); // Clear any user token
-        history.replaceState({}, '', window.location.pathname);
-        console.log('Redirecting to coach dashboard...');
-        window.location.href = '/coach_dashboard.html';
-        return;
-      }
-
-      // If we have a stored coach token, validate it
-      if (storedCoachToken) {
-        const isValid = await validateToken(storedCoachToken, 'coach');
-        if (isValid) {
-          console.log('Redirecting to coach dashboard using stored token...');
-          window.location.href = '/coach_dashboard.html';
-          return;
-        } else {
-          console.log('Invalid coach token, clearing...');
-          localStorage.removeItem('coachToken');
-        }
-      }
-
-      // If we have a user token in URL, handle it
-      if (urlUserToken) {
-        console.log('Storing user token from URL...');
-        localStorage.setItem('userToken', urlUserToken);
-        if (urlDiscordId) {
-          localStorage.setItem('discordId', urlDiscordId);
-        }
-        history.replaceState({}, '', window.location.pathname);
-        console.log('Redirecting to user dashboard...');
-        window.location.href = '/user_dashboard.html';
-        return;
-      }
-
-      // If we have a stored user token, validate it
-      if (storedUserToken) {
-        const isValid = await validateToken(storedUserToken, 'user');
-        if (isValid) {
-          console.log('Redirecting to user dashboard using stored token...');
-          window.location.href = '/user_dashboard.html';
-          return;
-        } else {
-          console.log('Invalid user token, clearing...');
-          localStorage.removeItem('userToken');
-        }
-      }
-    }
-
-    // Execute the redirection logic
-    handleRedirection();
 
     // Add event listener for beforeunload to ensure tokens are preserved
     window.addEventListener('beforeunload', () => {

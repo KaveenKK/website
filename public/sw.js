@@ -30,13 +30,27 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Don't cache API requests or authentication-related requests
-  if (event.request.url.includes('/api/') || 
-      event.request.url.includes('/auth/') ||
-      event.request.url.includes('token')) {
-    return fetch(event.request);
+  const url = new URL(event.request.url);
+  
+  // Never cache OAuth, API, or authentication-related requests
+  if (url.pathname.includes('/auth/') || 
+      url.pathname.includes('/api/') ||
+      url.searchParams.has('code') ||
+      url.searchParams.has('token') ||
+      url.searchParams.has('state') ||
+      event.request.headers.get('Authorization')) {
+    return fetch(event.request.clone(), {
+      cache: 'no-store',
+      headers: {
+        ...event.request.headers,
+        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    });
   }
 
+  // For all other requests, try cache first, then network
   event.respondWith(
     caches.match(event.request)
       .then(response => {
@@ -53,4 +67,19 @@ self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
+});
+
+// Clear cache on activation
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
 }); 
