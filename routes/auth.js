@@ -165,4 +165,19 @@ router.get("/discord/callback", async (req, res) => {
   }
 });
 
+// Token validation endpoints
+router.get("/validate-user", authMiddleware, (req, res) => {
+  if (req.user.role !== 'user') {
+    return res.status(403).json({ error: "Invalid token type" });
+  }
+  res.json({ valid: true });
+});
+
+router.get("/validate-coach", authMiddleware, (req, res) => {
+  if (req.user.role !== 'coach') {
+    return res.status(403).json({ error: "Invalid token type" });
+  }
+  res.json({ valid: true });
+});
+
 export default router;
