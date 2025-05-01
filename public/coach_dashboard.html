@@ -2,187 +2,144 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coach Dashboard - Nevengi</title>
-  <link rel="stylesheet" href="styles.css">
-  <script>
-    // Check authentication status on page load
-    document.addEventListener('DOMContentLoaded', async () => {
-      const coachToken = localStorage.getItem('coachToken');
-      if (!coachToken) {
-        window.location.href = '/?error=not_authenticated';
-        return;
-      }
-
-      try {
-        const response = await fetch('/api/check-auth', {
-          headers: {
-            'Authorization': `Bearer ${coachToken}`
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error('Not authenticated');
-        }
-        
-        const data = await response.json();
-        if (!data.authenticated || data.user.role !== 'coach') {
-          localStorage.removeItem('coachToken');
-          window.location.href = '/?error=not_authenticated';
-        }
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        localStorage.removeItem('coachToken');
-        window.location.href = '/?error=not_authenticated';
-      }
-    });
-
-    // Handle logout
-    function handleLogout() {
-      localStorage.removeItem('coachToken');
-      window.location.href = '/';
-    }
-  </script>
+  <title>Coach Dashboard</title>
+  <link rel="stylesheet" href="coach_dashboard.css">
 </head>
 <body>
-  <div class="dashboard-container">
-    <h1>Welcome to Your Coach Dashboard</h1>
-    <button onclick="handleLogout()">Logout</button>
-    <!-- Tabs -->
-    <div class="tabs">
-      <div class="tab active" data-tab="dashboard">Dashboard</div>
-      <div class="tab" data-tab="subscribers">Subscribers</div>
-      <div class="tab" data-tab="invites">Invites</div>
-      <div class="tab" data-tab="earnings">Earnings</div>
-      <div class="tab" data-tab="starterCourse">Starter Course</div>
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" data-tab="dashboard">Dashboard</div>
+    <div class="tab" data-tab="subscribers">Subscribers</div>
+    <div class="tab" data-tab="invites">Invites</div>
+    <div class="tab" data-tab="earnings">Earnings</div>
+    <div class="tab" data-tab="starterCourse">Starter Course</div>
+  </div>
+
+  <!-- Dashboard -->
+  <section id="dashboard" class="tab-content active">
+    <h1 id="welcomeGreeting">Welcome, Coach</h1>
+
+    <!-- 1) Coach Application Status Card -->
+    <div class="profile-application card">
+      <div class="application-status" id="appStatusIndicator">
+        Loading application status…
+      </div>
+      <a class="button" id="applyLink" href="apply_coaching.html" target="_blank">
+        Go to Coach Application Form
+      </a>
     </div>
 
-    <!-- Dashboard -->
-    <section id="dashboard" class="tab-content active">
-      <h1 id="welcomeGreeting">Welcome, Coach</h1>
+    <!-- 2) Profile Section Card -->
+    <div class="profile-section card">
+      <!-- Picture uploader -->
+      <div class="pic-uploader">
+        <img id="profilePic" class="profile-pic"
+             src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+             alt="Profile Picture">
+        <label class="upload-label">Change Photo</label>
+        <input type="file" id="picUpload" accept="image/*">
+      </div>
 
-      <!-- 1) Coach Application Status Card -->
-      <div class="profile-application card">
-        <div class="application-status" id="appStatusIndicator">
-          Loading application status…
+      <!-- Profile form -->
+      <form id="profileForm" class="profile-form">
+        <label>Birth Date (18–80 years):</label>
+        <input type="date" name="birthdate" id="birthdate" required>
+
+        <label>Bio:</label>
+        <textarea name="bio" rows="3"></textarea>
+
+        <label>Experience:</label>
+        <textarea name="experience" rows="3"></textarea>
+
+        <label>YouTube:</label>
+        <input type="url" name="youtube" placeholder="https://youtube.com/in/username">
+
+        <label>Facebook:</label>
+        <input type="url" name="facebook" placeholder="https://facebook.com/in/username">
+
+        <label>TikTok:</label>
+        <input type="url" name="tiktok" placeholder="https://tiktok.com/in/username">
+
+        <label>Instagram:</label>
+        <input type="url" name="instagram" placeholder="https://instagram.com/username">
+
+        <label>Threads:</label>
+        <input type="url" name="threads" placeholder="https://threads.com/username">
+
+        <label>Twitter:</label>
+        <input type="url" name="twitter" placeholder="https://twitter.com/username">
+
+        <label>LinkedIn:</label>
+        <input type="url" name="linkedin" placeholder="https://linkedin.com/in/username">
+
+        <label>PayPal Email (for payouts):</label>
+        <input type="email" name="paypal">
+
+        <label>Monthly Subscription Price ($0–$20):</label>
+        <input type="number" name="monthly_price_usd" id="usdInput" min="0" max="20" step="0.01" value="0">
+        <p><strong>Visible Price to Users:</strong> <span id="mapleDisplay">0</span> 🍁</p>
+
+        <!-- Form actions -->
+        <div class="form-actions">
+          <button type="button" id="saveBtn" style="display:none;">Save Profile</button>
+          <button type="button" id="editBtn" class="small" style="display:none;">✏️ Edit</button>
         </div>
-        <a class="button" id="applyLink" href="apply_coaching.html" target="_blank">
-          Go to Coach Application Form
-        </a>
+
+        <!-- Approval / Publish Status (moved to bottom) -->
+        <div class="status" id="approvalStatus">Loading approval status…</div>
+      </form>
+    </div>
+
+    <!-- Legal notice Card -->
+    <div class="legal card">
+      <p><strong>Legal Notice:</strong> You are responsible for your own taxes. Nevengi is not liable for reporting or paying taxes on your earnings. Ensure you comply with local laws.</p>
+    </div>
+  </section>
+
+  <!-- Subscribers -->
+  <section id="subscribers" class="tab-content">
+    <h1>Your Subscribers</h1>
+    <ul id="subscriberList">
+      <li>Loading subscribers…</li>
+    </ul>
+  </section>
+
+  <!-- Invites -->
+  <section id="invites" class="tab-content">
+    <h1>Invited Members</h1>
+    <ul id="inviteList">
+      <li>Loading invited members…</li>
+    </ul>
+  </section>
+
+  <!-- Earnings -->
+  <section id="earnings" class="tab-content">
+    <h1>Earnings Overview</h1>
+    <canvas id="earningsChart" width="600" height="300"></canvas>
+  </section>
+
+  <!-- Starter Course -->
+  <section id="starterCourse" class="tab-content">
+    <h1>Starter Course for Coaches</h1>
+    <div id="courseSlides">
+      <div class="course-slide active">
+        <img src="https://cdn.pixabay.com/photo/2023/02/28/17/56/ai-generated-7822831_1280.png" alt="Intro">
+        <p>Welcome to Nevengi Coaching! Learn how the platform works and your responsibilities.</p>
+        <p>If you still haven't joined Nevengi Discord Server, make sure you join before sending your coach application:</p>
+        <p>https://discord.gg/6RMPeDmfDd</p>
+        <p>If you still haven't completed your coach application, submit it via the following link:</p>
+        <p><a href="apply_coaching.html" target="_blank">Apply for Coaching</a></p>
       </div>
-
-      <!-- 2) Profile Section Card -->
-      <div class="profile-section card">
-        <!-- Picture uploader -->
-        <div class="pic-uploader">
-          <img id="profilePic" class="profile-pic"
-               src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
-               alt="Profile Picture">
-          <label class="upload-label">Change Photo</label>
-          <input type="file" id="picUpload" accept="image/*">
-        </div>
-
-        <!-- Profile form -->
-        <form id="profileForm" class="profile-form">
-          <label>Birth Date (18–80 years):</label>
-          <input type="date" name="birthdate" id="birthdate" required>
-
-          <label>Bio:</label>
-          <textarea name="bio" rows="3"></textarea>
-
-          <label>Experience:</label>
-          <textarea name="experience" rows="3"></textarea>
-
-          <label>YouTube:</label>
-          <input type="url" name="youtube" placeholder="https://youtube.com/in/username">
-
-          <label>Facebook:</label>
-          <input type="url" name="facebook" placeholder="https://facebook.com/in/username">
-
-          <label>TikTok:</label>
-          <input type="url" name="tiktok" placeholder="https://tiktok.com/in/username">
-
-          <label>Instagram:</label>
-          <input type="url" name="instagram" placeholder="https://instagram.com/username">
-
-          <label>Threads:</label>
-          <input type="url" name="threads" placeholder="https://threads.com/username">
-
-          <label>Twitter:</label>
-          <input type="url" name="twitter" placeholder="https://twitter.com/username">
-
-          <label>LinkedIn:</label>
-          <input type="url" name="linkedin" placeholder="https://linkedin.com/in/username">
-
-          <label>PayPal Email (for payouts):</label>
-          <input type="email" name="paypal">
-
-          <label>Monthly Subscription Price ($0–$20):</label>
-          <input type="number" name="monthly_price_usd" id="usdInput" min="0" max="20" step="0.01" value="0">
-          <p><strong>Visible Price to Users:</strong> <span id="mapleDisplay">0</span> 🍁</p>
-
-          <!-- Form actions -->
-          <div class="form-actions">
-            <button type="button" id="saveBtn" style="display:none;">Save Profile</button>
-            <button type="button" id="editBtn" class="small" style="display:none;">✏️ Edit</button>
-          </div>
-
-          <!-- Approval / Publish Status (moved to bottom) -->
-          <div class="status" id="approvalStatus">Loading approval status…</div>
-        </form>
+      <!-- Other slides unchanged… -->
+      <div class="course-slide">
+        <p><strong>Final Step:</strong> Click below to confirm you’ve completed and understood the starter course &amp; terms.</p>
+        <button id="completeCourseBtn">✅ Complete Course</button>
       </div>
-
-      <!-- Legal notice Card -->
-      <div class="legal card">
-        <p><strong>Legal Notice:</strong> You are responsible for your own taxes. Nevengi is not liable for reporting or paying taxes on your earnings. Ensure you comply with local laws.</p>
-      </div>
-    </section>
-
-    <!-- Subscribers -->
-    <section id="subscribers" class="tab-content">
-      <h1>Your Subscribers</h1>
-      <ul id="subscriberList">
-        <li>Loading subscribers…</li>
-      </ul>
-    </section>
-
-    <!-- Invites -->
-    <section id="invites" class="tab-content">
-      <h1>Invited Members</h1>
-      <ul id="inviteList">
-        <li>Loading invited members…</li>
-      </ul>
-    </section>
-
-    <!-- Earnings -->
-    <section id="earnings" class="tab-content">
-      <h1>Earnings Overview</h1>
-      <canvas id="earningsChart" width="600" height="300"></canvas>
-    </section>
-
-    <!-- Starter Course -->
-    <section id="starterCourse" class="tab-content">
-      <h1>Starter Course for Coaches</h1>
-      <div id="courseSlides">
-        <div class="course-slide active">
-          <img src="https://cdn.pixabay.com/photo/2023/02/28/17/56/ai-generated-7822831_1280.png" alt="Intro">
-          <p>Welcome to Nevengi Coaching! Learn how the platform works and your responsibilities.</p>
-          <p>If you still haven't joined Nevengi Discord Server, make sure you join before sending your coach application:</p>
-          <p>https://discord.gg/6RMPeDmfDd</p>
-          <p>If you still haven't completed your coach application, submit it via the following link:</p>
-          <p><a href="apply_coaching.html" target="_blank">Apply for Coaching</a></p>
-        </div>
-        <!-- Other slides unchanged… -->
-        <div class="course-slide">
-          <p><strong>Final Step:</strong> Click below to confirm you've completed and understood the starter course &amp; terms.</p>
-          <button id="completeCourseBtn">✅ Complete Course</button>
-        </div>
-      </div>
-      <div class="slide-controls">
-        <button id="nextBtn">Next</button>
-      </div>
-    </section>
-  </div>
+    </div>
+    <div class="slide-controls">
+      <button id="nextBtn">Next</button>
+    </div>
+  </section>
 
   <script src="coach_dashboard.js"></script>
 </body>
