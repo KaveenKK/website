@@ -382,6 +382,7 @@
     const params = new URLSearchParams(window.location.search);
     const urlUserToken = params.get('token');
     const urlDiscordId = params.get('discord_id');
+    const urlCoachToken = params.get('coachToken');
     
     // Check localStorage
     const storedUserToken = localStorage.getItem('userToken');
@@ -389,30 +390,80 @@
     
     console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
     console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
+    console.log('URL Coach Token:', urlCoachToken ? 'exists' : 'not found');
     console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
     console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
     
-    // If we have a token in URL, store it and redirect
-    if (urlUserToken) {
-      console.log('Storing user token from URL...');
-      localStorage.setItem('userToken', urlUserToken);
-      if (urlDiscordId) {
-        localStorage.setItem('discordId', urlDiscordId);
+    // Function to validate token
+    async function validateToken(token, type) {
+      try {
+        const response = await fetch(`/api/auth/validate-${type}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        return response.ok;
+      } catch (error) {
+        console.error(`Error validating ${type} token:`, error);
+        return false;
       }
-      history.replaceState({}, '', window.location.pathname);
-      console.log('Redirecting to user dashboard...');
-      window.location.href = '/user_dashboard.html';
-    } 
-    // If we have a stored user token, redirect
-    else if (storedUserToken) {
-      console.log('Redirecting to user dashboard using stored token...');
-      window.location.href = '/user_dashboard.html';
     }
-    // If we have a stored coach token, redirect
-    else if (storedCoachToken) {
-      console.log('Redirecting to coach dashboard using stored token...');
-      window.location.href = '/coach_dashboard.html';
+
+    // Function to handle redirection
+    async function handleRedirection() {
+      // If we have a coach token in URL, it takes highest priority
+      if (urlCoachToken) {
+        console.log('Storing coach token from URL...');
+        localStorage.setItem('coachToken', urlCoachToken);
+        localStorage.removeItem('userToken'); // Clear any user token
+        history.replaceState({}, '', window.location.pathname);
+        console.log('Redirecting to coach dashboard...');
+        window.location.href = '/coach_dashboard.html';
+        return;
+      }
+
+      // If we have a stored coach token, validate it
+      if (storedCoachToken) {
+        const isValid = await validateToken(storedCoachToken, 'coach');
+        if (isValid) {
+          console.log('Redirecting to coach dashboard using stored token...');
+          window.location.href = '/coach_dashboard.html';
+          return;
+        } else {
+          console.log('Invalid coach token, clearing...');
+          localStorage.removeItem('coachToken');
+        }
+      }
+
+      // If we have a user token in URL, handle it
+      if (urlUserToken) {
+        console.log('Storing user token from URL...');
+        localStorage.setItem('userToken', urlUserToken);
+        if (urlDiscordId) {
+          localStorage.setItem('discordId', urlDiscordId);
+        }
+        history.replaceState({}, '', window.location.pathname);
+        console.log('Redirecting to user dashboard...');
+        window.location.href = '/user_dashboard.html';
+        return;
+      }
+
+      // If we have a stored user token, validate it
+      if (storedUserToken) {
+        const isValid = await validateToken(storedUserToken, 'user');
+        if (isValid) {
+          console.log('Redirecting to user dashboard using stored token...');
+          window.location.href = '/user_dashboard.html';
+          return;
+        } else {
+          console.log('Invalid user token, clearing...');
+          localStorage.removeItem('userToken');
+        }
+      }
     }
+
+    // Execute the redirection logic
+    handleRedirection();
 
     // Add event listener for beforeunload to ensure tokens are preserved
     window.addEventListener('beforeunload', () => {
