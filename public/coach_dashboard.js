@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Persist and retrieve token
   const params = new URLSearchParams(window.location.search);
   let token = params.get('token');
+  const isPWA = params.get('pwa') === 'true';
+  
   if (token) {
     localStorage.setItem('coachToken', token);
     history.replaceState({}, '', window.location.pathname);
@@ -13,7 +15,20 @@ document.addEventListener("DOMContentLoaded", async () => {
   token = token || localStorage.getItem('coachToken');
   if (!token) {
     alert('You must log in first');
-    return window.location.href = '/auth/discord';
+    return window.location.href = isPWA ? '/auth/discord?pwa=true' : '/auth/discord';
+  }
+
+  // Function to check if PWA is installed
+  function isPWAInstalled() {
+    return window.matchMedia('(display-mode: standalone)').matches || 
+           window.navigator.standalone || 
+           document.referrer.includes('android-app://');
+  }
+
+  // If we're in PWA mode but not actually in PWA, redirect to PWA
+  if (isPWA && !isPWAInstalled()) {
+    window.location.href = '/auth/discord?pwa=true';
+    return;
   }
 
   // API helper

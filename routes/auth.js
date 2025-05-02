@@ -11,9 +11,10 @@ const DISCORD_API = "https://discord.com/api";
 // STEP 1 – Redirect to Discord OAuth2
 // USER Discord Login
 router.get("/discord/user", (req, res) => {
+  const isPWA = req.query.pwa === 'true';
   const params = new URLSearchParams({
     client_id: process.env.DISCORD_CLIENT_ID,
-    redirect_uri: process.env.DISCORD_USER_REDIRECT_URI,
+    redirect_uri: isPWA ? process.env.DISCORD_PWA_USER_REDIRECT_URI : process.env.DISCORD_USER_REDIRECT_URI,
     response_type: "code",
     scope: "identify email"
   });
@@ -22,9 +23,10 @@ router.get("/discord/user", (req, res) => {
 
 // COACH Discord Login
 router.get("/discord", (req, res) => {
+  const isPWA = req.query.pwa === 'true';
   const params = new URLSearchParams({
     client_id: process.env.DISCORD_CLIENT_ID,
-    redirect_uri: process.env.DISCORD_REDIRECT_URI,
+    redirect_uri: isPWA ? process.env.DISCORD_PWA_REDIRECT_URI : process.env.DISCORD_REDIRECT_URI,
     response_type: "code",
     scope: "identify email"
   });
@@ -34,6 +36,7 @@ router.get("/discord", (req, res) => {
 // STEP 2 – Callback endpoint for USERS
 router.get("/discord/user/callback", async (req, res) => {
   const code = req.query.code;
+  const isPWA = req.query.pwa === 'true';
   if (!code) return res.redirect('/login');
 
   try {
@@ -45,7 +48,7 @@ router.get("/discord/user/callback", async (req, res) => {
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: "authorization_code",
         code,
-        redirect_uri: process.env.DISCORD_USER_REDIRECT_URI,
+        redirect_uri: isPWA ? process.env.DISCORD_PWA_USER_REDIRECT_URI : process.env.DISCORD_USER_REDIRECT_URI,
         scope: "identify email"
       }).toString(),
       { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
@@ -89,7 +92,7 @@ router.get("/discord/user/callback", async (req, res) => {
 
     // Redirect to user dashboard with token & discord_id
     return res.redirect(
-      `/user_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
+      `/user_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}&pwa=${isPWA}`
     );
   } catch (err) {
     console.error("OAuth User Error:", err.response?.data || err.message);
@@ -100,6 +103,7 @@ router.get("/discord/user/callback", async (req, res) => {
 // STEP 2 – Callback endpoint for COACHES
 router.get("/discord/callback", async (req, res) => {
   const code = req.query.code;
+  const isPWA = req.query.pwa === 'true';
   if (!code) return res.redirect('/login');
 
   try {
@@ -111,7 +115,7 @@ router.get("/discord/callback", async (req, res) => {
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: "authorization_code",
         code,
-        redirect_uri: process.env.DISCORD_REDIRECT_URI,
+        redirect_uri: isPWA ? process.env.DISCORD_PWA_REDIRECT_URI : process.env.DISCORD_REDIRECT_URI,
         scope: "identify email"
       }).toString(),
       { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
@@ -153,7 +157,7 @@ router.get("/discord/callback", async (req, res) => {
 
     // Redirect to coach dashboard with token & discord_id
     return res.redirect(
-      `/coach_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
+      `/coach_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}&pwa=${isPWA}`
     );
   } catch (err) {
     console.error("Discord auth error:", err.response?.data || err.message);
