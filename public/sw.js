@@ -40,10 +40,21 @@ self.addEventListener('fetch', event => {
       url.searchParams.has('state') ||
       event.request.headers.get('Authorization') ||
       url.pathname.includes('discord.com') ||
-      url.pathname.includes('oauth2')) {
+      url.pathname.includes('oauth2') ||
+      url.searchParams.has('pwa')) {
     // Unregister the service worker during OAuth flow
-    if (url.searchParams.has('code')) {
+    if (url.searchParams.has('code') || url.searchParams.has('pwa')) {
       self.registration.unregister();
+      // Clear any cached auth-related data
+      caches.keys().then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (cacheName.includes('auth') || cacheName.includes('oauth')) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      });
     }
     return fetch(event.request);
   }
@@ -64,6 +75,19 @@ self.addEventListener('fetch', event => {
 self.addEventListener('message', event => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+  // Handle auth-related messages
+  if (event.data && event.data.type === 'AUTH_STARTED') {
+    // Clear any cached auth data when auth starts
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheName.includes('auth') || cacheName.includes('oauth')) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    });
   }
 });
 
