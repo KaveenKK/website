@@ -21,52 +21,6 @@
   <link rel="stylesheet" href="styles.css">
 
   <script>
-    // Global variables
-    const discordLink = 'https://discord.gg/SYtbqPMqju';
-    const startBtn = document.getElementById('start-btn');
-    const questionnaire = document.getElementById('questionnaire');
-    const heroText = document.getElementById('hero-text');
-    const heroImg = document.getElementById('hero-img');
-    const installBtn = document.getElementById('install-btn');
-    let deferredPrompt;
-    let currentIndex = null;
-
-    const questions = [
-      {
-        text: 'Who are you?',
-        options: [
-          { label: 'I am a user', 
-            img: 'images/usernobk.png',
-            action: () => showUserMessage()
-          },  
-          { 
-            label: 'I am an influencer',
-            img: 'images/coachnobk.png',
-            next: 1 
-          },
-          { 
-            label: 'Startup/ Company',
-            img: 'images/coachnobk.png',
-            action: () => showCompanyMessage()
-          },
-        ]
-      },
-      {
-        text: 'Do you have 5000+ followers on any platform?',
-        options: [
-          { label: 'Yes, I do',
-            img: 'images/happymascot.webp',
-            action: () => window.location.href = '/introduction_coaching.html' 
-          },
-          {
-            label: 'No, not yet',
-            img: 'images/sadmascot2d.png',
-            action: () => showFinalUserMessage() 
-          }
-        ]
-      }
-    ];
-
     // Check if we're in a PWA context
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
                  window.navigator.standalone || 
@@ -407,23 +361,6 @@
     document.addEventListener('DOMContentLoaded', () => {
       console.log('DOM loaded, checking authentication...');
       handleRedirection();
-
-      // Initialize hamburger menu
-      const hamburger = document.querySelector('.hamburger');
-      const mobileMenu = document.querySelector('.mobile-menu');
-
-      if (hamburger && mobileMenu) {
-        hamburger.addEventListener('click', () => {
-          mobileMenu.classList.toggle('show');
-        });
-
-        // Hide menu if user clicks outside
-        document.addEventListener('click', (e) => {
-          if (!hamburger.contains(e.target) && !mobileMenu.contains(e.target)) {
-            mobileMenu.classList.remove('show');
-          }
-        });
-      }
     });
 
     // Also check on page load in case DOMContentLoaded already fired
@@ -431,70 +368,6 @@
       console.log('Page already loaded, checking authentication...');
       handleRedirection();
     }
-
-    // Login menu toggle
-    document.getElementById('login-link').addEventListener('click', e => {
-      e.preventDefault();
-      const menu = document.getElementById('login-menu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    });
-
-    // Mobile login menu toggle
-    document.getElementById('mobile-login-link').addEventListener('click', e => {
-      e.preventDefault();
-      const menu = document.getElementById('mobile-login-menu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    });
-
-    // Close menus when clicking outside
-    document.addEventListener('click', e => {
-      const menu = document.getElementById('login-menu');
-      const mobileLoginMenu = document.getElementById('mobile-login-menu');
-      
-      if (!menu.contains(e.target) && e.target.id !== 'login-link') {
-        menu.style.display = 'none';
-      }
-      
-      if (!mobileLoginMenu.contains(e.target) && e.target.id !== 'mobile-login-link') {
-        mobileLoginMenu.style.display = 'none';
-      }
-    });
-
-    // Start questionnaire
-    startBtn.addEventListener('click', () => showQuestion(0));
-
-    // PWA installation handling
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBtn.style.display = 'block';
-    });
-
-    installBtn.addEventListener('click', async () => {
-      if (!deferredPrompt) {
-        alert('App is already installed or not available for installation');
-        return;
-      }
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
-      } else {
-        console.log('User dismissed the install prompt');
-      }
-      deferredPrompt = null;
-      installBtn.style.display = 'none';
-    });
-
-    window.addEventListener('appinstalled', (evt) => {
-      console.log('App was installed');
-      installBtn.style.display = 'none';
-    });
-
-    // Add event listener for beforeunload to ensure tokens are preserved
-    window.addEventListener('beforeunload', () => {
-      localStorage.setItem('lastVisit', Date.now().toString());
-    });
   </script>
 </head>
 <body>
@@ -507,13 +380,12 @@
           <span class="logo-text">Nevengi™</span>
         </a>
       </div>
-      <nav class="main-nav">
-        <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer" class="nav-link">
+      <nav>
+        <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer">
           <button>NRC</button>
         </a>
         
-        <!-- inline buttons (for wide screens) -->
-        <div class="auth-buttons">
+        <div class="login-wrapper">
           <a href="#" id="login-link">Login</a>
           <div id="login-menu">
             <button onclick="location.href='/auth/discord/user'">
@@ -525,34 +397,7 @@
                 <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
                 Coach Login
             </button>
-          </div>
-        </div>
-
-        <!-- hamburger toggle -->
-        <button class="hamburger" aria-label="Toggle menu">
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-        </button>
-
-        <!-- mobile menu -->
-        <div class="mobile-menu">
-          <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer" class="mobile-nav-link">
-            <button>NRC</button>
-          </a>
-          <div class="mobile-login-wrapper">
-            <a href="#" id="mobile-login-link">Login</a>
-            <div id="mobile-login-menu">
-              <button onclick="location.href='/auth/discord/user'">
-                  <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                  User Login
-              </button>
-                
-              <button onclick="location.href='/auth/discord'">
-                  <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                  Coach Login
-              </button>
-            </div>
+              
           </div>
         </div>
       </nav>
@@ -661,7 +506,205 @@
       <div class="footer-col footer-brand">
         <p>© 2025 Nevengi. All Rights Reserved.</p>
       </div>
-    </div>
-  </footer>
+
+  <script>
+    const discordLink = 'https://discord.gg/SYtbqPMqju';
+    const startBtn = document.getElementById('start-btn');
+    const questionnaire = document.getElementById('questionnaire');
+    const heroText = document.getElementById('hero-text');
+    const heroImg = document.getElementById('hero-img');
+
+    const questions = [
+      {
+        text: 'Who are you?',
+        options: [
+          { label: 'I am a user', 
+            img: 'images/usernobk.png',
+            action: () => showUserMessage()
+          },  
+          { 
+            label: 'I am an influencer',
+            img: 'images/coachnobk.png',
+            next: 1 
+          },
+          { 
+            label: 'Startup/ Company',
+            img: 'images/coachnobk.png',
+            action: () => showCompanyMessage()
+          },
+        ]
+      },
+      {
+        text: 'Do you have 5000+ followers on any platform?',
+        options: [
+          { label: 'Yes, I do',
+            img: 'images/happymascot.webp',
+            action: () => window.location.href = '/introduction_coaching.html' 
+          },
+          {
+            label: 'No, not yet',
+            img: 'images/sadmascot2d.png',
+            action: () => showFinalUserMessage() 
+          }
+        ]
+      }
+    ];
+
+    
+
+
+    let currentIndex = null;
+
+    function showUserMessage() {
+      questionnaire.innerHTML = `
+       <button class="back-btn" onclick="goBack()">← Back</button><br>
+       <img class="question-img" src="images/manthink.jpg" alt="Welcome" />
+       <h2>You were told to be strong, work hard, stay confident, and never give up.🤦‍♂️</h2>
+       <p> But did any of those surface-level tips actually help you take action? Everyone knows these things🤷‍♂️. what we need is a practical system. That's exactly why we built Nevengi.</p>
+       <button class="btn-primary" onclick="showFinalUserMessage()">Yeah, makes sense</button>
+     `;
+   }
+
+
+    function showQuestion(index) {
+      currentIndex = index;
+      // instantly hide hero intro
+      heroText.classList.add('hidden');
+      heroImg.classList.add('hidden');
+      // show questionnaire
+      questionnaire.style.display = 'block';
+
+      const q = questions[index];
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button>
+        <h2>${q.text}</h2>
+        <div class="options-row">
+          ${q.options.map((opt, i) => `
+            <button class="option glass" onclick="handleOptionClick(${index}, ${i})">
+              <img class="option-img" src="${opt.img}" alt="" />
+              <span>${opt.label}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function handleOptionClick(qIndex, oIndex) {
+      const opt = questions[qIndex].options[oIndex];
+      if (opt.hasOwnProperty('next')) {
+        const next = opt.next;
+        if (next < questions.length) {
+          showQuestion(next);
+        } else {
+          showFinalUserMessage();
+        }
+      } else if (opt.action) {
+        opt.action();
+      }
+    }
+
+    function showFinalUserMessage() {
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button><br>
+        <img class="question-img" src="images/mylogo_nevengi_circle.webp" alt="Welcome" />
+        <h2>Welcome to Nevengi!</h2>
+        <p>Join a powerful community of self-improvers and access daily challenges, rewards, and coaching support to transform your life.</p><br>
+        <a href="${discordLink}" class="btn-primary">Join our Discord</a>
+      `;
+    }
+
+    function showCompanyMessage() {
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button><br>
+        <h2 style="text-align: center;">Support your employees' growth 🚀</h2>
+        <img class="question-img" src="images/companyoffer.png" alt="Company Offer" style="width: 250px; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+        <br>
+        <div style="text-align: left; padding: 0 20px;">
+        <p>⚡Offer your employees free access to Nevengi's self-improvement system and watch them grow stronger, smarter, and more productive.</p>
+        <p><strong>Minimum:</strong> 6 months per employee</p><br>
+        <p>To get started, email us at <a href="mailto:nevengiteam@gmail.com">team@nevengi.com</a> with:</p>
+        <p><strong>📌Number of employees</p>
+        <p><strong>📌 Time period:</strong> How long will they have access? (Minimum 6 months)</p><br>
+        <p>We'll get back to you within 24 hours with a quote</p><br>
+        <div style="text-align: center;">
+         <a href="mailto:nevengiteam@gmail.com" class="btn-primary">Contact Us Now</a>
+        </div>
+
+     `;
+    }
+
+
+    function goBack() {
+      if (currentIndex === 0) {
+        // back to welcome
+        questionnaire.style.display = 'none';
+        heroText.classList.remove('hidden');
+        heroImg.classList.remove('hidden');
+        currentIndex = null;
+      } else if (currentIndex > 0) {
+        showQuestion(currentIndex - 1);
+      }
+    }
+
+    // Login menu toggle
+    document.getElementById('login-link').addEventListener('click', e => {
+      e.preventDefault();
+      const menu = document.getElementById('login-menu');
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+    document.addEventListener('click', e => {
+      const menu = document.getElementById('login-menu');
+      if (!menu.contains(e.target) && e.target.id !== 'login-link') {
+        menu.style.display = 'none';
+      }
+    });
+
+    // Start questionnaire
+    startBtn.addEventListener('click', () => showQuestion(0));
+
+    // Add this to your existing script section
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later
+      deferredPrompt = e;
+      // Show the install button
+      installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) {
+        alert('App is already installed or not available for installation');
+        return;
+      }
+      // Show the install prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('User accepted the install prompt');
+      } else {
+        console.log('User dismissed the install prompt');
+      }
+      // Clear the saved prompt since it can't be used again
+      deferredPrompt = null;
+      // Hide the install button
+      installBtn.style.display = 'none';
+    });
+
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('App was installed');
+      installBtn.style.display = 'none';
+    });
+
+    // Add event listener for beforeunload to ensure tokens are preserved
+    window.addEventListener('beforeunload', () => {
+      // Force a sync write to localStorage
+      localStorage.setItem('lastVisit', Date.now().toString());
+    });
+  </script>
 </body>
 </html>
