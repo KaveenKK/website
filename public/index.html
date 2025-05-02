@@ -27,19 +27,6 @@
              (window.navigator.standalone === true);
     }
 
-    // Check if PWA is installed
-    async function isPWAInstalled() {
-      if ('getInstalledRelatedApps' in navigator) {
-        try {
-          const relatedApps = await navigator.getInstalledRelatedApps();
-          return relatedApps.length > 0;
-        } catch (e) {
-          console.log('getInstalledRelatedApps not supported');
-        }
-      }
-      return false;
-    }
-
     // OAuth state management
     const oauthState = {
       processing: false,
@@ -132,7 +119,7 @@
         
         // If this is a PWA auth attempt, wait a bit before proceeding
         if (isPwaAuth) {
-          setTimeout(async () => {
+          setTimeout(() => {
             // Unregister service worker during OAuth
             if ('serviceWorker' in navigator) {
               navigator.serviceWorker.getRegistrations().then(registrations => {
@@ -189,13 +176,6 @@
           // Initial PWA redirect
           window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
         }
-        return;
-      }
-      
-      // Regular web flow - but check if PWA is installed
-      if (await isPWAInstalled()) {
-        console.log('PWA is installed, using PWA auth flow');
-        window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
         return;
       }
       
