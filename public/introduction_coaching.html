@@ -86,7 +86,7 @@
 
     <div class="section">
       <h2>Step 1: Install Discord</h2>
-      <p>If you don't have Discord installed yet, please download and register at <a href="https://discord.com/" target="_blank">discord.com</a>.</p>
+      <p>If you don’t have Discord installed yet, please download and register at <a href="https://discord.com/" target="_blank">discord.com</a>.</p>
       <p>If you try to login to coach dashboard without an email verified discord account, Your authentication will fail.</p>
       <p> Make sure you setup the discord account with an email first</p>
     </div>
@@ -97,34 +97,37 @@
       <a class="button" href="https://discord.gg/6RMPeDmfDd" target="_blank">Join Nevengi Server</a>
     </div>
 
-    <div class="section">
-      <h2>Step 3: Sign Up with Discord</h2>
-      <p>Click the button below to sign up as a coach using your Discord account. This allows us to link your profile and personalize your experience.</p>
-      <a href="https://www.nevengi.com/auth/discord" id="coach-signup-link">
-        <button class="button">Sign up with Discord</button>
-      </a>
-    </div>
+ <!-- Inside your glass-card div -->
 
-    <div class="section">
-      <h2>Step 4: Submit the Application Form</h2>
-      <p>
-        Go to your Coach dashboard and fill in the coach application form with required details.
-        After submitting, please wait while we review your application. Wait until you see the application status as approved in your dashboard.
-      </p>
-    </div>
+<div class="section">
+  <h2>Step 3: Sign Up with Discord</h2>
+  <p>Click the button below to sign up as a coach using your Discord account. This allows us to link your profile and personalize your experience.</p>
+  <a href="https://www.nevengi.com/auth/discord">
+    <button class="button">Sign up with Discord</button>
+  </a>
+</div>
 
-    <div class="section">
-      <h2>Step 5: Get Approved & Start Your Journey</h2>
-      <p> Once you are approved you will recieve the "Coach" role in our discord server & You will be able to update your profile.
-        Approval may take 1-3 days.   </p>
-      <!-- Keep this section as-is -->
-    </div>
+<div class="section">
+  <h2>Step 4: Submit the Application Form</h2>
+  <p>
+    Go to your Coach dashboard and fill in the coach application form with required details.
+    After submitting, please wait while we review your application. Wait until you see the application status as approved in your dashboard.
+  </p>
+</div>
 
-    <div class="section">
-      <h2>Step 6: Get Paid</h2>
-      <p>Get Paid Monthly into your Paypal</p>
-      <!-- Keep this section as-is -->
-    </div>
+<div class="section">
+  <h2>Step 5: Get Approved & Start Your Journey</h2>
+  <p> Once you are approved you will recieve the "Coach" role in our discord server & You will be able to update your profile.
+    Approval may take 1-3 days.   </p>
+  <!-- Keep this section as-is -->
+</div>
+
+<div class="section">
+  <h2>Step 6: Get Paid</h2>
+  <p>Get Paid Monthly into your Paypal</p>
+  <!-- Keep this section as-is -->
+</div>
+
 
     <div class="section">
       <h2>Ongoing Mentorship for Every Coach</h2>
@@ -135,7 +138,7 @@
         
       <h3>👤 What Your Mentor Will Do</h3>
       <h4>Weekly Check-ins</h4>  
-        Stay accountable with weekly progress reviews to assess how you're doing and where you can improve.
+        Stay accountable with weekly progress reviews to assess how you’re doing and where you can improve.
         
       <h4>Personalized Guidance</h4>
         Get tailored insights based on your strengths, niche, and goals.
@@ -153,24 +156,5 @@
     <p> You will given a seperate channel which you get insights and inspiration for content creation with new ideas and stratergies. this will be also personalized for each of your categories</p>
 
   </div>
-
-  <script>
-  function isPWAInstalled() {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           window.navigator.standalone ||
-           document.referrer.includes('android-app://');
-  }
-
-  function showPWAMessage() {
-    alert('For the best experience, please open the Nevengi app (PWA) and sign up with Discord from there. This ensures your authentication works correctly.');
-  }
-
-  document.getElementById('coach-signup-link').addEventListener('click', function(e) {
-    if (!isPWAInstalled() && window.matchMedia('(display-mode: browser)').matches) {
-      e.preventDefault();
-      showPWAMessage();
-    }
-  });
-  </script>
 </body>
 </html>
