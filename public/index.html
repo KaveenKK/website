@@ -674,24 +674,30 @@
       localStorage.setItem('lastVisit', Date.now().toString());
     });
 
-    document.getElementById('user-login-link').addEventListener('click', function(e) {
-      if (!isPWA && isPWAInstalled()) {
-        e.preventDefault();
-        showPWAModal();
-      } else {
-        // Store expected context
-        localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
-      }
-    });
-    document.getElementById('coach-login-link').addEventListener('click', function(e) {
-      if (!isPWA && isPWAInstalled()) {
-        e.preventDefault();
-        showPWAModal();
-      } else {
-        // Store expected context
-        localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
-      }
-    });
+    const userLoginLink = document.getElementById('user-login-link');
+    if (userLoginLink) {
+      userLoginLink.addEventListener('click', function(e) {
+        if (!isPWA && isPWAInstalled()) {
+          e.preventDefault();
+          showPWAModal();
+        } else {
+          // Store expected context
+          localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
+        }
+      });
+    }
+    const coachLoginLink = document.getElementById('coach-login-link');
+    if (coachLoginLink) {
+      coachLoginLink.addEventListener('click', function(e) {
+        if (!isPWA && isPWAInstalled()) {
+          e.preventDefault();
+          showPWAModal();
+        } else {
+          // Store expected context
+          localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
+        }
+      });
+    }
   </script>
 </body>
 </html>

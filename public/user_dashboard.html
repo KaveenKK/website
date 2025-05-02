@@ -123,12 +123,9 @@
     }
   }
   </script>
-  <header style="display:flex;align-items:center;justify-content:space-between;background:#008cba;color:white;padding:1rem 2rem;">
-    <div style="display:flex;align-items:center;gap:1rem;">
-      <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #fff;background:#eee;">
-      <span id="userName" style="font-size:1.3rem;font-weight:bold;"></span>
-    </div>
-    <button id="logoutBtn">Logout</button>
+  <header>
+    <h1>Nevengi Dashboard</h1>
+    <button id="logoutBtn" style="float:right;margin-top:-2.5rem;">Logout</button>
   </header>
 
   <!-- Login Screen -->
@@ -138,7 +135,11 @@
   </div>
 
   <!-- Main Dashboard -->
-  <div id="dashboard" class="container hidden">
+  <div id="dashboard" class="container hidden" style="display: flex; align-items: flex-start; gap: 2rem;">
+    <div id="profilePicContainer" style="min-width:140px;max-width:180px;text-align:center;">
+      <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #ccc;">
+      <div id="userName" style="margin-top:0.5rem;font-weight:bold;"></div>
+    </div>
     <div style="flex:1;">
       <nav class="dashboard-nav">
         <button data-tab="explore">Explore Coaches</button>
