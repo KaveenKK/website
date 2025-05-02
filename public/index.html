@@ -22,9 +22,10 @@
 
   <script>
     // Check if we're in a PWA context
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                 window.navigator.standalone || 
-                 document.referrer.includes('android-app://');
+    function isRunningStandalone() {
+      return (window.matchMedia('(display-mode: standalone)').matches) ||
+             (window.navigator.standalone === true);
+    }
 
     // OAuth state management
     const oauthState = {
@@ -113,7 +114,7 @@
       const authUrl = `/auth/discord/${authType}`;
       
       // For PWA, we need to handle the OAuth flow differently
-      if (isPWA || isPwaAuth) {
+      if (isPwaAuth || isRunningStandalone()) {
         console.log('PWA context detected, using alternative OAuth flow');
         
         // If this is a PWA auth attempt, wait a bit before proceeding
@@ -251,35 +252,86 @@
             'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
             'Pragma': 'no-cache',
             'Expires': '0',
-            'X-Requested-With': 'XMLHttpRequest' // Prevent caching
+            'X-Requested-With': 'XMLHttpRequest'
           },
-          credentials: 'include' // Include cookies if any
+          credentials: 'include'
         });
         
         console.log(`Validation response for ${type}:`, response.status);
+        
+        if (response.status === 401) {
+          // Token is invalid or expired
+          console.log(`Token validation failed for ${type}: Unauthorized`);
+          clearToken(type);
+          return false;
+        }
+        
         if (!response.ok) {
           console.log(`Token validation failed for ${type}:`, response.status);
-          // Clear invalid token
-          if (type === 'user') {
-            localStorage.removeItem('userToken');
-          } else {
-            localStorage.removeItem('coachToken');
-          }
+          clearToken(type);
           return false;
         }
         
         const data = await response.json();
         console.log(`Validation data for ${type}:`, data);
-        return data.valid === true;
+        
+        if (data.valid === true) {
+          // If token is about to expire, try to refresh it
+          if (data.expiresIn && data.expiresIn < 300) { // 5 minutes
+            await refreshToken(token, type);
+          }
+          return true;
+        }
+        
+        clearToken(type);
+        return false;
       } catch (error) {
         console.error(`Error validating ${type} token:`, error);
-        // Clear token on error
-        if (type === 'user') {
-          localStorage.removeItem('userToken');
-        } else {
-          localStorage.removeItem('coachToken');
+        clearToken(type);
+        return false;
+      }
+    }
+
+    // Function to refresh token
+    async function refreshToken(token, type) {
+      try {
+        const response = await fetch(`/auth/refresh-${type}`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          },
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.token) {
+            // Store the new token
+            if (type === 'user') {
+              localStorage.setItem('userToken', data.token);
+            } else {
+              localStorage.setItem('coachToken', data.token);
+            }
+            return true;
+          }
         }
         return false;
+      } catch (error) {
+        console.error(`Error refreshing ${type} token:`, error);
+        return false;
+      }
+    }
+
+    // Function to clear token
+    function clearToken(type) {
+      if (type === 'user') {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('discordId');
+      } else {
+        localStorage.removeItem('coachToken');
       }
     }
 
@@ -307,19 +359,11 @@
       // If we have a stored coach token, validate it
       if (storedCoachToken) {
         console.log('Found stored coach token, validating...');
-        try {
-          const isValid = await validateToken(storedCoachToken, 'coach');
-          if (isValid) {
-            console.log('Coach token valid, redirecting to coach dashboard...');
-            window.location.href = '/coach_dashboard.html';
-            return;
-          } else {
-            console.log('Invalid coach token, clearing...');
-            localStorage.removeItem('coachToken');
-          }
-        } catch (error) {
-          console.error('Error validating coach token:', error);
-          localStorage.removeItem('coachToken');
+        const isValid = await validateToken(storedCoachToken, 'coach');
+        if (isValid) {
+          console.log('Coach token valid, redirecting to coach dashboard...');
+          window.location.href = '/coach_dashboard.html';
+          return;
         }
       }
 
@@ -338,19 +382,11 @@
       // If we have a stored user token, validate it
       if (storedUserToken) {
         console.log('Found stored user token, validating...');
-        try {
-          const isValid = await validateToken(storedUserToken, 'user');
-          if (isValid) {
-            console.log('User token valid, redirecting to user dashboard...');
-            window.location.href = '/user_dashboard.html';
-            return;
-          } else {
-            console.log('Invalid user token, clearing...');
-            localStorage.removeItem('userToken');
-          }
-        } catch (error) {
-          console.error('Error validating user token:', error);
-          localStorage.removeItem('userToken');
+        const isValid = await validateToken(storedUserToken, 'user');
+        if (isValid) {
+          console.log('User token valid, redirecting to user dashboard...');
+          window.location.href = '/user_dashboard.html';
+          return;
         }
       }
 
