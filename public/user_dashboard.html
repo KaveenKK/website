@@ -76,6 +76,7 @@
   </script>
   <header>
     <h1>Nevengi Dashboard</h1>
+    <button id="logoutBtn" style="float:right;margin-top:-2.5rem;">Logout</button>
   </header>
 
   <!-- Login Screen -->
@@ -316,6 +317,13 @@
       loadStatus();
       loadShop();
     }
+
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('discordId');
+      localStorage.removeItem('expectedPWA');
+      window.location.href = '/';
+    });
   </script>
 </body>
 </html>

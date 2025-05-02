@@ -162,6 +162,16 @@ if (expectedPWA !== null) {
     </div>
   </section>
 
+  <div style="text-align:right;">
+    <button id="logoutBtn" style="margin:1rem;">Logout</button>
+  </div>
+  <script>
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      localStorage.removeItem('coachToken');
+      localStorage.removeItem('expectedPWA');
+      window.location.href = '/';
+    });
+  </script>
   <script src="coach_dashboard.js"></script>
 </body>
 </html>
