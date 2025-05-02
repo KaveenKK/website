@@ -41,8 +41,10 @@ self.addEventListener('fetch', event => {
       event.request.headers.get('Authorization') ||
       url.pathname.includes('discord.com') ||
       url.pathname.includes('oauth2')) {
-    // Only unregister if this is a PWA auth attempt
-    if (url.searchParams.has('pwa')) {
+    // Only unregister if this is a PWA auth attempt and we're in standalone mode
+    if (url.searchParams.has('pwa') && 
+        (self.matchMedia('(display-mode: standalone)').matches || 
+         self.navigator.standalone === true)) {
       self.registration.unregister();
     }
     return fetch(event.request);
