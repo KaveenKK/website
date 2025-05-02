@@ -41,8 +41,8 @@ self.addEventListener('fetch', event => {
       event.request.headers.get('Authorization') ||
       url.pathname.includes('discord.com') ||
       url.pathname.includes('oauth2')) {
-    // Unregister the service worker during OAuth flow
-    if (url.searchParams.has('code')) {
+    // Only unregister if this is a PWA auth attempt
+    if (url.searchParams.has('pwa')) {
       self.registration.unregister();
     }
     return fetch(event.request);
