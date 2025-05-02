@@ -135,94 +135,100 @@
   </div>
 
   <!-- Main Dashboard -->
-  <div id="dashboard" class="container hidden">
-    <nav class="dashboard-nav">
-      <button data-tab="explore">Explore Coaches</button>
-      <button data-tab="rewards">Rewards Shop</button>
-      <button data-tab="leaderboard">Leaderboard</button>
-      <button data-tab="status">My XP & Maples</button>
-      <button data-tab="plans">Pricing Plans</button>
-      <a href="model.html" class="btn">Go to Page 2</a>
-    </nav>
+  <div id="dashboard" class="container hidden" style="display: flex; align-items: flex-start; gap: 2rem;">
+    <div id="profilePicContainer" style="min-width:140px;max-width:180px;text-align:center;">
+      <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" style="width:120px;height:120px;border-radius:50%;object-fit:cover;border:3px solid #ccc;">
+      <div id="userName" style="margin-top:0.5rem;font-weight:bold;"></div>
+    </div>
+    <div style="flex:1;">
+      <nav class="dashboard-nav">
+        <button data-tab="explore">Explore Coaches</button>
+        <button data-tab="rewards">Rewards Shop</button>
+        <button data-tab="leaderboard">Leaderboard</button>
+        <button data-tab="status">My XP & Maples</button>
+        <button data-tab="plans">Pricing Plans</button>
+        <a href="model.html" class="btn">Go to Page 2</a>
+      </nav>
 
-    <!-- Explore Coaches -->
-    <section id="explore">
-      <h2>Explore Coaches</h2>
-      <ul id="coachList"></ul>
-    </section>
+      <!-- Explore Coaches -->
+      <section id="explore">
+        <h2>Explore Coaches</h2>
+        <ul id="coachList"></ul>
+      </section>
 
-    <!-- Rewards Shop (Shopify) -->
-    <section id="rewards">
-      <h2>Rewards Shop</h2>
-      <div id="shopify-collection"></div>
-    </section>
+      <!-- Rewards Shop (Shopify) -->
+      <section id="rewards">
+        <h2>Rewards Shop</h2>
+        <div id="shopify-collection"></div>
+      </section>
 
-    <!-- Leaderboard -->
-    <section id="leaderboard">
-      <h2>Leaderboard</h2>
-      <ul id="leaderboardList"></ul>
-    </section>
+      <!-- Leaderboard -->
+      <section id="leaderboard">
+        <h2>Leaderboard</h2>
+        <ul id="leaderboardList"></ul>
+      </section>
 
-    <!-- XP & Maples -->
-    <section id="status">
-      <h2>My Status</h2>
-      <div class="status-box">
-        <p><strong>XP:</strong> <span id="xpAmount">0</span></p>
-        <p><strong>Maples:</strong> <span id="mapleAmount">0</span></p>
-      </div>
-    </section>
-
-    <!-- Pricing Plans (PayPal Subscriptions) -->
-    <section id="plans">
-      <h2>Pricing Plans</h2>
-      <div class="pricing-options">
-        <div class="pricing-option">
-          <h3>I'm Broke</h3>
-          <p>
-            <span class="price-usd" data-usd="13.99">$13.99</span>
-            <span class="local-price"></span>
-            / month
-          </p>
-          <ul>
-            <li>Basic resources</li>
-            <li>Community Access</li>
-            <li>Check-ins every 2 weeks</li>
-          </ul>
-          <div id="paypal-button-container-1"></div>
+      <!-- XP & Maples -->
+      <section id="status">
+        <h2>My Status</h2>
+        <div class="status-box">
+          <p><strong>XP:</strong> <span id="xpAmount">0</span></p>
+          <p><strong>Maples:</strong> <span id="mapleAmount">0</span></p>
         </div>
-        <div class="pricing-option">
-          <h3>Let's Go</h3>
-          <p>
-            <span class="price-usd" data-usd="23.99">$23.99</span>
-            <span class="local-price"></span>
-            / month
-          </p>
-          <span class="recommended-label">Recommended</span>
-          <ul>
-            <li>Most resources</li>
-            <li>Premium Community</li>
-            <li>Weekly Check-ins</li>
-          </ul>
-          <div id="paypal-button-container-2"></div>
+      </section>
+
+      <!-- Pricing Plans (PayPal Subscriptions) -->
+      <section id="plans">
+        <h2>Pricing Plans</h2>
+        <div class="pricing-options">
+          <div class="pricing-option">
+            <h3>I'm Broke</h3>
+            <p>
+              <span class="price-usd" data-usd="13.99">$13.99</span>
+              <span class="local-price"></span>
+              / month
+            </p>
+            <ul>
+              <li>Basic resources</li>
+              <li>Community Access</li>
+              <li>Check-ins every 2 weeks</li>
+            </ul>
+            <div id="paypal-button-container-1"></div>
+          </div>
+          <div class="pricing-option">
+            <h3>Let's Go</h3>
+            <p>
+              <span class="price-usd" data-usd="23.99">$23.99</span>
+              <span class="local-price"></span>
+              / month
+            </p>
+            <span class="recommended-label">Recommended</span>
+            <ul>
+              <li>Most resources</li>
+              <li>Premium Community</li>
+              <li>Weekly Check-ins</li>
+            </ul>
+            <div id="paypal-button-container-2"></div>
+          </div>
+          <div class="pricing-option">
+            <h3>I'm Serious</h3>
+            <p>
+              <span class="price-usd" data-usd="37.99">$37.99</span>
+              <span class="local-price"></span>
+              / month
+            </p>
+            <span class="recommended-label">VIP</span>
+            <ul>
+              <li>All resources</li>
+              <li>VIP Community</li>
+              <li>2× Weekly Check-ins</li>
+              <li>Priority Support</li>
+            </ul>
+            <div id="paypal-button-container-3"></div>
+          </div>
         </div>
-        <div class="pricing-option">
-          <h3>I'm Serious</h3>
-          <p>
-            <span class="price-usd" data-usd="37.99">$37.99</span>
-            <span class="local-price"></span>
-            / month
-          </p>
-          <span class="recommended-label">VIP</span>
-          <ul>
-            <li>All resources</li>
-            <li>VIP Community</li>
-            <li>2× Weekly Check-ins</li>
-            <li>Priority Support</li>
-          </ul>
-          <div id="paypal-button-container-3"></div>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 
   <!-- PayPal SDK -->
@@ -373,6 +379,21 @@
         const conv = usd * (RATES[userCcy]||1);
         localEl.textContent = ` (${new Intl.NumberFormat(locale,{style:'currency',currency:userCcy}).format(conv)})`;
       });
+
+      // Load user profile picture and name
+      async function loadUserProfilePic() {
+        const headers = { Authorization: 'Bearer ' + token };
+        const res = await fetch(`${API_BASE}/api/user-profile`, { headers });
+        if (!res.ok) return;
+        const user = await res.json();
+        let avatarUrl = 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        if (user.avatar && user.discord_id) {
+          avatarUrl = `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png`;
+        }
+        document.getElementById('userProfilePic').src = avatarUrl;
+        document.getElementById('userName').textContent = user.username || '';
+      }
+      if (token) loadUserProfilePic();
 
       // Initialize all data
       if (token) {

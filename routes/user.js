@@ -235,4 +235,19 @@ router.get('/status', authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * GET /api/user-profile
+ * Returns the current user's profile (for dashboard)
+ */
+router.get('/user-profile', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('discord_id username avatar email xp maples');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    res.json(user);
+  } catch (err) {
+    console.error('❌ User profile error:', err);
+    res.status(500).json({ error: 'Failed to fetch user profile' });
+  }
+});
+
 export default router;

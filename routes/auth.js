@@ -65,11 +65,15 @@ router.get("/discord/user/callback", async (req, res) => {
         discord_id: discordUser.id,
         email: discordUser.email,
         username: discordUser.username,
+        avatar: discordUser.avatar || null,
         identity_completed: false,
         xp: 0,
         maples: 0,
         role: 'user'
       });
+    } else if (user.avatar !== discordUser.avatar) {
+      user.avatar = discordUser.avatar || null;
+      await user.save();
     }
 
     // Only issue a JWT once they've completed identity check

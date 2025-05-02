@@ -42,7 +42,9 @@ const userSchema = new mongoose.Schema({
     coach_id:    { type: mongoose.Schema.Types.ObjectId, ref: 'Coach', required: true },
     coach_name:  { type: String,                 required: true },
     subscribed_at: { type: Date,                 default: Date.now }
-  }]
+  }],
+
+  avatar: { type: String, default: null },
 }, {
   timestamps: true
 });
