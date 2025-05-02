@@ -238,151 +238,153 @@
 
   <!-- Dashboard Logic -->
   <script>
-    const API_BASE = '';
+    document.addEventListener('DOMContentLoaded', function() {
+      const API_BASE = '';
 
-    // Login flow
-    document.getElementById('loginBtn').addEventListener('click', () => {
-      window.location.href = '/auth/discord/user';
-    });
-
-    // Handle OAuth callback
-    const params = new URLSearchParams(window.location.search);
-    if (params.has('token')) {
-      localStorage.setItem('userToken', params.get('token'));
-      localStorage.setItem('discordId', params.get('discord_id'));
-      history.replaceState({}, '', window.location.pathname);
-    }
-
-    const token = localStorage.getItem('userToken');
-
-    // Show dashboard if logged in
-    if (token) {
-      document.getElementById('loginScreen').classList.add('hidden');
-      document.getElementById('dashboard').classList.remove('hidden');
-    }
-
-    // Tab navigation handler for both navs
-    function handleTabClick(tab) {
-      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-      document.getElementById(tab).classList.add('active');
-      // Set active state on both navs
-      document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => {
-        if (btn.dataset.tab === tab) {
-          btn.classList.add('active');
-        } else {
-          btn.classList.remove('active');
-        }
+      // Login flow
+      document.getElementById('loginBtn').addEventListener('click', () => {
+        window.location.href = '/auth/discord/user';
       });
-    }
 
-    // Attach handler to both navs
-    document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => {
-      btn.addEventListener('click', () => handleTabClick(btn.dataset.tab));
-    });
-
-    // Set initial active tab
-    handleTabClick('explore');
-
-    // Helper: render one coach, with optional pinned styling
-    function renderCoachItem(coach, pinned = false) {
-      return `
-        <li class="coach-item${pinned ? ' pinned' : ''}">
-          <div class="coach-info">
-            ${pinned ? '<strong style="color:#008cba;">[Invited Coach]</strong> ' : ''}
-            <strong>${coach.name}</strong> – ${coach.specialties.join(', ')}
-          </div>
-          <div class="coach-action">
-            <button onclick="subscribe('${coach._id}')">Subscribe</button>
-            <button onclick="rate('${coach._id}')">Rate</button>
-          </div>
-        </li>
-      `;
-    }
-
-    // Load Explore Coaches with pinned-invite logic
-    async function loadCoaches() {
-      const headers = { Authorization: 'Bearer ' + token };
-
-      // 1) Get user profile
-      const userRes = await fetch(`${API_BASE}/api/user-profile`, { headers });
-      const user = await userRes.json();
-
-      // 2) If invited, fetch that coach
-      let pinnedCoach = null;
-      if (user.referred_coach_id) {
-        const coachRes = await fetch(`${API_BASE}/api/coach/${user.referred_coach_id}`, { headers });
-        if (coachRes.ok) pinnedCoach = await coachRes.json();
+      // Handle OAuth callback
+      const params = new URLSearchParams(window.location.search);
+      if (params.has('token')) {
+        localStorage.setItem('userToken', params.get('token'));
+        localStorage.setItem('discordId', params.get('discord_id'));
+        history.replaceState({}, '', window.location.pathname);
       }
 
-      // 3) Fetch all coaches
-      const allRes = await fetch(`${API_BASE}/api/coaches`, { headers });
-      const allCoaches = allRes.ok ? await allRes.json() : [];
+      const token = localStorage.getItem('userToken');
 
-      // 4) Build list: pinned first, then the rest
-      let html = '';
-      if (pinnedCoach) html += renderCoachItem(pinnedCoach, true);
-      allCoaches.forEach(c => {
-        if (!pinnedCoach || c._id !== pinnedCoach._id) {
-          html += renderCoachItem(c);
-        }
+      // Show dashboard if logged in
+      if (token) {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+      }
+
+      // Tab navigation handler for both navs
+      function handleTabClick(tab) {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(tab).classList.add('active');
+        // Set active state on both navs
+        document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => {
+          if (btn.dataset.tab === tab) {
+            btn.classList.add('active');
+          } else {
+            btn.classList.remove('active');
+          }
+        });
+      }
+
+      // Attach handler to both navs
+      document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => {
+        btn.addEventListener('click', () => handleTabClick(btn.dataset.tab));
       });
 
-      document.getElementById('coachList').innerHTML = html;
-    }
+      // Set initial active tab
+      handleTabClick('explore');
 
-    // Other loaders (leaderboard, status, shop, etc.)
-    async function loadLeaderboard() {
-      const res = await fetch(`${API_BASE}/api/leaderboard`, { headers: { Authorization: 'Bearer ' + token } });
-      const data = await res.json();
-      document.getElementById('leaderboardList').innerHTML = data.map(u => `<li>${u.username} <span>${u.xp}</span></li>`).join('');
-    }
+      // Helper: render one coach, with optional pinned styling
+      function renderCoachItem(coach, pinned = false) {
+        return `
+          <li class="coach-item${pinned ? ' pinned' : ''}">
+            <div class="coach-info">
+              ${pinned ? '<strong style="color:#008cba;">[Invited Coach]</strong> ' : ''}
+              <strong>${coach.name}</strong> – ${coach.specialties.join(', ')}
+            </div>
+            <div class="coach-action">
+              <button onclick="subscribe('${coach._id}')">Subscribe</button>
+              <button onclick="rate('${coach._id}')">Rate</button>
+            </div>
+          </li>
+        `;
+      }
 
-    async function loadStatus() {
-      const res = await fetch(`${API_BASE}/api/status`, { headers: { Authorization: 'Bearer ' + token } });
-      const st = await res.json();
-      document.getElementById('xpAmount').textContent = st.xp;
-      document.getElementById('mapleAmount').textContent = st.maples;
-    }
+      // Load Explore Coaches with pinned-invite logic
+      async function loadCoaches() {
+        const headers = { Authorization: 'Bearer ' + token };
 
-    async function loadShop() {
-      document.getElementById('shopify-collection').textContent = 'Shop items will appear here';
-    }
+        // 1) Get user profile
+        const userRes = await fetch(`${API_BASE}/api/user-profile`, { headers });
+        const user = await userRes.json();
 
-    function subscribe(coachId) {
-      alert('Subscribed to ' + coachId);
-    }
-    function rate(coachId) {
-      const rating = prompt('Rate out of 5');
-      if (!rating) return;
-      alert('Rated ' + coachId + ' as ' + rating);
-    }
+        // 2) If invited, fetch that coach
+        let pinnedCoach = null;
+        if (user.referred_coach_id) {
+          const coachRes = await fetch(`${API_BASE}/api/coach/${user.referred_coach_id}`, { headers });
+          if (coachRes.ok) pinnedCoach = await coachRes.json();
+        }
 
-    // Pricing plan currency conversion
-    const RATES = { USD:1, EUR:0.93, GBP:0.80, CAD:1.36 };
-    const locale = navigator.language || 'en-US';
-    const userCcy = new Intl.NumberFormat(locale,{style:'currency',currency:'USD'}).resolvedOptions().currency;
-    document.querySelectorAll('.pricing-option').forEach(opt => {
-      const usdEl = opt.querySelector('.price-usd');
-      const localEl = opt.querySelector('.local-price');
-      const usd = parseFloat(usdEl.dataset.usd);
-      if (!usd || userCcy==='USD') return;
-      const conv = usd * (RATES[userCcy]||1);
-      localEl.textContent = ` (${new Intl.NumberFormat(locale,{style:'currency',currency:userCcy}).format(conv)})`;
-    });
+        // 3) Fetch all coaches
+        const allRes = await fetch(`${API_BASE}/api/coaches`, { headers });
+        const allCoaches = allRes.ok ? await allRes.json() : [];
 
-    // Initialize all data
-    if (token) {
-      loadCoaches();
-      loadLeaderboard();
-      loadStatus();
-      loadShop();
-    }
+        // 4) Build list: pinned first, then the rest
+        let html = '';
+        if (pinnedCoach) html += renderCoachItem(pinnedCoach, true);
+        allCoaches.forEach(c => {
+          if (!pinnedCoach || c._id !== pinnedCoach._id) {
+            html += renderCoachItem(c);
+          }
+        });
 
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('discordId');
-      localStorage.removeItem('expectedPWA');
-      window.location.href = '/';
+        document.getElementById('coachList').innerHTML = html;
+      }
+
+      // Other loaders (leaderboard, status, shop, etc.)
+      async function loadLeaderboard() {
+        const res = await fetch(`${API_BASE}/api/leaderboard`, { headers: { Authorization: 'Bearer ' + token } });
+        const data = await res.json();
+        document.getElementById('leaderboardList').innerHTML = data.map(u => `<li>${u.username} <span>${u.xp}</span></li>`).join('');
+      }
+
+      async function loadStatus() {
+        const res = await fetch(`${API_BASE}/api/status`, { headers: { Authorization: 'Bearer ' + token } });
+        const st = await res.json();
+        document.getElementById('xpAmount').textContent = st.xp;
+        document.getElementById('mapleAmount').textContent = st.maples;
+      }
+
+      async function loadShop() {
+        document.getElementById('shopify-collection').textContent = 'Shop items will appear here';
+      }
+
+      window.subscribe = function(coachId) {
+        alert('Subscribed to ' + coachId);
+      }
+      window.rate = function(coachId) {
+        const rating = prompt('Rate out of 5');
+        if (!rating) return;
+        alert('Rated ' + coachId + ' as ' + rating);
+      }
+
+      // Pricing plan currency conversion
+      const RATES = { USD:1, EUR:0.93, GBP:0.80, CAD:1.36 };
+      const locale = navigator.language || 'en-US';
+      const userCcy = new Intl.NumberFormat(locale,{style:'currency',currency:'USD'}).resolvedOptions().currency;
+      document.querySelectorAll('.pricing-option').forEach(opt => {
+        const usdEl = opt.querySelector('.price-usd');
+        const localEl = opt.querySelector('.local-price');
+        const usd = parseFloat(usdEl.dataset.usd);
+        if (!usd || userCcy==='USD') return;
+        const conv = usd * (RATES[userCcy]||1);
+        localEl.textContent = ` (${new Intl.NumberFormat(locale,{style:'currency',currency:userCcy}).format(conv)})`;
+      });
+
+      // Initialize all data
+      if (token) {
+        loadCoaches();
+        loadLeaderboard();
+        loadStatus();
+        loadShop();
+      }
+
+      document.getElementById('logoutBtn').addEventListener('click', function() {
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('discordId');
+        localStorage.removeItem('expectedPWA');
+        window.location.href = '/';
+      });
     });
   </script>
 
