@@ -76,6 +76,7 @@ header {
   width: 100%;
   margin: 1rem 0;
   padding: 0 1rem;
+  position: relative;
 }
 header .glass {
   display: flex;
@@ -125,6 +126,9 @@ nav a:hover {
 }
 .login-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 
 /* Login menu */
@@ -347,6 +351,11 @@ footer {
 @media (max-width: 768px) {
   header {
     margin: 0.5rem 0;
+    padding: 0 0.5rem;
+  }
+  
+  header .glass {
+    padding: 0.75rem;
   }
   
   .logo-text {
@@ -360,6 +369,13 @@ footer {
   .login-wrapper {
     position: relative;
     margin-left: auto;
+    z-index: 1000;
+  }
+  
+  #login-menu {
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
   }
   
   .hero {
@@ -408,11 +424,25 @@ footer {
 
 @media (max-width: 480px) {
   header {
+    padding: 0.25rem;
+  }
+  
+  header .glass {
     padding: 0.5rem;
   }
   
   .logo-text {
     font-size: 1.25rem;
+  }
+  
+  .login-wrapper {
+    margin-left: auto;
+  }
+  
+  #login-menu {
+    right: 0;
+    top: 100%;
+    margin-top: 0.5rem;
   }
   
   .hero-text h1 {
@@ -430,9 +460,5 @@ footer {
   
   .card-scroll {
     width: 140px;
-  }
-  
-  #login-menu {
-    right: -1rem;
   }
 }
