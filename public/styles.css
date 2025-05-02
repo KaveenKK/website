@@ -158,21 +158,17 @@ nav a:hover {
 /* Hero */
 .hero {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 1rem;
+  justify-content: space-between;
+  padding: 2rem;
   max-width: 1200px;
   margin: 0 auto;
   position: relative;
   z-index: 1;
-  width: 100%;
 }
 .hero.glass {
-  padding: 1.5rem;
+  padding: 2rem;
   box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  margin: 1rem;
-  width: calc(100% - 2rem);
 }
 .hero-text,
 .hero-img {
@@ -183,16 +179,14 @@ nav a:hover {
   display: none;
 }
 .hero-text h1 {
-  font-size: 2rem;
+  font-size: 3rem;
   margin-bottom: 0.5rem;
   line-height: 1.2;
   letter-spacing: 1px;
-  text-align: center;
 }
 .hero-text p {
-  font-size: 1rem;
+  font-size: 1.125rem;
   margin-bottom: 1.5rem;
-  text-align: center;
 }
 .btn-primary {
   background: #80bdf0;
@@ -202,10 +196,9 @@ nav a:hover {
   font-weight: bold;
 }
 .hero-img img {
-  max-width: 100%;
+  max-width: 60%;
   height: auto;
   display: block;
-  margin: 1rem auto;
 }
 
 /* Scrollable cards */
@@ -365,13 +358,14 @@ footer {
   }
   
   .login-wrapper {
-    position: fixed;
-    right: 1rem;
-    top: 1rem;
+    position: relative;
+    margin-left: auto;
   }
   
   .hero {
+    flex-direction: column;
     padding: 1rem;
+    text-align: center;
   }
   
   .hero-text h1 {
@@ -380,6 +374,11 @@ footer {
   
   .hero-text p {
     font-size: 0.9rem;
+  }
+  
+  .hero-img img {
+    max-width: 100%;
+    margin-top: 1rem;
   }
   
   .scroll-container {
@@ -408,6 +407,14 @@ footer {
 }
 
 @media (max-width: 480px) {
+  header {
+    padding: 0.5rem;
+  }
+  
+  .logo-text {
+    font-size: 1.25rem;
+  }
+  
   .hero-text h1 {
     font-size: 1.5rem;
   }
@@ -423,5 +430,9 @@ footer {
   
   .card-scroll {
     width: 140px;
+  }
+  
+  #login-menu {
+    right: -1rem;
   }
 }
