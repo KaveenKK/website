@@ -127,75 +127,62 @@
       const authUrl = `/auth/discord/${authType}`;
       
       // For PWA, we need to handle the OAuth flow differently
-      if (isPwaAuth || isRunningStandalone()) {
-        console.log('PWA context detected, using alternative OAuth flow');
+      if (isPwaAuth) {
+        console.log('PWA auth flow detected');
         
-        // If this is a PWA auth attempt, wait a bit before proceeding
-        if (isPwaAuth) {
-          setTimeout(async () => {
-            // Unregister service worker during OAuth
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.getRegistrations().then(registrations => {
-                registrations.forEach(registration => registration.unregister());
-              });
-            }
-            
-            // Make the token request directly
-            fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
-              method: 'GET',
-              headers: {
-                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
-              }
-            })
-            .then(response => {
-              if (!response.ok) {
-                throw new Error('Auth request failed');
-              }
-              return response.json();
-            })
-            .then(data => {
-              if (data.token) {
-                // Store the token and redirect
-                if (authType === 'user') {
-                  localStorage.setItem('userToken', data.token);
-                  if (data.discord_id) {
-                    localStorage.setItem('discordId', data.discord_id);
-                  }
-                  window.location.href = '/user_dashboard.html';
-                } else {
-                  localStorage.setItem('coachToken', data.token);
-                  window.location.href = '/coach_dashboard.html';
-                }
-              } else {
-                throw new Error('No token received');
-              }
-            })
-            .catch(error => {
-              console.error('Auth error:', error);
-              // Clear any partial state
-              localStorage.removeItem('userToken');
-              localStorage.removeItem('coachToken');
-              localStorage.removeItem('discordId');
-              // Redirect to home page
-              window.location.href = '/';
-            })
-            .finally(() => {
-              oauthState.processing = false;
+        setTimeout(() => {
+          // Unregister service worker during OAuth
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+              registrations.forEach(registration => registration.unregister());
             });
-          }, 2000); // Wait 2 seconds before making the request
-        } else {
-          // Initial PWA redirect
-          window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
-        }
-        return;
-      }
-      
-      // Regular web flow - but check if PWA is installed
-      if (await isPWAInstalled()) {
-        console.log('PWA is installed, using PWA auth flow');
-        window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
+          }
+          
+          // Make the token request directly
+          fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
+            method: 'GET',
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Auth request failed');
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.token) {
+              // Store the token and redirect
+              if (authType === 'user') {
+                localStorage.setItem('userToken', data.token);
+                if (data.discord_id) {
+                  localStorage.setItem('discordId', data.discord_id);
+                }
+                window.location.href = '/user_dashboard.html';
+              } else {
+                localStorage.setItem('coachToken', data.token);
+                window.location.href = '/coach_dashboard.html';
+              }
+            } else {
+              throw new Error('No token received');
+            }
+          })
+          .catch(error => {
+            console.error('Auth error:', error);
+            // Clear any partial state
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('coachToken');
+            localStorage.removeItem('discordId');
+            // Redirect to home page
+            window.location.href = '/';
+          })
+          .finally(() => {
+            oauthState.processing = false;
+          });
+        }, 2000); // Wait 2 seconds before making the request
         return;
       }
       
