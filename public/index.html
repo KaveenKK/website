@@ -388,13 +388,13 @@
           <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer">
             <button>NRC</button>
           </a>
-          <a href="/auth/discord/user">
+          <a href="/auth/discord/user" id="user-login-link">
             <button>
               <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; margin-right: 8px;">
               User Login
             </button>
           </a>
-          <a href="/auth/discord">
+          <a href="/auth/discord" id="coach-login-link">
             <button>
               <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; margin-right: 8px;">
               Coach Login
@@ -722,6 +722,30 @@
     window.addEventListener('beforeunload', () => {
       // Force a sync write to localStorage
       localStorage.setItem('lastVisit', Date.now().toString());
+    });
+
+    // PWA-aware Discord login/signup
+    function isPWAInstalled() {
+      return window.matchMedia('(display-mode: standalone)').matches ||
+             window.navigator.standalone ||
+             document.referrer.includes('android-app://');
+    }
+
+    function showPWAMessage() {
+      alert('For the best experience, please open the Nevengi app (PWA) and log in with Discord from there. This ensures your authentication works correctly.');
+    }
+
+    document.getElementById('user-login-link').addEventListener('click', function(e) {
+      if (!isPWAInstalled() && window.matchMedia('(display-mode: browser)').matches) {
+        e.preventDefault();
+        showPWAMessage();
+      }
+    });
+    document.getElementById('coach-login-link').addEventListener('click', function(e) {
+      if (!isPWAInstalled() && window.matchMedia('(display-mode: browser)').matches) {
+        e.preventDefault();
+        showPWAMessage();
+      }
     });
   </script>
 </body>
