@@ -16,9 +16,9 @@
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Unlock the All-Rounder - Your personal development platform" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="apple-touch-icon" href="images/glowinglogonowback.webp" />
+  <link rel="apple-touch-icon" href="/images/glowinglogonowback.webp" />
   <title>Nevengi</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="/app/styles.css">
 
   <script>
     // Check if we're in a PWA context
@@ -161,10 +161,10 @@
                 if (data.discord_id) {
                   localStorage.setItem('discordId', data.discord_id);
                 }
-                window.location.href = '/user_dashboard.html';
+                window.location.href = '/app/user_dashboard.html';
               } else {
                 localStorage.setItem('coachToken', data.token);
-                window.location.href = '/coach_dashboard.html';
+                window.location.href = '/app/coach_dashboard.html';
               }
             } else {
               throw new Error('No token received');
@@ -177,7 +177,7 @@
             localStorage.removeItem('coachToken');
             localStorage.removeItem('discordId');
             // Redirect to home page
-            window.location.href = '/';
+            window.location.href = '/app/';
           })
           .finally(() => {
             oauthState.processing = false;
@@ -209,10 +209,10 @@
             if (data.discord_id) {
               localStorage.setItem('discordId', data.discord_id);
             }
-            window.location.href = '/user_dashboard.html';
+            window.location.href = '/app/user_dashboard.html';
           } else {
             localStorage.setItem('coachToken', data.token);
-            window.location.href = '/coach_dashboard.html';
+            window.location.href = '/app/coach_dashboard.html';
           }
         } else {
           throw new Error('No token received');
@@ -225,7 +225,7 @@
         localStorage.removeItem('coachToken');
         localStorage.removeItem('discordId');
         // Redirect to home page
-        window.location.href = '/';
+        window.location.href = '/app/';
       })
       .finally(() => {
         oauthState.processing = false;
@@ -359,7 +359,7 @@
         localStorage.setItem('coachToken', urlCoachToken);
         localStorage.removeItem('userToken'); // Clear any user token
         clearUrlParams();
-        window.location.href = '/coach_dashboard.html';
+        window.location.href = '/app/coach_dashboard.html';
         return;
       }
 
@@ -369,7 +369,7 @@
         const isValid = await validateToken(storedCoachToken, 'coach');
         if (isValid) {
           console.log('Coach token valid, redirecting to coach dashboard...');
-          window.location.href = '/coach_dashboard.html';
+          window.location.href = '/app/coach_dashboard.html';
           return;
         }
       }
@@ -382,7 +382,7 @@
           localStorage.setItem('discordId', urlDiscordId);
         }
         clearUrlParams();
-        window.location.href = '/user_dashboard.html';
+        window.location.href = '/app/user_dashboard.html';
         return;
       }
 
@@ -392,7 +392,7 @@
         const isValid = await validateToken(storedUserToken, 'user');
         if (isValid) {
           console.log('User token valid, redirecting to user dashboard...');
-          window.location.href = '/user_dashboard.html';
+          window.location.href = '/app/user_dashboard.html';
           return;
         }
       }
@@ -418,8 +418,8 @@
   <header>
     <div class="glass">
       <div class="logo">
-        <a href="/" class="logo-link">
-          <img src="images/glowinglogonowback.webp" alt="Nevengi" class="logo-img" />
+        <a href="/app/" class="logo-link">
+          <img src="/images/glowinglogonowback.webp" alt="Nevengi" class="logo-img" />
           <span class="logo-text">Nevengi™</span>
         </a>
       </div>
@@ -432,15 +432,14 @@
           <a href="#" id="login-link">Login</a>
           <div id="login-menu">
             <button onclick="location.href='/auth/discord/user'">
-                <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+                <img src="/images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
                 User Login
             </button>
               
             <button onclick="location.href='/auth/discord'">
-                <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+                <img src="/images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
                 Coach Login
             </button>
-              
           </div>
         </div>
       </nav>
@@ -450,32 +449,32 @@
     <!-- Scrollable Feature Cards -->
   <section class="scroll-container">
     <div class="card-scroll">
-      <img src="images/coach tranforamtion.png" alt="feature 1" />
+      <img src="/images/coach tranforamtion.png" alt="feature 1" />
       <p>Become a coach for your own followers</p>
     </div>
 
     <div class="card-scroll">
-      <img src="images/18plus.webp" alt="feature 1" />
+      <img src="/images/18plus.webp" alt="feature 1" />
       <p>Are You 18 or Older ?</p>
     </div>
     <div class="card-scroll">
-      <img src="images/followers.webp" alt="Feature 2" />
+      <img src="/images/followers.webp" alt="Feature 2" />
       <p>Do You have more than 5k followers in any of your social media accounts ?</p>
     </div>
     <div class="card-scroll">
-      <img src="images/niche.webp" alt="Feature 3" />
+      <img src="/images/niche.webp" alt="Feature 3" />
       <p>Do you make content for a specific niche ?</p>
     </div>
     <div class="card-scroll">
-      <img src="images/accountability.webp" alt="Feature 4" />
+      <img src="/images/accountability.webp" alt="Feature 4" />
       <p>Being Accountable</p>
     </div>
     <div class="card-scroll">
-      <img src="images/advice.webp" alt="Feature 5" />
+      <img src="/images/advice.webp" alt="Feature 5" />
       <p>Giving Advice</p>
     </div>
     <div class="card-scroll">
-      <img src="images/socialmediacontent.webp" alt="Feature 6" />
+      <img src="/images/socialmediacontent.webp" alt="Feature 6" />
       <p>Create content to get your followers to Nevengi</p>
     </div>
   </section>
@@ -493,11 +492,13 @@
       <button class="btn-primary" id="install-btn" style="margin-top: 10px;">Install App</button>
     </div>
     <div class="hero-img" id="hero-img">
-      <img src="images/mascot.webp" alt="Nevengi Character" />
+      <img src="/images/mascot.webp" alt="Nevengi Character" />
     </div>
 
     <!-- Embedded Questionnaire -->
-    <div id="questionnaire" class="glass"></div>
+    <div id="questionnaire" class="hidden">
+      <!-- ... existing questionnaire code ... -->
+    </div>
   </section>
 
   <!-- =========  FAQ  ===================================================== -->
@@ -723,19 +724,8 @@
         alert('App is already installed or not available for installation');
         return;
       }
-      // Show the install prompt
-      deferredPrompt.prompt();
-      // Wait for the user to respond to the prompt
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
-      } else {
-        console.log('User dismissed the install prompt');
-      }
-      // Clear the saved prompt since it can't be used again
-      deferredPrompt = null;
-      // Hide the install button
-      installBtn.style.display = 'none';
+      // Redirect to /app/ first
+      window.location.href = '/app/';
     });
 
     window.addEventListener('appinstalled', (evt) => {

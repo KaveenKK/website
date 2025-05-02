@@ -1,8 +1,8 @@
-const CACHE_NAME = 'nevengi-v1';
+const CACHE_NAME = 'nevengi-v2';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/styles.css',
+  '/app/',
+  '/app/index.html',
+  '/app/styles.css',
   '/manifest.json',
   '/images/glowinglogonowback.webp',
   '/images/mascot.webp',
@@ -40,7 +40,8 @@ self.addEventListener('fetch', event => {
       url.searchParams.has('state') ||
       event.request.headers.get('Authorization') ||
       url.pathname.includes('discord.com') ||
-      url.pathname.includes('oauth2')) {
+      url.pathname.includes('oauth2') ||
+      !url.pathname.startsWith('/app/')) {  // Add check for non-app routes
     // Only unregister if this is a PWA auth attempt and we're in standalone mode
     if (url.searchParams.has('pwa') && 
         (self.matchMedia('(display-mode: standalone)').matches || 
