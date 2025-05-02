@@ -381,28 +381,40 @@
         </a>
       </div>
       <nav>
-        <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer">
-          <button>NRC</button>
-        </a>
-        
-        <div class="login-wrapper">
-          <a href="#" id="login-link">Login</a>
-          <div id="login-menu">
-            <button onclick="location.href='/auth/discord/user'">
-                <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                User Login
-            </button>
-              
-            <button onclick="location.href='/auth/discord'">
-                <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                Coach Login
-            </button>
-              
-          </div>
+        <button class="hamburger-menu" id="hamburger-menu">☰</button>
+        <div class="menu" id="menu">
+          <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer">
+            <button>NRC</button>
+          </a>
+          <button onclick="location.href='/auth/discord/user'">
+            <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+            User Login
+          </button>
+          <button onclick="location.href='/auth/discord'">
+            <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+            Coach Login
+          </button>
         </div>
       </nav>
     </div>
   </header>
+
+  <script>
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const menu = document.getElementById('menu');
+
+    hamburgerMenu.addEventListener('click', () => {
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        menu.style.display = 'block';
+      } else {
+        menu.style.display = 'none';
+      }
+    });
+  </script>
 
     <!-- Scrollable Feature Cards -->
   <section class="scroll-container">
