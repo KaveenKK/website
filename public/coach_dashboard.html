@@ -6,6 +6,27 @@
   <link rel="stylesheet" href="coach_dashboard.css">
 </head>
 <body>
+<script>
+function isPWA() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+         window.navigator.standalone ||
+         document.referrer.includes('android-app://');
+}
+const expectedPWA = localStorage.getItem('expectedPWA');
+if (expectedPWA !== null) {
+  const inPWA = isPWA();
+  if ((expectedPWA === 'true' && !inPWA) || (expectedPWA === 'false' && inPWA)) {
+    document.body.innerHTML = `
+      <div style=\"position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);color:#fff;display:flex;align-items:center;justify-content:center;z-index:9999;\">
+        <div style=\"background:#222;padding:2rem;border-radius:1rem;text-align:center;max-width:90vw;\">
+          <h2>Wrong Context</h2>
+          <p>Please open the Nevengi app (PWA) to continue if you started there, or use the browser if you started there.</p>
+        </div>
+      </div>
+    `;
+  }
+}
+</script>
   <!-- Tabs -->
   <div class="tabs">
     <div class="tab active" data-tab="dashboard">Dashboard</div>
@@ -132,7 +153,7 @@
       </div>
       <!-- Other slides unchanged… -->
       <div class="course-slide">
-        <p><strong>Final Step:</strong> Click below to confirm you’ve completed and understood the starter course &amp; terms.</p>
+        <p><strong>Final Step:</strong> Click below to confirm you've completed and understood the starter course &amp; terms.</p>
         <button id="completeCourseBtn">✅ Complete Course</button>
       </div>
     </div>

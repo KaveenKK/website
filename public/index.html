@@ -723,6 +723,25 @@
       // Force a sync write to localStorage
       localStorage.setItem('lastVisit', Date.now().toString());
     });
+
+    document.getElementById('user-login-link').addEventListener('click', function(e) {
+      if (!isPWA && isPWAInstalled()) {
+        e.preventDefault();
+        showPWAModal();
+      } else {
+        // Store expected context
+        localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
+      }
+    });
+    document.getElementById('coach-login-link').addEventListener('click', function(e) {
+      if (!isPWA && isPWAInstalled()) {
+        e.preventDefault();
+        showPWAModal();
+      } else {
+        // Store expected context
+        localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
+      }
+    });
   </script>
 </body>
 </html>

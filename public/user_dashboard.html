@@ -53,6 +53,27 @@
   </style>
 </head>
 <body>
+  <script>
+  function isPWA() {
+    return window.matchMedia('(display-mode: standalone)').matches ||
+           window.navigator.standalone ||
+           document.referrer.includes('android-app://');
+  }
+  const expectedPWA = localStorage.getItem('expectedPWA');
+  if (expectedPWA !== null) {
+    const inPWA = isPWA();
+    if ((expectedPWA === 'true' && !inPWA) || (expectedPWA === 'false' && inPWA)) {
+      document.body.innerHTML = `
+        <div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);color:#fff;display:flex;align-items:center;justify-content:center;z-index:9999;">
+          <div style="background:#222;padding:2rem;border-radius:1rem;text-align:center;max-width:90vw;">
+            <h2>Wrong Context</h2>
+            <p>Please open the Nevengi app (PWA) to continue if you started there, or use the browser if you started there.</p>
+          </div>
+        </div>
+      `;
+    }
+  }
+  </script>
   <header>
     <h1>Nevengi Dashboard</h1>
   </header>
@@ -105,7 +126,7 @@
       <h2>Pricing Plans</h2>
       <div class="pricing-options">
         <div class="pricing-option">
-          <h3>I’m Broke</h3>
+          <h3>I'm Broke</h3>
           <p>
             <span class="price-usd" data-usd="13.99">$13.99</span>
             <span class="local-price"></span>
@@ -119,7 +140,7 @@
           <div id="paypal-button-container-1"></div>
         </div>
         <div class="pricing-option">
-          <h3>Let’s Go</h3>
+          <h3>Let's Go</h3>
           <p>
             <span class="price-usd" data-usd="23.99">$23.99</span>
             <span class="local-price"></span>
@@ -134,7 +155,7 @@
           <div id="paypal-button-container-2"></div>
         </div>
         <div class="pricing-option">
-          <h3>I’m Serious</h3>
+          <h3>I'm Serious</h3>
           <p>
             <span class="price-usd" data-usd="37.99">$37.99</span>
             <span class="local-price"></span>
