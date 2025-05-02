@@ -126,8 +126,8 @@
       const authType = oauthStateParam.split('_')[0]; // 'user' or 'coach'
       const authUrl = `/auth/discord/${authType}`;
       
-      // Only use PWA flow if explicitly marked as PWA auth AND we're in standalone mode
-      if (isPwaAuth && isRunningStandalone()) {
+      // Only use PWA flow if explicitly marked as PWA auth
+      if (isPwaAuth) {
         console.log('PWA auth flow detected');
         
         setTimeout(() => {
