@@ -126,7 +126,7 @@
       const authType = oauthStateParam.split('_')[0]; // 'user' or 'coach'
       const authUrl = `/auth/discord/${authType}`;
       
-      // Only use PWA flow if explicitly marked as PWA auth
+      // For PWA, we need to handle the OAuth flow differently
       if (isPwaAuth) {
         console.log('PWA auth flow detected');
         
@@ -186,7 +186,7 @@
         return;
       }
       
-      // Regular web flow - never redirect to PWA
+      // Regular web flow
       fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}`, {
         method: 'GET',
         headers: {
