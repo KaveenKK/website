@@ -50,6 +50,52 @@
     .pricing-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 1rem; }
     .pricing-option { background: white; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
     .recommended-label { background: gold; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; }
+
+    @media (max-width: 768px) {
+      .dashboard-nav { display: none !important; }
+      .mobile-bottom-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100vw;
+        background: #fff;
+        border-top: 1px solid #eee;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.07);
+        z-index: 1000;
+        justify-content: space-around;
+        padding: 0.25rem 0;
+        height: 64px;
+      }
+      .mobile-bottom-nav button {
+        flex: 1;
+        background: none;
+        border: none;
+        color: #008cba;
+        font-size: 1.1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem 0 0.1rem 0;
+        border-radius: 0;
+        box-shadow: none;
+        transition: background 0.2s;
+      }
+      .mobile-bottom-nav button:active, .mobile-bottom-nav button.active {
+        background: #e6f7ff;
+        color: #005f7a;
+      }
+      .mobile-bottom-nav span {
+        font-size: 1.5rem;
+        line-height: 1;
+      }
+      .mobile-bottom-nav div {
+        font-size: 0.75rem;
+        margin-top: 2px;
+      }
+      body { padding-bottom: 70px; }
+    }
   </style>
 </head>
 <body>
@@ -87,7 +133,7 @@
 
   <!-- Main Dashboard -->
   <div id="dashboard" class="container hidden">
-    <nav>
+    <nav class="dashboard-nav">
       <button data-tab="explore">Explore Coaches</button>
       <button data-tab="rewards">Rewards Shop</button>
       <button data-tab="leaderboard">Leaderboard</button>
@@ -325,6 +371,27 @@
       localStorage.removeItem('expectedPWA');
       window.location.href = '/';
     });
+
+    // Add mobile nav tab switching
+    document.querySelectorAll('.mobile-bottom-nav button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+        document.getElementById(btn.dataset.tab).classList.add('active');
+        document.querySelectorAll('.mobile-bottom-nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+    // Set initial active tab for mobile nav
+    document.querySelector('.mobile-bottom-nav button').classList.add('active');
   </script>
+
+  <!-- Add mobile bottom nav -->
+  <nav class="mobile-bottom-nav">
+    <button data-tab="explore"><span>🏆</span><div>Coaches</div></button>
+    <button data-tab="rewards"><span>🎁</span><div>Rewards</div></button>
+    <button data-tab="leaderboard"><span>🥇</span><div>Leaders</div></button>
+    <button data-tab="status"><span>🌱</span><div>Status</div></button>
+    <button data-tab="plans"><span>💎</span><div>Plans</div></button>
+  </nav>
 </body>
 </html>
