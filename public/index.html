@@ -731,35 +731,22 @@
              document.referrer.includes('android-app://');
     }
 
-    function showPWAModal() {
-      document.getElementById('pwa-modal').style.display = 'flex';
+    function showPWAMessage() {
+      alert('For the best experience, please open the Nevengi app (PWA) and log in with Discord from there. This ensures your authentication works correctly.');
     }
 
-    document.getElementById('close-pwa-modal').addEventListener('click', function() {
-      document.getElementById('pwa-modal').style.display = 'none';
-    });
-
     document.getElementById('user-login-link').addEventListener('click', function(e) {
-      if (!isPWA && isPWAInstalled()) {
+      if (!isPWAInstalled() && window.matchMedia('(display-mode: browser)').matches) {
         e.preventDefault();
-        showPWAModal();
+        showPWAMessage();
       }
     });
     document.getElementById('coach-login-link').addEventListener('click', function(e) {
-      if (!isPWA && isPWAInstalled()) {
+      if (!isPWAInstalled() && window.matchMedia('(display-mode: browser)').matches) {
         e.preventDefault();
-        showPWAModal();
+        showPWAMessage();
       }
     });
   </script>
-
-  <!-- PWA Modal -->
-  <div id="pwa-modal" style="display:none; position:fixed; z-index:9999; left:0; top:0; width:100vw; height:100vh; background:rgba(0,0,0,0.7); align-items:center; justify-content:center;">
-    <div style="background:#fff; color:#222; border-radius:16px; max-width:90vw; width:350px; margin:auto; padding:2rem; text-align:center; box-shadow:0 8px 32px rgba(0,0,0,0.25);">
-      <h2>Open the Nevengi App</h2>
-      <p style="margin-bottom:1.5rem;">You have the Nevengi app (PWA) installed.<br>For the best experience, please open the app from your home screen and log in with Discord from there.<br><br>This ensures your authentication works correctly.</p>
-      <button id="close-pwa-modal" style="padding:0.5rem 1.5rem; border-radius:8px; background:#5865F2; color:#fff; border:none; font-size:1rem;">Close</button>
-    </div>
-  </div>
 </body>
 </html>
