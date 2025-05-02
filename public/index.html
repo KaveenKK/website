@@ -374,37 +374,47 @@
 
   <header>
     <div class="glass">
-      <div class="logo">
-        <a href="/" class="logo-link">
-          <img src="images/glowinglogonowback.webp" alt="Nevengi" class="logo-img" />
-          <span class="logo-text">Nevengi™</span>
-        </a>
-      </div>
+      <a href="/" class="logo-link">
+        <img src="images/glowinglogonowback.webp" alt="Logo" class="logo-img">
+        <span class="logo-text">Nevengi</span>
+      </a>
       <nav>
-        <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer">
-          <button>NRC</button>
-        </a>
-        
-        <div class="login-wrapper">
-          <a href="#" id="login-link">Login</a>
-          <div id="login-menu">
-            <button onclick="location.href='/auth/discord/user'">
-                <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                User Login
-            </button>
-              
-            <button onclick="location.href='/auth/discord'">
-                <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                Coach Login
-            </button>
-              
-          </div>
-        </div>
+        <a href="/terms.html">Terms</a>
+        <a href="/apply_coaching.html">Apply Coaching</a>
       </nav>
+      <div class="login-wrapper">
+        <button id="login-btn" class="btn-primary">Login</button>
+        <button id="nrc-btn" class="btn-primary">NRC</button>
+      </div>
+      <button class="mobile-menu-btn" aria-label="Open menu">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+        </svg>
+      </button>
     </div>
   </header>
 
-    <!-- Scrollable Feature Cards -->
+  <div class="mobile-menu">
+    <div class="mobile-menu-header">
+      <a href="/" class="logo-link">
+        <img src="images/glowinglogonowback.webp" alt="Logo" class="logo-img">
+        <span class="logo-text">Nevengi</span>
+      </a>
+      <button class="mobile-menu-close" aria-label="Close menu">
+        <svg viewBox="0 0 24 24">
+          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mobile-menu-content">
+      <button id="mobile-login-btn" class="btn-primary">Login</button>
+      <button id="mobile-nrc-btn" class="btn-primary">NRC</button>
+      <a href="/terms.html" class="btn-primary">Terms</a>
+      <a href="/apply_coaching.html" class="btn-primary">Apply Coaching</a>
+    </div>
+  </div>
+
+  <!-- Scrollable Feature Cards -->
   <section class="scroll-container">
     <div class="card-scroll">
       <img src="images/coach tranforamtion.png" alt="feature 1" />
@@ -704,6 +714,48 @@
     window.addEventListener('beforeunload', () => {
       // Force a sync write to localStorage
       localStorage.setItem('lastVisit', Date.now().toString());
+    });
+
+    // Mobile menu functionality
+    const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+    const mobileMenuClose = document.querySelector('.mobile-menu-close');
+    const mobileMenu = document.querySelector('.mobile-menu');
+    const mobileLoginBtn = document.getElementById('mobile-login-btn');
+    const mobileNrcBtn = document.getElementById('mobile-nrc-btn');
+    const loginBtn = document.getElementById('login-btn');
+    const nrcBtn = document.getElementById('nrc-btn');
+
+    function toggleMobileMenu() {
+      mobileMenu.classList.toggle('active');
+      document.body.style.overflow = mobileMenu.classList.contains('active') ? 'hidden' : '';
+    }
+
+    mobileMenuBtn.addEventListener('click', toggleMobileMenu);
+    mobileMenuClose.addEventListener('click', toggleMobileMenu);
+
+    // Share click handlers between desktop and mobile buttons
+    function setupButtonHandlers(desktopBtn, mobileBtn, handler) {
+      if (desktopBtn) desktopBtn.addEventListener('click', handler);
+      if (mobileBtn) mobileBtn.addEventListener('click', handler);
+    }
+
+    // Setup login button handlers
+    setupButtonHandlers(loginBtn, mobileLoginBtn, () => {
+      toggleMobileMenu();
+      // Add your login logic here
+    });
+
+    // Setup NRC button handlers
+    setupButtonHandlers(nrcBtn, mobileNrcBtn, () => {
+      toggleMobileMenu();
+      // Add your NRC logic here
+    });
+
+    // Close mobile menu when clicking outside
+    mobileMenu.addEventListener('click', (e) => {
+      if (e.target === mobileMenu) {
+        toggleMobileMenu();
+      }
     });
   </script>
 </body>
