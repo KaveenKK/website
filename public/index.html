@@ -21,260 +21,245 @@
   <link rel="stylesheet" href="styles.css">
 
   <script>
-    (function() {
-      // Check if we're in a PWA context
-      const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                   window.navigator.standalone || 
-                   document.referrer.includes('android-app://');
+    // Check if we're in a PWA context
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                 window.navigator.standalone || 
+                 document.referrer.includes('android-app://');
 
-      // OAuth state management
-      const oauthState = {
-        processing: false,
-        processedCodes: new Set(),
-        lastAttempt: 0,
-        retryCount: 0
-      };
+    // OAuth state management
+    const oauthState = {
+      processing: false,
+      processedCodes: new Set(),
+      lastAttempt: 0,
+      retryCount: 0
+    };
 
-      // Register service worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-              console.log('ServiceWorker registration successful');
-              
-              // Check for updates
-              registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing;
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New content is available, refresh the page
-                    window.location.reload();
-                  }
-                });
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+          .then(registration => {
+            console.log('ServiceWorker registration successful');
+            
+            // Check for updates
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  // New content is available, refresh the page
+                  window.location.reload();
+                }
               });
-            })
-            .catch(err => {
-              console.log('ServiceWorker registration failed: ', err);
             });
-        });
-      }
+          })
+          .catch(err => {
+            console.log('ServiceWorker registration failed: ', err);
+          });
+      });
+    }
 
-      // Add this to ensure auth endpoints are not cached
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.addEventListener('message', event => {
-          if (event.data && event.data.type === 'SKIP_WAITING') {
-            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-          }
-        });
-      }
-
-      // Check for existing tokens and redirect if logged in
-      console.log('Checking authentication status...');
-      
-      // Check URL parameters first
-      const params = new URLSearchParams(window.location.search);
-      const urlUserToken = params.get('token');
-      const urlDiscordId = params.get('discord_id');
-      const urlCoachToken = params.get('coachToken');
-      const oauthCode = params.get('code');
-      const oauthStateParam = params.get('state');
-      const isPwaAuth = params.get('pwa') === 'true';
-      
-      // If we have an OAuth code, handle it directly
-      if (oauthCode && oauthStateParam && !oauthState.processing) {
-        // Check if we've already processed this code
-        if (oauthState.processedCodes.has(oauthCode)) {
-          console.log('OAuth code already processed, ignoring...');
-          return;
+    // Add this to ensure auth endpoints are not cached
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data && event.data.type === 'SKIP_WAITING') {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
         }
+      });
+    }
 
-        // Check rate limiting
-        const now = Date.now();
-        const timeSinceLastAttempt = now - oauthState.lastAttempt;
-        if (timeSinceLastAttempt < 5000) { // 5 second cooldown
-          console.log('Rate limit cooldown, please wait...');
+    // Check for existing tokens and redirect if logged in
+    console.log('Checking authentication status...');
+    
+    // Check URL parameters first
+    const params = new URLSearchParams(window.location.search);
+    const urlUserToken = params.get('token');
+    const urlDiscordId = params.get('discord_id');
+    const urlCoachToken = params.get('coachToken');
+    const oauthCode = params.get('code');
+    const oauthStateParam = params.get('state');
+    const isPwaAuth = params.get('pwa') === 'true';
+    
+    // If we have an OAuth code, handle it directly
+    if (oauthCode && oauthStateParam && !oauthState.processing) {
+      // Check if we've already processed this code
+      if (oauthState.processedCodes.has(oauthCode)) {
+        console.log('OAuth code already processed, ignoring...');
+        return;
+      }
+
+      // Check rate limiting
+      const now = Date.now();
+      const timeSinceLastAttempt = now - oauthState.lastAttempt;
+      if (timeSinceLastAttempt < 5000) { // 5 second cooldown
+        console.log('Rate limit cooldown, please wait...');
+        setTimeout(() => {
+          window.location.reload();
+        }, 5000 - timeSinceLastAttempt);
+        return;
+      }
+
+      console.log('OAuth flow detected, processing...');
+      oauthState.processing = true;
+      oauthState.lastAttempt = now;
+      oauthState.processedCodes.add(oauthCode);
+      
+      // Clear any existing tokens
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('coachToken');
+      localStorage.removeItem('discordId');
+      
+      // Get the original auth URL from state
+      const authType = oauthStateParam.split('_')[0]; // 'user' or 'coach'
+      const authUrl = `/auth/discord/${authType}`;
+      
+      // For PWA, we need to handle the OAuth flow differently
+      if (isPWA || isPwaAuth) {
+        console.log('PWA context detected, using alternative OAuth flow');
+        
+        // If this is a PWA auth attempt, wait a bit before proceeding
+        if (isPwaAuth) {
           setTimeout(() => {
-            window.location.reload();
-          }, 5000 - timeSinceLastAttempt);
-          return;
-        }
-
-        console.log('OAuth flow detected, processing...');
-        oauthState.processing = true;
-        oauthState.lastAttempt = now;
-        oauthState.processedCodes.add(oauthCode);
-        
-        // Clear any existing tokens
-        localStorage.removeItem('userToken');
-        localStorage.removeItem('coachToken');
-        localStorage.removeItem('discordId');
-        
-        // Get the original auth URL from state
-        const authType = oauthStateParam.split('_')[0]; // 'user' or 'coach'
-        const authUrl = `/auth/discord/${authType}`;
-        
-        // For PWA, we need to handle the OAuth flow differently
-        if (isPWA || isPwaAuth) {
-          console.log('PWA context detected, using alternative OAuth flow');
-          
-          // If this is a PWA auth attempt, wait a bit before proceeding
-          if (isPwaAuth) {
-            setTimeout(() => {
-              // Unregister service worker during OAuth
-              if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.getRegistrations().then(registrations => {
-                  registrations.forEach(registration => registration.unregister());
-                });
-              }
-              
-              // Make the token request directly
-              fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
-                method: 'GET',
-                headers: {
-                  'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-                  'Pragma': 'no-cache',
-                  'Expires': '0'
-                }
-              })
-              .then(response => {
-                if (!response.ok) {
-                  throw new Error('Auth request failed');
-                }
-                return response.json();
-              })
-              .then(data => {
-                if (data.token) {
-                  // Store the token and redirect
-                  if (authType === 'user') {
-                    localStorage.setItem('userToken', data.token);
-                    if (data.discord_id) {
-                      localStorage.setItem('discordId', data.discord_id);
-                    }
-                    window.location.href = '/user_dashboard.html';
-                  } else {
-                    localStorage.setItem('coachToken', data.token);
-                    window.location.href = '/coach_dashboard.html';
-                  }
-                } else {
-                  throw new Error('No token received');
-                }
-              })
-              .catch(error => {
-                console.error('Auth error:', error);
-                // Clear any partial state
-                localStorage.removeItem('userToken');
-                localStorage.removeItem('coachToken');
-                localStorage.removeItem('discordId');
-                // Redirect to home page
-                window.location.href = '/';
-              })
-              .finally(() => {
-                oauthState.processing = false;
+            // Unregister service worker during OAuth
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
               });
-            }, 2000); // Wait 2 seconds before making the request
-          } else {
-            // Initial PWA redirect
-            window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
-          }
-          return;
-        }
-        
-        // Regular web flow
-        fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}`, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Auth request failed');
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.token) {
-            // Store the token and redirect
-            if (authType === 'user') {
-              localStorage.setItem('userToken', data.token);
-              if (data.discord_id) {
-                localStorage.setItem('discordId', data.discord_id);
-              }
-              window.location.href = '/user_dashboard.html';
-            } else {
-              localStorage.setItem('coachToken', data.token);
-              window.location.href = '/coach_dashboard.html';
             }
-          } else {
-            throw new Error('No token received');
-          }
-        })
-        .catch(error => {
-          console.error('Auth error:', error);
-          // Clear any partial state
-          localStorage.removeItem('userToken');
-          localStorage.removeItem('coachToken');
-          localStorage.removeItem('discordId');
-          // Redirect to home page
-          window.location.href = '/';
-        })
-        .finally(() => {
-          oauthState.processing = false;
-        });
+            
+            // Make the token request directly
+            fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
+              method: 'GET',
+              headers: {
+                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+              }
+            })
+            .then(response => {
+              if (!response.ok) {
+                throw new Error('Auth request failed');
+              }
+              return response.json();
+            })
+            .then(data => {
+              if (data.token) {
+                // Store the token and redirect
+                if (authType === 'user') {
+                  localStorage.setItem('userToken', data.token);
+                  if (data.discord_id) {
+                    localStorage.setItem('discordId', data.discord_id);
+                  }
+                  window.location.href = '/user_dashboard.html';
+                } else {
+                  localStorage.setItem('coachToken', data.token);
+                  window.location.href = '/coach_dashboard.html';
+                }
+              } else {
+                throw new Error('No token received');
+              }
+            })
+            .catch(error => {
+              console.error('Auth error:', error);
+              // Clear any partial state
+              localStorage.removeItem('userToken');
+              localStorage.removeItem('coachToken');
+              localStorage.removeItem('discordId');
+              // Redirect to home page
+              window.location.href = '/';
+            })
+            .finally(() => {
+              oauthState.processing = false;
+            });
+          }, 2000); // Wait 2 seconds before making the request
+        } else {
+          // Initial PWA redirect
+          window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
+        }
         return;
       }
       
-      // Check localStorage
-      const storedUserToken = localStorage.getItem('userToken');
-      const storedCoachToken = localStorage.getItem('coachToken');
-      
-      console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
-      console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
-      console.log('URL Coach Token:', urlCoachToken ? 'exists' : 'not found');
-      console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
-      console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
-      
-      // Function to validate token
-      async function validateToken(token, type) {
-        console.log(`Validating ${type} token:`, token);
-        if (!token) {
-          console.log('No token provided for validation');
-          return false;
+      // Regular web flow
+      fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
         }
-        
-        try {
-          const response = await fetch(`/auth/validate-${type}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-              'Pragma': 'no-cache',
-              'Expires': '0',
-              'X-Requested-With': 'XMLHttpRequest' // Prevent caching
-            },
-            credentials: 'include' // Include cookies if any
-          });
-          
-          console.log(`Validation response for ${type}:`, response.status);
-          if (!response.ok) {
-            console.log(`Token validation failed for ${type}:`, response.status);
-            // Clear invalid token
-            if (type === 'user') {
-              localStorage.removeItem('userToken');
-            } else {
-              localStorage.removeItem('coachToken');
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Auth request failed');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (data.token) {
+          // Store the token and redirect
+          if (authType === 'user') {
+            localStorage.setItem('userToken', data.token);
+            if (data.discord_id) {
+              localStorage.setItem('discordId', data.discord_id);
             }
-            return false;
+            window.location.href = '/user_dashboard.html';
+          } else {
+            localStorage.setItem('coachToken', data.token);
+            window.location.href = '/coach_dashboard.html';
           }
-          
-          const data = await response.json();
-          console.log(`Validation data for ${type}:`, data);
-          return data.valid === true;
-        } catch (error) {
-          console.error(`Error validating ${type} token:`, error);
-          // Clear token on error
+        } else {
+          throw new Error('No token received');
+        }
+      })
+      .catch(error => {
+        console.error('Auth error:', error);
+        // Clear any partial state
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('coachToken');
+        localStorage.removeItem('discordId');
+        // Redirect to home page
+        window.location.href = '/';
+      })
+      .finally(() => {
+        oauthState.processing = false;
+      });
+      return;
+    }
+    
+    // Check localStorage
+    const storedUserToken = localStorage.getItem('userToken');
+    const storedCoachToken = localStorage.getItem('coachToken');
+    
+    console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
+    console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
+    console.log('URL Coach Token:', urlCoachToken ? 'exists' : 'not found');
+    console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
+    console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
+    
+    // Function to validate token
+    async function validateToken(token, type) {
+      console.log(`Validating ${type} token:`, token);
+      if (!token) {
+        console.log('No token provided for validation');
+        return false;
+      }
+      
+      try {
+        const response = await fetch(`/auth/validate-${type}`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0',
+            'X-Requested-With': 'XMLHttpRequest' // Prevent caching
+          },
+          credentials: 'include' // Include cookies if any
+        });
+        
+        console.log(`Validation response for ${type}:`, response.status);
+        if (!response.ok) {
+          console.log(`Token validation failed for ${type}:`, response.status);
+          // Clear invalid token
           if (type === 'user') {
             localStorage.removeItem('userToken');
           } else {
@@ -282,8 +267,21 @@
           }
           return false;
         }
+        
+        const data = await response.json();
+        console.log(`Validation data for ${type}:`, data);
+        return data.valid === true;
+      } catch (error) {
+        console.error(`Error validating ${type} token:`, error);
+        // Clear token on error
+        if (type === 'user') {
+          localStorage.removeItem('userToken');
+        } else {
+          localStorage.removeItem('coachToken');
+        }
+        return false;
       }
-    })();
+    }
   </script>
 </head>
 <body>
@@ -676,30 +674,24 @@
       localStorage.setItem('lastVisit', Date.now().toString());
     });
 
-    const userLoginLink = document.getElementById('user-login-link');
-    if (userLoginLink) {
-      userLoginLink.addEventListener('click', function(e) {
-        if (!isPWA && isPWAInstalled()) {
-          e.preventDefault();
-          showPWAModal();
-        } else {
-          // Store expected context
-          localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
-        }
-      });
-    }
-    const coachLoginLink = document.getElementById('coach-login-link');
-    if (coachLoginLink) {
-      coachLoginLink.addEventListener('click', function(e) {
-        if (!isPWA && isPWAInstalled()) {
-          e.preventDefault();
-          showPWAModal();
-        } else {
-          // Store expected context
-          localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
-        }
-      });
-    }
+    document.getElementById('user-login-link').addEventListener('click', function(e) {
+      if (!isPWA && isPWAInstalled()) {
+        e.preventDefault();
+        showPWAModal();
+      } else {
+        // Store expected context
+        localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
+      }
+    });
+    document.getElementById('coach-login-link').addEventListener('click', function(e) {
+      if (!isPWA && isPWAInstalled()) {
+        e.preventDefault();
+        showPWAModal();
+      } else {
+        // Store expected context
+        localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
+      }
+    });
   </script>
 </body>
 </html>
