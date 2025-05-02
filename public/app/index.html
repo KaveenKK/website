@@ -721,31 +721,11 @@
 
     installBtn.addEventListener('click', async () => {
       if (!deferredPrompt) {
-        // If we're already in /app/, just show the install prompt
-        if (window.location.pathname.startsWith('/app/')) {
-          alert('App is already installed or not available for installation');
-          return;
-        }
-        // Otherwise, redirect to /app/ first
-        window.location.href = '/app/';
+        alert('App is already installed or not available for installation');
         return;
       }
-
-      // Show the install prompt
-      deferredPrompt.prompt();
-      
-      // Wait for the user to respond to the prompt
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        console.log('User accepted the install prompt');
-      } else {
-        console.log('User dismissed the install prompt');
-      }
-      
-      // Clear the saved prompt since it can't be used again
-      deferredPrompt = null;
-      // Hide the install button
-      installBtn.style.display = 'none';
+      // Redirect to /app/ first
+      window.location.href = '/app/';
     });
 
     window.addEventListener('appinstalled', (evt) => {
