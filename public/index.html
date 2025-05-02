@@ -371,6 +371,35 @@
   </script>
 </head>
 <body>
+<script>
+(async function() {
+  // Helper to check if token is valid
+  async function validateToken(token, type) {
+    if (!token) return false;
+    try {
+      const res = await fetch(`/auth/validate-${type}`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return data.valid === true;
+    } catch {
+      return false;
+    }
+  }
+
+  // Check for tokens in localStorage
+  const userToken = localStorage.getItem('userToken');
+  const coachToken = localStorage.getItem('coachToken');
+
+  if (coachToken && await validateToken(coachToken, 'coach')) {
+    window.location.href = '/coach_dashboard.html';
+  } else if (userToken && await validateToken(userToken, 'user')) {
+    window.location.href = '/user_dashboard.html';
+  }
+})();
+</script>
 
   <header>
     <div class="glass">
