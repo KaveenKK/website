@@ -381,19 +381,25 @@
         </a>
       </div>
       <nav>
-        <button class="hamburger-menu" id="hamburger-menu">☰</button>
+        <div class="hamburger-menu" id="hamburger-menu">
+          <button>☰</button>
+        </div>
         <div class="menu" id="menu">
           <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer">
             <button>NRC</button>
           </a>
-          <button onclick="location.href='/auth/discord/user'">
-            <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-            User Login
-          </button>
-          <button onclick="location.href='/auth/discord'">
-            <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-            Coach Login
-          </button>
+          <a href="/auth/discord/user">
+            <button>
+              <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; margin-right: 8px;">
+              User Login
+            </button>
+          </a>
+          <a href="/auth/discord">
+            <button>
+              <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; margin-right: 8px;">
+              Coach Login
+            </button>
+          </a>
         </div>
       </nav>
     </div>

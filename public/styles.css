@@ -131,6 +131,31 @@ nav a:hover {
   gap: 1rem;
 }
 
+/* Navigation and Hamburger Menu Styles */
+.hamburger-menu {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 10px;
+  color: white;
+  margin-right: 15px;
+}
+
+.menu {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.menu button {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  white-space: nowrap;
+}
+
 /* Login menu */
 #login-menu {
   display: none;
@@ -363,7 +388,33 @@ footer {
   }
   
   nav {
+    position: relative;
+  }
+  
+  .hamburger-menu {
+    display: block;
+    position: relative;
+    z-index: 1000;
+  }
+
+  .menu {
     display: none;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    padding: 15px;
+    border-radius: 8px;
+    flex-direction: column;
+    gap: 15px;
+    width: 200px;
+    z-index: 999;
+  }
+
+  .menu button {
+    width: 100%;
+    justify-content: flex-start;
   }
   
   .login-wrapper {
