@@ -261,14 +261,27 @@
       document.getElementById('dashboard').classList.remove('hidden');
     }
 
-    // Tab navigation
-    document.querySelectorAll('nav button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-        document.getElementById(btn.dataset.tab).classList.add('active');
+    // Tab navigation handler for both navs
+    function handleTabClick(tab) {
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      document.getElementById(tab).classList.add('active');
+      // Set active state on both navs
+      document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => {
+        if (btn.dataset.tab === tab) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
       });
+    }
+
+    // Attach handler to both navs
+    document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => {
+      btn.addEventListener('click', () => handleTabClick(btn.dataset.tab));
     });
-    document.querySelector('nav button').click();
+
+    // Set initial active tab
+    handleTabClick('explore');
 
     // Helper: render one coach, with optional pinned styling
     function renderCoachItem(coach, pinned = false) {
@@ -371,18 +384,6 @@
       localStorage.removeItem('expectedPWA');
       window.location.href = '/';
     });
-
-    // Add mobile nav tab switching
-    document.querySelectorAll('.mobile-bottom-nav button').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-        document.getElementById(btn.dataset.tab).classList.add('active');
-        document.querySelectorAll('.mobile-bottom-nav button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-      });
-    });
-    // Set initial active tab for mobile nav
-    document.querySelector('.mobile-bottom-nav button').classList.add('active');
   </script>
 
   <!-- Add mobile bottom nav -->
