@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truffle Man Embed</n<html>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #three-canvas { display: block; width: 100vw; height: 100vh; }
+    .credit {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(255,255,255,0.7);
+      padding: 4px 8px;
+      font-size: 0.8rem;
+      border-radius: 4px;
+      z-index: 10;
+    }
+    .credit a { color: #0066cc; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <canvas id="three-canvas"></canvas>
+  <div class="credit">
+    <a href="page-2.html" class="btn">Go to Page 2</a>
+    This work is based on "Truffle Man" (
+    <a href="https://sketchfab.com/3d-models/truffle-man-e41c6781e4854a1fbe5cdf24a0029aab" target="_blank">Sketchfab</a>) by 
+    <a href="https://sketchfab.com/Dotflare" target="_blank">dotflare</a> licensed under 
+    <a href="http://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
+  </div>
+
+  <!-- Three.js core -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+  <!-- GLTF Loader -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <script>
+    // Scene, Camera, Renderer
+    const canvas = document.getElementById('three-canvas');
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xf0f0f0);
+
+    const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(0, 1.6, 3);
+
+    // Lighting
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+    hemi.position.set(0, 2, 0);
+    scene.add(hemi);
+
+    const dir = new THREE.DirectionalLight(0xffffff, 0.8);
+    dir.position.set(2, 4, 2);
+    scene.add(dir);
+
+    // Load GLTF model
+    let mixer;
+    const loader = new THREE.GLTFLoader();
+    loader.load(
+      'scene.gltf',          // path to your .gltf file
+      gltf => {
+        scene.add(gltf.scene);
+        if (gltf.animations && gltf.animations.length) {
+          mixer = new THREE.AnimationMixer(gltf.scene);
+          gltf.animations.forEach(clip => mixer.clipAction(clip).play());
+        }
+      },
+      xhr => {
+        console.log(`Loading: ${(xhr.loaded / xhr.total * 100).toFixed(1)}%`);
+      },
+      err => console.error('Error loading GLTF:', err)
+    );
+
+    // Handle resizing
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // Animation loop
+    const clock = new THREE.Clock();
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      if (mixer) mixer.update(delta);
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+</body>
+</html>
