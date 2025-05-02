@@ -703,27 +703,29 @@
     }
 
     // Login menu toggle
-    document.getElementById('login-link').addEventListener('click', e => {
-      e.preventDefault();
-      const menu = document.getElementById('login-menu');
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    });
-    document.addEventListener('click', e => {
-      const menu = document.getElementById('login-menu');
-      if (!menu.contains(e.target) && e.target.id !== 'login-link') {
-        menu.style.display = 'none';
-      }
-    });
+    const loginLink = document.getElementById('login-link');
+    const loginMenu = document.getElementById('login-menu');
+    if (loginLink && loginMenu) {
+      loginLink.addEventListener('click', e => {
+        e.preventDefault();
+        loginMenu.style.display = loginMenu.style.display === 'block' ? 'none' : 'block';
+      });
+      document.addEventListener('click', e => {
+        if (!loginMenu.contains(e.target) && e.target.id !== 'login-link') {
+          loginMenu.style.display = 'none';
+        }
+      });
+    }
 
     // Start questionnaire
-    startBtn.addEventListener('click', () => showQuestion(0));
+    if (startBtn) {
+      startBtn.addEventListener('click', () => showQuestion(0));
+    }
 
-    // Add this to your existing script section
-    document.addEventListener('DOMContentLoaded', function() {
-      let deferredPrompt;
-      const installBtn = document.getElementById('install-btn');
-      if (!installBtn) return;
-
+    // Install button logic
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+    if (installBtn) {
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -750,7 +752,7 @@
         console.log('App was installed');
         installBtn.style.display = 'none';
       });
-    });
+    }
 
     // Add event listener for beforeunload to ensure tokens are preserved
     window.addEventListener('beforeunload', () => {
