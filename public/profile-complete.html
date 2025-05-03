@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Welcome to Nevengi</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<link rel="manifest" href="/manifest.json" />
+<meta name="theme-color" content="#000000" />
 <style>
     :root{
         --brand:#2d6cdf;
@@ -98,6 +100,19 @@
 </style>
 </head>
 <body>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js')
+        .then(registration => {
+          // Service worker registered
+        })
+        .catch(err => {
+          // Registration failed
+        });
+    });
+  }
+</script>
 <header>
     <h1>Your Nevengi Profile is created!</h1>
     <p>You can log in anytime using our Nevengi App or website.</p>
