@@ -135,6 +135,10 @@
   <div id="loginScreen" class="container">
     <h2>Login with Discord</h2>
     <button id="loginBtn">Login with Discord</button>
+    <div style="margin-top:1.5rem;">
+      <p style="margin-bottom:0.5rem;color:#008cba;font-weight:500;">For the best experience, use our mobile app!</p>
+      <button id="installAppBtn" style="background:#005f7a;">Install Nevengi App</button>
+    </div>
   </div>
 
   <!-- Main Dashboard -->
@@ -408,6 +412,25 @@
         localStorage.removeItem('expectedPWA');
         window.location.href = '/';
       });
+
+      let deferredPrompt;
+      const installBtn = document.getElementById('installAppBtn');
+      if (installBtn) {
+        installBtn.style.display = 'none';
+        window.addEventListener('beforeinstallprompt', (e) => {
+          e.preventDefault();
+          deferredPrompt = e;
+          installBtn.style.display = 'inline-block';
+        });
+        installBtn.addEventListener('click', async () => {
+          if (deferredPrompt) {
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+          }
+        });
+      }
     });
   </script>
 
