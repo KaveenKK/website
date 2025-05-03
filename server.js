@@ -22,6 +22,7 @@ import User from './models/User.js';
 import adminRoutes from "./routes/admin.js";
 import webhookRoutes from './routes/webhook.js';   // ← ES import
 import userRoutes from "./routes/user.js";
+import './models/WeeklyReport.js';
 
 // Prefer IPv4 to avoid potential DNS v6 issues
 dns.setDefaultResultOrder('ipv4first');

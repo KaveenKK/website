@@ -128,7 +128,10 @@
       <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #fff;background:#eee;">
       <span id="userName" style="font-size:1.3rem;font-weight:bold;"></span>
     </div>
-    <button id="logoutBtn">Logout</button>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button id="reportsTopBtn" style="background:#005f7a;">Reports</button>
+      <button id="logoutBtn">Logout</button>
+    </div>
   </header>
 
   <!-- Login Screen -->
@@ -150,6 +153,7 @@
         <button data-tab="leaderboard">Leaderboard</button>
         <button data-tab="status">My XP & Maples</button>
         <button data-tab="plans">Pricing Plans</button>
+        <button data-tab="reports">Reports</button>
         <a href="model.html" class="btn">Go to Page 2</a>
       </nav>
 
@@ -230,6 +234,12 @@
             <div id="paypal-button-container-3"></div>
           </div>
         </div>
+      </section>
+
+      <!-- Reports -->
+      <section id="reports">
+        <h2>Weekly Reports</h2>
+        <div id="reportsContainer">Loading reports…</div>
       </section>
     </div>
   </div>
@@ -431,6 +441,49 @@
           }
         });
       }
+
+      // Add handler for top-right Reports button
+      document.getElementById('reportsTopBtn').addEventListener('click', function() {
+        handleTabClick('reports');
+      });
+
+      // Fetch and render weekly reports
+      async function loadReports() {
+        const container = document.getElementById('reportsContainer');
+        container.textContent = 'Loading reports…';
+        try {
+          const res = await fetch(`/api/reports`, { headers: { Authorization: 'Bearer ' + token } });
+          if (!res.ok) throw new Error('Failed to fetch reports');
+          const reports = await res.json();
+          if (!reports.length) {
+            container.textContent = 'No reports yet.';
+            return;
+          }
+          // Render reports as scrollable cards
+          container.innerHTML = `<div style="display:flex;overflow-x:auto;gap:1rem;padding-bottom:1rem;">${reports.map(report => `
+            <div style="min-width:320px;max-width:340px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);padding:1rem;flex-shrink:0;display:flex;flex-direction:column;">
+              <div style="font-weight:bold;font-size:1.1rem;margin-bottom:0.5rem;">Week ${report.weekNumber}, ${report.year}</div>
+              <div style="margin-bottom:0.5rem;">
+                <strong>Weekly Data:</strong>
+                <pre style="background:#f6f8fa;padding:0.5rem;border-radius:4px;overflow-x:auto;font-size:0.95em;">${JSON.stringify(report.data, null, 2)}</pre>
+              </div>
+              <div style="margin-top:auto;">
+                <strong>Coach Reviews:</strong>
+                ${report.reviews && report.reviews.length ? report.reviews.map(r => `
+                  <div style=\"margin:0.5em 0;padding:0.5em;background:#e6f7ff;border-radius:4px;\"><b>${r.coach_name}:</b> ${r.review}</div>
+                `).join('') : '<div style="color:#888;">No reviews yet.</div>'}
+              </div>
+            </div>
+          `).join('')}</div>`;
+        } catch (err) {
+          container.textContent = 'Failed to load reports.';
+        }
+      }
+
+      // Load reports when Reports tab is activated
+      document.querySelectorAll('[data-tab="reports"]').forEach(btn => {
+        btn.addEventListener('click', loadReports);
+      });
     });
   </script>
 
@@ -441,6 +494,7 @@
     <button data-tab="leaderboard"><span>🥇</span><div>Leaders</div></button>
     <button data-tab="status"><span>🌱</span><div>Status</div></button>
     <button data-tab="plans"><span>💎</span><div>Plans</div></button>
+    <button data-tab="reports"><span>📄</span><div>Reports</div></button>
   </nav>
 </body>
 </html>

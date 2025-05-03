@@ -2,6 +2,7 @@ import express from "express";
 import User from "../models/User.js";
 import Coach from "../models/Coach.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import WeeklyReport from '../models/WeeklyReport.js';
 
 const router = express.Router();
 
@@ -247,6 +248,67 @@ router.get('/user-profile', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('❌ User profile error:', err);
     res.status(500).json({ error: 'Failed to fetch user profile' });
+  }
+});
+
+/**
+ * GET /api/reports
+ * Returns all weekly reports for the logged-in user
+ */
+router.get('/reports', authMiddleware, async (req, res) => {
+  try {
+    const reports = await WeeklyReport.find({ user: req.user.id }).sort({ year: -1, weekNumber: -1 });
+    res.json(reports);
+  } catch (err) {
+    console.error('❌ Error fetching reports:', err);
+    res.status(500).json({ error: 'Failed to fetch reports' });
+  }
+});
+
+/**
+ * POST /api/reports/:weekNumber
+ * Add or update a weekly report for the user
+ * Body: { data }
+ */
+router.post('/reports/:weekNumber', authMiddleware, async (req, res) => {
+  try {
+    const { weekNumber } = req.params;
+    const { data } = req.body;
+    const year = new Date().getFullYear();
+    const report = await WeeklyReport.findOneAndUpdate(
+      { user: req.user.id, weekNumber, year },
+      { $set: { data } },
+      { upsert: true, new: true }
+    );
+    res.json(report);
+  } catch (err) {
+    console.error('❌ Error saving report:', err);
+    res.status(500).json({ error: 'Failed to save report' });
+  }
+});
+
+/**
+ * POST /api/reports/:weekNumber/review
+ * Coach adds a review for a user's week
+ * Body: { userId, review }
+ */
+router.post('/reports/:weekNumber/review', authMiddleware, async (req, res) => {
+  try {
+    if (req.user.role !== 'coach') return res.status(403).json({ error: 'Only coaches can add reviews' });
+    const { weekNumber } = req.params;
+    const { userId, review } = req.body;
+    const year = new Date().getFullYear();
+    const coach = await Coach.findById(req.user.id);
+    if (!coach) return res.status(404).json({ error: 'Coach not found' });
+    const report = await WeeklyReport.findOneAndUpdate(
+      { user: userId, weekNumber, year },
+      { $push: { reviews: { coach: coach._id, coach_name: coach.name, review } } },
+      { upsert: true, new: true }
+    );
+    res.json(report);
+  } catch (err) {
+    console.error('❌ Error adding review:', err);
+    res.status(500).json({ error: 'Failed to add review' });
   }
 });
 
