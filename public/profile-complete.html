@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Welcome to Nevengi</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+    :root{
+        --brand:#2d6cdf;
+        --bg:#f7f9fc;
+        --text:#333;
+        --card-bg:#ffffff;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{
+        font-family:'Inter',sans-serif;
+        background:var(--bg);
+    }
+    header{
+        background:var(--brand);
+        color:#fff;
+        text-align:center;
+        padding:80px 20px 120px;
+        clip-path:polygon(0 0,100% 0,100% 85%,0 100%);
+    }
+    header h1{
+        font-size:2rem;
+        margin-bottom:1rem;
+        font-weight:600;
+    }
+    header p{
+        font-size:1.1rem;
+        opacity:.95;
+    }
+    main{
+        max-width:1200px;
+        margin:-80px auto 80px;
+        padding:0 20px;
+    }
+    .steps{
+        display:flex;
+        flex-wrap:wrap;
+        justify-content:center;
+        gap:40px 60px;
+    }
+    .step{
+        background:var(--card-bg);
+        border-radius:16px;
+        box-shadow:0 8px 30px rgba(0,0,0,.08);
+        width:280px;
+        position:relative;
+        overflow:hidden;
+        transition:transform .3s ease,box-shadow .3s ease;
+    }
+    .step:hover{
+        transform:translateY(-8px);
+        box-shadow:0 12px 36px rgba(0,0,0,.12);
+    }
+    .step img{
+        display:block;
+        width:100%;
+        height:180px;
+        object-fit:cover;
+    }
+    .step .content{
+        padding:24px 20px 32px;
+        text-align:center;
+    }
+    .step h2{
+        font-size:1.25rem;
+        margin-bottom:.6rem;
+        color:var(--brand);
+    }
+    .step p{
+        font-size:.95rem;
+        color:var(--text);
+        line-height:1.5;
+    }
+    /* arrows */
+    .step::after{
+        content:"\2193";
+        position:absolute;
+        bottom:-50px;
+        left:50%;
+        transform:translateX(-50%);
+        font-size:3rem;
+        color:var(--brand);
+    }
+    .steps .step:last-child::after{
+        display:none;
+    }
+    @media(max-width:768px){
+        .step{
+            width:90%;
+        }
+    }
+</style>
+</head>
+<body>
+<header>
+    <h1>Your Nevengi Profile is created!</h1>
+    <p>You can log in anytime using our Nevengi App or website.</p>
+</header>
+
+<main>
+    <section class="steps">
+        <article class="step">
+            <img src="images/download-app.jpg" alt="Download App">
+            <div class="content">
+                <h2>1. Download the Nevengi Mobile App</h2>
+                <p>For the best experience, especially on mobile, use our lightweight web app. It's optimized for speed and ease of use.</p>
+                <div style="text-align:center; margin-top:16px;">
+                    <button id="install-btn" style="font-size:0.9rem; color:#fff; background:#2d6cdf; border:none; border-radius:6px; padding:10px 24px; cursor:pointer;">Install App</button>
+                </div>
+            </div>
+        </article>
+
+        <article class="step">
+            <img src="images/login menu.jpg" alt="Login Instructions">
+            <div class="content">
+                <h2>2. Log in through the Mobile App</h2>
+                <p>Open the app, tap the hamburger menu (☰), choose "User Login", and sign in with your Discord account.</p>
+            </div>
+        </article>
+
+        <article class="step">
+            <img src="images/excited.png" alt="Enjoy the App">
+            <div class="content">
+                <h2>3. Enjoy and Explore</h2>
+                <p>That's it! Dive into the Nevengi experience, explore features, and make the most of your time in the app.</p>
+            </div>
+        </article>
+    </section>
+</main>
+<script>
+let deferredPrompt;
+const installBtn = document.getElementById('install-btn');
+if (installBtn) {
+  installBtn.style.display = 'none';
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.style.display = 'inline-block';
+  });
+  installBtn.addEventListener('click', async () => {
+    if (!deferredPrompt) {
+      alert('App is already installed or not available for installation');
+      return;
+    }
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    installBtn.style.display = 'none';
+  });
+  window.addEventListener('appinstalled', () => {
+    installBtn.style.display = 'none';
+  });
+}
+</script>
+</body>
+</html>
