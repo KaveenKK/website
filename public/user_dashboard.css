@@ -244,8 +244,17 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
     padding-right: 4px;
   }
   .blue-bar {
+    width: 24px;
     height: 320px;
     padding: 18px 0;
+    left: 2px;
+    right: 2px;
+  }
+  .blue-bar.left {
+    left: 2px;
+  }
+  .blue-bar.right {
+    right: 2px;
   }
   .icon-circle {
     width: 54px;
