@@ -550,8 +550,27 @@
         }
       }
 
-      window.subscribe = function(coachId) {
-        alert('Subscribed to ' + coachId);
+      window.subscribe = async function(coachId) {
+        if (!confirm('Are you sure you want to subscribe to this coach?')) return;
+        try {
+          const res = await fetch(`${API_BASE}/api/subscribe`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ coachId })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert('Successfully subscribed!');
+            loadCoaches(); // Optionally refresh the list
+          } else {
+            alert(data.error || 'Failed to subscribe.');
+          }
+        } catch (err) {
+          alert('An error occurred. Please try again.');
+        }
       }
       window.rate = function(coachId) {
         const rating = prompt('Rate out of 5');
