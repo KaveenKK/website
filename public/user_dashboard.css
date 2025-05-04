@@ -247,14 +247,14 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
     width: 24px;
     height: 320px;
     padding: 18px 0;
-    left: 2px;
-    right: 2px;
   }
   .blue-bar.left {
     left: 2px;
+    right: auto;
   }
   .blue-bar.right {
     right: 2px;
+    left: auto;
   }
   .icon-circle {
     width: 54px;
@@ -271,5 +271,26 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   .character-img {
     max-width: 60vw !important;
     min-width: 80px !important;
+  }
+  /* Popup to the right for left bar, to the left for right bar */
+  .blue-bar.left .icon-circle .popup {
+    left: 105% !important;
+    right: auto !important;
+    top: 50%;
+    transform: translateY(-50%);
+    min-width: 80px;
+    max-width: 180px;
+    white-space: normal;
+    z-index: 100;
+  }
+  .blue-bar.right .icon-circle .popup {
+    right: 105% !important;
+    left: auto !important;
+    top: 50%;
+    transform: translateY(-50%);
+    min-width: 80px;
+    max-width: 180px;
+    white-space: normal;
+    z-index: 100;
   }
 } 
