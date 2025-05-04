@@ -176,6 +176,8 @@
     <!-- Mobile hamburger dropdown -->
     <div id="mobileMenu" style="display:none;position:absolute;top:100%;left:0;width:180px;background:#fff;color:#333;box-shadow:0 4px 16px rgba(0,0,0,0.13);border-radius:0 0 8px 8px;z-index:1100;flex-direction:column;overflow:hidden;">
       <button id="mobilePlansBtn" style="background:none;color:#29acd8;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Plans</button>
+      <button id="mobileSettingsBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Settings</button>
+      <button id="mobileLeadersBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Leaders</button>
       <button id="mobileLogoutBtn" style="background:none;color:#d32f2f;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Logout</button>
     </div>
   </header>
@@ -300,7 +302,7 @@
       <!-- Home Tab -->
       <section id="home" class="active">
         <div class="character-display">
-          <img src="images/character2.png" alt="Character" class="character-img">
+          <img src="images/man.png" alt="Character" class="character-img">
           <div class="character-info">
             <h2>Level 5</h2>
             <p><strong>XP:</strong> 1200</p>
@@ -330,6 +332,19 @@
       <section id="reports">
         <h2>Weekly Reports</h2>
         <div id="reportsContainer">Loading reports…</div>
+      </section>
+      <!-- Settings -->
+      <section id="settings" style="display:none;">
+        <h2>Settings</h2>
+        <form id="settingsForm">
+          <div style="margin-bottom:1rem;">
+            <label style="font-weight:bold;">Profile Gender:</label><br>
+            <label><input type="radio" name="gender" value="male"> Male</label>
+            <label style="margin-left:1em;"><input type="radio" name="gender" value="female"> Female</label>
+          </div>
+          <button type="submit">Save</button>
+          <span id="settingsSavedMsg" style="margin-left:1em;color:green;display:none;">Saved!</span>
+        </form>
       </section>
     </div>
   </div>
@@ -579,6 +594,8 @@
       const hamburgerMenuBtn = document.getElementById('hamburgerMenuBtn');
       const mobileMenu = document.getElementById('mobileMenu');
       const mobilePlansBtn = document.getElementById('mobilePlansBtn');
+      const mobileSettingsBtn = document.getElementById('mobileSettingsBtn');
+      const mobileLeadersBtn = document.getElementById('mobileLeadersBtn');
       const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
       // Show/hide menu
       if (hamburgerMenuBtn && mobileMenu) {
@@ -619,6 +636,16 @@
           });
         });
       }
+      // Leaders button logic
+      if (mobileLeadersBtn) {
+        mobileLeadersBtn.addEventListener('click', function() {
+          mobileMenu.style.display = 'none';
+          document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+          document.getElementById('leaderboard').classList.add('active');
+          // Set active state on navs
+          document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => btn.classList.remove('active'));
+        });
+      }
       // Logout button logic
       if (mobileLogoutBtn) {
         mobileLogoutBtn.addEventListener('click', function() {
@@ -628,6 +655,52 @@
           window.location.href = '/';
         });
       }
+      // Settings button logic
+      if (mobileSettingsBtn) {
+        mobileSettingsBtn.addEventListener('click', function() {
+          mobileMenu.style.display = 'none';
+          document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+          document.getElementById('settings').classList.add('active');
+          // Set active state on navs
+          document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => btn.classList.remove('active'));
+        });
+      }
+      // Settings section logic
+      const settingsForm = document.getElementById('settingsForm');
+      const settingsSavedMsg = document.getElementById('settingsSavedMsg');
+      if (settingsForm) {
+        settingsForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          const gender = settingsForm.gender.value;
+          const headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token };
+          const res = await fetch('/api/user-profile', { method: 'PUT', headers, body: JSON.stringify({ gender }) });
+          if (res.ok) {
+            settingsSavedMsg.style.display = 'inline';
+            setTimeout(()=>settingsSavedMsg.style.display='none', 1500);
+            updateCharacterImage(gender);
+          }
+        });
+      }
+      // Helper to update character image
+      function updateCharacterImage(gender) {
+        const img = document.querySelector('.character-img');
+        if (img) {
+          img.src = gender === 'female' ? 'images/lady.png' : 'images/man.png';
+        }
+      }
+      // On load, set gender radio and character image
+      async function loadUserGenderAndSetImage() {
+        const headers = { Authorization: 'Bearer ' + token };
+        const res = await fetch('/api/user-profile', { headers });
+        if (!res.ok) return;
+        const user = await res.json();
+        if (user.gender) {
+          const radio = document.querySelector(`input[name='gender'][value='${user.gender}']`);
+          if (radio) radio.checked = true;
+          updateCharacterImage(user.gender);
+        }
+      }
+      if (token) loadUserGenderAndSetImage();
     });
   </script>
 
@@ -635,7 +708,7 @@
   <nav class="mobile-bottom-nav">
     <button data-tab="explore"><span>🏆</span><div>Coaches</div></button>
     <button data-tab="rewards"><span>🎁</span><div>Rewards</div></button>
-    <button data-tab="leaderboard"><span>🥇</span><div>Leaders</div></button>
+    <button data-tab="home"><span>🏠</span><div>Home</div></button>
     <button data-tab="status"><span>🌱</span><div>Status</div></button>
     <button data-tab="reports"><span>📄</span><div>Reports</div></button>
   </nav>
