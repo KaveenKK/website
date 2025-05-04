@@ -556,7 +556,47 @@
         }
       }
 
+      // Add a modal for insufficient maples
+      if (!document.getElementById('insufficientMapleModal')) {
+        const modal = document.createElement('div');
+        modal.id = 'insufficientMapleModal';
+        modal.style = 'display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.5);z-index:9999;align-items:center;justify-content:center;';
+        modal.innerHTML = `
+          <div style="background:#fff;padding:2em 2em 1.5em 2em;border-radius:12px;max-width:90vw;min-width:300px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.18);">
+            <div id="insufficientMapleMsg" style="font-size:1.1em;margin-bottom:1.5em;"></div>
+            <div style="display:flex;gap:1em;justify-content:center;">
+              <button id="findCheaperBtn" style="background:#aaa;">Find a cheaper coach</button>
+              <button id="addMaplesBtn" style="background:#008cba;">Add More maples</button>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(modal);
+        document.getElementById('findCheaperBtn').onclick = () => { modal.style.display = 'none'; };
+        document.getElementById('addMaplesBtn').onclick = () => {
+          modal.style.display = 'none';
+          handleTabClick('plans');
+        };
+      }
+
       window.subscribe = async function(coachId) {
+        // Get coach info and user maples
+        const headers = { Authorization: 'Bearer ' + token };
+        const [coachRes, userRes] = await Promise.all([
+          fetch(`${API_BASE}/api/coaches`, { headers }),
+          fetch(`${API_BASE}/api/user-profile`, { headers })
+        ]);
+        const allCoaches = coachRes.ok ? await coachRes.json() : [];
+        const coach = allCoaches.find(c => c._id === coachId);
+        const user = userRes.ok ? await userRes.json() : {};
+        const userMaples = Number(user.maples) || 0;
+        const coachPrice = Number(coach?.monthly_price_maples) || 0;
+        if (userMaples < coachPrice) {
+          // Show modal
+          const modal = document.getElementById('insufficientMapleModal');
+          document.getElementById('insufficientMapleMsg').innerHTML = `This coach costs <b>${coachPrice} maples</b>, but you only have <b>${userMaples}</b>.<br>Either buy extra maples from the plans section or find a cheaper coach.`;
+          modal.style.display = 'flex';
+          return;
+        }
         if (!confirm('Are you sure you want to subscribe to this coach?')) return;
         try {
           const res = await fetch(`${API_BASE}/api/subscribe`, {
@@ -571,6 +611,7 @@
           if (res.ok && data.success) {
             alert('Successfully subscribed!');
             loadCoaches(); // Optionally refresh the list
+            loadStatus(); // Refresh maples
           } else {
             alert(data.error || 'Failed to subscribe.');
           }
