@@ -160,15 +160,15 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 60px;
-  height: 300px;
+  width: 100px;
+  height: 540px;
   background-color: #008cba;
-  border-radius: 30px;
+  border-radius: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
-  padding: 10px 0;
+  justify-content: space-evenly;
+  padding: 30px 0;
 }
 .blue-bar.left {
   left: 0;
@@ -178,8 +178,8 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 }
 .icon-circle {
   position: relative;
-  width: 54px;
-  height: 54px;
+  width: 150px;
+  height: 150px;
   background-color: white;
   border-radius: 50%;
   display: flex;
@@ -191,8 +191,8 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   position: absolute;
   top: 0;
   left: 0;
-  width: 64px;
-  height: 64px;
+  width: 150px;
+  height: 150px;
   z-index: 1;
   pointer-events: none;
 }
@@ -202,7 +202,7 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 }
 .icon-circle .ring-bar {
   transition: stroke 0.3s, stroke-dasharray 0.3s;
-  stroke: #222;
+  /* stroke: #222; */
   opacity: 1;
 }
 .icon-circle.black-smoky .ring-bar {
@@ -212,22 +212,30 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 .icon-circle img {
   position: relative;
   z-index: 2;
-  width: 42px;
-  height: 42px;
+  width: 95px;
+  height: 95px;
 }
 .popup {
   display: none;
   position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translateY(-50%);
   background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 5px;
-  font-size: 0.8em;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  z-index: 10;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-size: 1.1em;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.13);
+  z-index: 20;
+  white-space: nowrap;
+}
+.icon-circle.left-popup .popup {
+  left: 110%;
+  right: auto;
+}
+.icon-circle.right-popup .popup {
+  right: 110%;
+  left: auto;
 }
 
 @media (max-width: 600px) {
@@ -236,9 +244,9 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
     padding-right: 4px;
   }
   .blue-bar {
-    width: 32px;
-    height: 160px;
-    padding: 2px 0;
+    width: 48px;
+    height: 260px;
+    padding: 6px 0;
   }
   .icon-circle {
     width: 38px;
