@@ -242,7 +242,7 @@ router.get('/status', authMiddleware, async (req, res) => {
  */
 router.get('/user-profile', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user.id).select('discord_id username avatar email xp maples');
+    const user = await User.findById(req.user.id).select('discord_id username avatar email xp maples gender');
     if (!user) return res.status(404).json({ error: 'User not found' });
     res.json(user);
   } catch (err) {
