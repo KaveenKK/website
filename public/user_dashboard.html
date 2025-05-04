@@ -114,9 +114,9 @@
       margin-bottom: 1rem;
     }
     .character-img {
-      width: 30vw;
-      max-width: 300px;
-      min-width: 120px;
+      width: 39vw;
+      max-width: 390px;
+      min-width: 156px;
       height: auto;
       border-radius: 50%;
       margin-bottom: 1rem;
@@ -342,11 +342,7 @@
         <h2>Settings</h2>
         <div style="margin-bottom:1.5rem;">
           <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Profile Gender</label>
-          <div id="genderToggleWrapper" style="display:flex;align-items:center;gap:1em;">
-            <span id="genderLabel" style="font-size:1.1em;font-weight:500;">Male</span>
-            <button id="genderToggleBtn" type="button" style="background:#e6f7ff;color:#008cba;border:1px solid #008cba;padding:0.5em 1.5em;border-radius:20px;font-size:1em;transition:background 0.2s;">Switch to Female</button>
-          </div>
-          <span id="settingsSavedMsg" style="margin-left:1em;color:green;display:none;">Saved!</span>
+          <span id="genderLabel" style="font-size:1.1em;font-weight:500;">-</span>
         </div>
       </section>
     </div>
@@ -669,52 +665,24 @@
         });
       }
       // Settings section logic
-      const genderToggleBtn = document.getElementById('genderToggleBtn');
       const genderLabel = document.getElementById('genderLabel');
-      const settingsSavedMsg = document.getElementById('settingsSavedMsg');
-      let currentGender = 'male';
-      async function saveGender(gender) {
-        const headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token };
-        const res = await fetch('/api/user-profile', { method: 'PUT', headers, body: JSON.stringify({ gender }) });
-        if (res.ok) {
-          settingsSavedMsg.style.display = 'inline';
-          setTimeout(()=>settingsSavedMsg.style.display='none', 1500);
-          updateCharacterImage(gender);
-        }
-      }
-      if (genderToggleBtn && genderLabel) {
-        genderToggleBtn.addEventListener('click', function() {
-          currentGender = currentGender === 'male' ? 'female' : 'male';
-          genderLabel.textContent = currentGender.charAt(0).toUpperCase() + currentGender.slice(1);
-          genderToggleBtn.textContent = currentGender === 'male' ? 'Switch to Female' : 'Switch to Male';
-          saveGender(currentGender);
-        });
-      }
-      // Helper to update character image
       function updateCharacterImage(gender) {
         const img = document.querySelector('.character-img');
         if (img) {
-          const newSrc = gender === 'female' ? 'images/lady.png' : 'images/man.png';
-          if (img.src.endsWith(newSrc)) {
-            img.src = '';
-            setTimeout(() => { img.src = newSrc; }, 10);
-          } else {
-            img.src = newSrc;
-          }
+          img.src = gender === 'female' ? 'images/lady.png' : 'images/man.png';
         }
       }
-      // On load, set gender toggle and character image
       async function loadUserGenderAndSetImage() {
         const headers = { Authorization: 'Bearer ' + token };
         const res = await fetch('/api/user-profile', { headers });
         if (!res.ok) return;
         const user = await res.json();
-        if (user.gender) {
-          currentGender = user.gender;
-          genderLabel.textContent = currentGender.charAt(0).toUpperCase() + currentGender.slice(1);
-          genderToggleBtn.textContent = currentGender === 'male' ? 'Switch to Female' : 'Switch to Male';
-          updateCharacterImage(user.gender);
+        let gender = 'male';
+        if (user.gender && user.gender.toLowerCase() === 'female') {
+          gender = 'female';
         }
+        genderLabel.textContent = gender.charAt(0).toUpperCase() + gender.slice(1);
+        updateCharacterImage(gender);
       }
       if (token) loadUserGenderAndSetImage();
     });
