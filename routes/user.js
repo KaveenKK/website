@@ -127,7 +127,9 @@ router.post('/subscribe', authMiddleware, async (req, res) => {
     await user.save();
 
     // Add subscriber to coach
-    coach.subscribers.push(userId);
+    if (!coach.subscribers.some(id => id.toString() === userId)) {
+      coach.subscribers.push(userId);
+    }
     await coach.save();
 
     return res.json({ success: true, my_coaches: user.my_coaches });
