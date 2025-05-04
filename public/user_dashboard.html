@@ -13,214 +13,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="icon" href="images/mylogo_nevengi_circle.webp" type="image/jpg">
   <title>Nevengi User Dashboard</title>
-  <style>
-    /* Basic Reset */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Segoe UI', sans-serif; background: #f9f9f9; color: #333; }
-    header { background: #008cba; color: white; padding: 1rem; text-align: center; }
-    .container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
-    .hidden { display: none; }
-    button { background: #008cba; color: white; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; }
-    button:disabled { background: #aaa; cursor: not-allowed; }
-    nav { display: flex; gap: 1rem; margin-bottom: 1rem; }
-    nav button { flex: 1; }
-    section { display: none; }
-    section.active { display: block; }
-    h2 { margin-bottom: 1rem; }
-    ul { list-style: none; }
-    li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
-    /* Hide mobile nav on desktop by default */
-    .mobile-bottom-nav { display: none; }
-
-    /* Explore Coaches */
-    .coach-item { display: flex; justify-content: space-between; align-items: center; }
-    .coach-info { flex: 1; }
-    .coach-action button { margin-left: 0.5rem; }
-    /* Highlight the invited coach */
-    .coach-item.pinned {
-      border: 2px solid #008cba;
-      background: #e6f7ff;
-    }
-
-    /* Rewards Shop */
-    #shopify-collection { display: flex; gap: 1rem; flex-wrap: wrap; }
-    /* Leaderboard */
-    #leaderboard li { display: flex; justify-content: space-between; }
-    /* XP/Maples */
-    .status-box { background: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    /* Pricing Plans */
-    .pricing-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 1rem; }
-    .pricing-option { background: white; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    .recommended-label { background: gold; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; }
-
-    @media (max-width: 768px) {
-      .dashboard-nav { display: none !important; }
-      .mobile-bottom-nav {
-        display: flex;
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100vw;
-        background: #fff;
-        border-top: 1px solid #eee;
-        box-shadow: 0 -2px 12px rgba(0,0,0,0.07);
-        z-index: 1000;
-        justify-content: space-around;
-        padding: 0.25rem 0;
-        height: 64px;
-      }
-      .mobile-bottom-nav button {
-        flex: 1;
-        background: none;
-        border: none;
-        color: #008cba;
-        font-size: 1.1rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 0.25rem 0 0.1rem 0;
-        border-radius: 0;
-        box-shadow: none;
-        transition: background 0.2s;
-      }
-      .mobile-bottom-nav button:active, .mobile-bottom-nav button.active {
-        background: #e6f7ff;
-        color: #005f7a;
-      }
-      .mobile-bottom-nav span {
-        font-size: 1.5rem;
-        line-height: 1;
-      }
-      .mobile-bottom-nav div {
-        font-size: 0.75rem;
-        margin-top: 2px;
-      }
-      body { padding-bottom: 70px; }
-      #headerRightBtns { display: none !important; }
-      #hamburgerMenuBtn { display: block !important; }
-      #mobileMenu { display: flex; }
-    }
-    @media (min-width: 769px) {
-      #mobileMenu, #hamburgerMenuBtn { display: none !important; }
-    }
-
-    /* Home Tab */
-    .character-display {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 1rem;
-    }
-    .character-img {
-      width: 62.4vw !important;
-      max-width: 624px !important;
-      min-width: 250px !important;
-      height: auto !important;
-      border-radius: 50% !important;
-      margin-bottom: 1rem !important;
-      display: block !important;
-    }
-    .character-info {
-      text-align: center;
-    }
-    .unlockables, .daily-stats, .affirmation {
-      background: #fff;
-      padding: 1rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 1rem;
-    }
-    .unlockables ul {
-      list-style: none;
-      padding: 0;
-    }
-    .unlockables li {
-      margin-bottom: 0.5rem;
-    }
-    .progress-bar-wrapper {
-      width: 100%;
-      margin-top: 0.3em;
-      margin-bottom: 0.5em;
-    }
-    .progress-bar-bg {
-      width: 100%;
-      height: 18px;
-      background: #e0e0e0;
-      border-radius: 9px;
-      overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
-    }
-    .progress-bar-xp {
-      height: 100%;
-      background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
-      border-radius: 9px 0 0 9px;
-      transition: width 0.5s cubic-bezier(.4,2,.6,1);
-      width: 0;
-    }
-    .progress-bar-maple {
-      height: 100%;
-      background: linear-gradient(90deg, #ffb347 0%, #ff7f50 100%);
-      border-radius: 9px 0 0 9px;
-      transition: width 0.5s cubic-bezier(.4,2,.6,1);
-      width: 0;
-    }
-
-    /* Add styles for the blue bars and icon circles */
-    .blue-bar {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 60px;
-      height: 300px;
-      background-color: #008cba;
-      border-radius: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-around;
-      padding: 10px 0;
-    }
-    .blue-bar.left {
-      left: -30px;
-    }
-    .blue-bar.right {
-      right: -30px;
-    }
-    .icon-circle {
-      position: relative;
-      width: 40px;
-      height: 40px;
-      background-color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 0 0 3px gold inset, 0 0 8px gold;
-      z-index: 10;
-    }
-    .icon-circle img {
-      width: 24px;
-      height: 24px;
-    }
-    .popup {
-      display: none;
-      position: absolute;
-      top: -30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #fff;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      padding: 5px;
-      font-size: 0.8em;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      z-index: 10;
-    }
-  </style>
+  <link rel="stylesheet" href="user_dashboard.css">
 </head>
 <body>
+  <script>
+    function showPopup(element, number, name) {
+      const popup = element.querySelector('.popup');
+      popup.textContent = `${number} - ${name}`;
+      popup.style.display = 'block';
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 2000);
+    }
+  </script>
   <script>
   function isPWA() {
     return window.matchMedia('(display-mode: standalone)').matches ||
@@ -1029,15 +834,6 @@
           }
         }
       });
-
-      function showPopup(element, number, name) {
-        const popup = element.querySelector('.popup');
-        popup.textContent = `${number} - ${name}`;
-        popup.style.display = 'block';
-        setTimeout(() => {
-          popup.style.display = 'none';
-        }, 2000);
-      }
     });
   </script>
 
