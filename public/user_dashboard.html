@@ -881,6 +881,7 @@
           const circumference = 2 * Math.PI * r;
           let percent = 0;
           let ringColor = '#222';
+          icon.classList.remove('black-smoky');
           if (!isNaN(numValue) && numValue >= 0 && numValue <= 10) {
             percent = numValue / 10;
             if (numValue >= 8) {
@@ -889,6 +890,7 @@
               ringColor = '#bfc1c6';
             } else {
               ringColor = '#222';
+              icon.classList.add('black-smoky');
             }
           }
           ringBar.setAttribute('stroke', ringColor);
