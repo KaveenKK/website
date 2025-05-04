@@ -312,4 +312,25 @@ router.post('/reports/:weekNumber/review', authMiddleware, async (req, res) => {
   }
 });
 
+/**
+ * POST /api/claim-new-user-xp
+ * Claim 200 XP as a new user reward
+ */
+router.post('/claim-new-user-xp', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+    if (user.claimed_new_user_xp) {
+      return res.json({ success: true, claimed: false });
+    }
+    user.xp = (user.xp || 0) + 200;
+    user.claimed_new_user_xp = true;
+    await user.save();
+    return res.json({ success: true, claimed: true });
+  } catch (err) {
+    console.error('❌ Claim new user XP error:', err);
+    res.status(500).json({ success: false, error: 'Failed to claim reward' });
+  }
+});
+
 export default router;

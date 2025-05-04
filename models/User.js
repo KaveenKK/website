@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema({
   xp: { type: Number, default: 0 },
   maples: { type: Number, default: 0 },
   level: { type: Number, default: 1 },
+  claimed_new_user_xp: { type: Boolean, default: false },
 
   // Legacy subscriptions by coach ID
   subscriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Coach' }],
