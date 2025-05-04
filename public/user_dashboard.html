@@ -189,6 +189,7 @@
       right: -30px;
     }
     .icon-circle {
+      position: relative;
       width: 40px;
       height: 40px;
       background-color: white;
@@ -196,16 +197,25 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      position: relative;
+      box-shadow: 0 0 0 3px #008cba inset;
     }
     .icon-circle img {
       width: 24px;
       height: 24px;
     }
-    .icon-label {
-      text-align: center;
+    .popup {
+      display: none;
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 5px;
       font-size: 0.8em;
-      color: #333;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 10;
     }
   </style>
 </head>
@@ -396,48 +406,48 @@
       <section id="home" class="active">
         <div class="character-display" style="position: relative;">
           <div class="blue-bar left">
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '1', 'Monk')">
               <img src="images/monk.png" alt="Icon 1">
-              <div class="icon-label">1<br>Monk</div>
+              <div class="popup"></div>
             </div>
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '2', 'Caveman')">
               <img src="images/caveman (2).png" alt="Icon 2">
-              <div class="icon-label">2<br>Caveman</div>
+              <div class="popup"></div>
             </div>
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '3', 'Caveman')">
               <img src="images/caveman (1).png" alt="Icon 3">
-              <div class="icon-label">3<br>Caveman</div>
+              <div class="popup"></div>
             </div>
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '4', 'Caveman')">
               <img src="images/caveman.png" alt="Icon 4">
-              <div class="icon-label">4<br>Caveman</div>
+              <div class="popup"></div>
             </div>
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '5', 'Artifacts')">
               <img src="images/artifacts (1).png" alt="Icon 5">
-              <div class="icon-label">5<br>Artifacts</div>
+              <div class="popup"></div>
             </div>
           </div>
           <img src="images/man.png" alt="Character" class="character-img">
           <div class="blue-bar right">
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '6', 'Artifacts')">
               <img src="images/artifacts.png" alt="Icon 6">
-              <div class="icon-label">6<br>Artifacts</div>
+              <div class="popup"></div>
             </div>
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '7', 'Family')">
               <img src="images/family.png" alt="Icon 7">
-              <div class="icon-label">7<br>Family</div>
+              <div class="popup"></div>
             </div>
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '8', 'Hunting')">
               <img src="images/hunting.png" alt="Icon 8">
-              <div class="icon-label">8<br>Hunting</div>
+              <div class="popup"></div>
             </div>
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '9', 'Love')">
               <img src="images/in-love.png" alt="Icon 9">
-              <div class="icon-label">9<br>Love</div>
+              <div class="popup"></div>
             </div>
-            <div class="icon-circle">
+            <div class="icon-circle" onclick="showPopup(this, '10', 'Health')">
               <img src="images/better-health.png" alt="Icon 10">
-              <div class="icon-label">10<br>Health</div>
+              <div class="popup"></div>
             </div>
           </div>
           <div class="character-info">
@@ -1018,6 +1028,15 @@
           }
         }
       });
+
+      function showPopup(element, number, name) {
+        const popup = element.querySelector('.popup');
+        popup.textContent = `${number} - ${name}`;
+        popup.style.display = 'block';
+        setTimeout(() => {
+          popup.style.display = 'none';
+        }, 2000);
+      }
     });
   </script>
 
