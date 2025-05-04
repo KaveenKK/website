@@ -98,6 +98,12 @@
         margin-top: 2px;
       }
       body { padding-bottom: 70px; }
+      #headerRightBtns { display: none !important; }
+      #hamburgerMenuBtn { display: block !important; }
+      #mobileMenu { display: flex; }
+    }
+    @media (min-width: 769px) {
+      #mobileMenu, #hamburgerMenuBtn { display: none !important; }
     }
   </style>
 </head>
@@ -123,14 +129,23 @@
     }
   }
   </script>
-  <header style="display:flex;align-items:center;justify-content:space-between;background:#008cba;color:white;padding:1rem 2rem;">
+  <header style="display:flex;align-items:center;justify-content:space-between;background:#008cba;color:white;padding:1rem 2rem;position:relative;">
+    <!-- Hamburger menu for mobile -->
+    <button id="hamburgerMenuBtn" aria-label="Open menu" style="display:none;background:none;border:none;font-size:2rem;color:white;cursor:pointer;margin-right:1rem;z-index:1101;">
+      &#9776;
+    </button>
     <div style="display:flex;align-items:center;gap:1rem;">
       <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #fff;background:#eee;">
       <span id="userName" style="font-size:1.3rem;font-weight:bold;"></span>
     </div>
-    <div style="display:flex;align-items:center;gap:1rem;">
+    <div id="headerRightBtns" style="display:flex;align-items:center;gap:1rem;">
       <button id="reportsTopBtn" style="background:#005f7a;">Reports</button>
       <button id="logoutBtn">Logout</button>
+    </div>
+    <!-- Mobile hamburger dropdown -->
+    <div id="mobileMenu" style="display:none;position:absolute;top:100%;left:0;width:180px;background:#fff;color:#333;box-shadow:0 4px 16px rgba(0,0,0,0.13);border-radius:0 0 8px 8px;z-index:1100;flex-direction:column;overflow:hidden;">
+      <button id="mobilePlansBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Plans</button>
+      <button id="mobileLogoutBtn" style="background:none;color:#d32f2f;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Logout</button>
     </div>
   </header>
 
@@ -497,6 +512,60 @@
       document.querySelectorAll('[data-tab="reports"]').forEach(btn => {
         btn.addEventListener('click', loadReports);
       });
+
+      // Hamburger menu logic for mobile
+      const hamburgerMenuBtn = document.getElementById('hamburgerMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
+      const mobilePlansBtn = document.getElementById('mobilePlansBtn');
+      const mobileLogoutBtn = document.getElementById('mobileLogoutBtn');
+      // Show/hide menu
+      if (hamburgerMenuBtn && mobileMenu) {
+        hamburgerMenuBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          if (mobileMenu.style.display === 'flex') {
+            mobileMenu.style.display = 'none';
+          } else {
+            mobileMenu.style.display = 'flex';
+          }
+        });
+        // Hide menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!mobileMenu.contains(e.target) && e.target !== hamburgerMenuBtn) {
+            mobileMenu.style.display = 'none';
+          }
+        });
+        // Hide menu on resize to desktop
+        window.addEventListener('resize', function() {
+          if (window.innerWidth > 768) {
+            mobileMenu.style.display = 'none';
+          }
+        });
+      }
+      // Plans button logic
+      if (mobilePlansBtn) {
+        mobilePlansBtn.addEventListener('click', function() {
+          mobileMenu.style.display = 'none';
+          document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+          document.getElementById('plans').classList.add('active');
+          // Set active state on navs
+          document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => {
+            if (btn.dataset.tab === 'plans') {
+              btn.classList.add('active');
+            } else {
+              btn.classList.remove('active');
+            }
+          });
+        });
+      }
+      // Logout button logic
+      if (mobileLogoutBtn) {
+        mobileLogoutBtn.addEventListener('click', function() {
+          localStorage.removeItem('userToken');
+          localStorage.removeItem('discordId');
+          localStorage.removeItem('expectedPWA');
+          window.location.href = '/';
+        });
+      }
     });
   </script>
 
@@ -506,7 +575,6 @@
     <button data-tab="rewards"><span>🎁</span><div>Rewards</div></button>
     <button data-tab="leaderboard"><span>🥇</span><div>Leaders</div></button>
     <button data-tab="status"><span>🌱</span><div>Status</div></button>
-    <button data-tab="plans"><span>💎</span><div>Plans</div></button>
     <button data-tab="reports"><span>📄</span><div>Reports</div></button>
   </nav>
 </body>
