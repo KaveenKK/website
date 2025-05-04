@@ -1,18 +1,18 @@
 /* Basic Reset */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', sans-serif; background: #f9f9f9; color: #333; }
-header { background: #008cba; color: white; padding: 1rem; text-align: center; }
-.container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; }
+body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
+header { background: var(--primary); color: #fff; padding: 1rem; text-align: center; }
+.container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; background: var(--card-bg); color: var(--text); border-radius: 12px; }
 .hidden { display: none; }
-button { background: #008cba; color: white; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; }
+button { background: var(--primary); color: #fff; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; }
 button:disabled { background: #aaa; cursor: not-allowed; }
-nav { display: flex; gap: 1rem; margin-bottom: 1rem; }
+nav { display: flex; gap: 1rem; margin-bottom: 1rem; background: var(--card-bg); color: var(--text); }
 nav button { flex: 1; }
 section { display: none; }
 section.active { display: block; }
 h2 { margin-bottom: 1rem; }
 ul { list-style: none; }
-li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
 /* Hide mobile nav on desktop by default */
 .mobile-bottom-nav { display: none; }
@@ -32,10 +32,10 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 /* Leaderboard */
 #leaderboard li { display: flex; justify-content: space-between; }
 /* XP/Maples */
-.status-box { background: white; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.status-box { background: var(--card-bg); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 /* Pricing Plans */
 .pricing-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 1rem; }
-.pricing-option { background: white; padding: 1rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.pricing-option { background: var(--card-bg); padding: 1rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .recommended-label { background: gold; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; }
 
 @media (max-width: 768px) {
@@ -46,7 +46,7 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
     bottom: 0;
     left: 0;
     width: 100vw;
-    background: #fff;
+    background: var(--card-bg);
     border-top: 1px solid #eee;
     box-shadow: 0 -2px 12px rgba(0,0,0,0.07);
     z-index: 1000;
@@ -114,7 +114,7 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   text-align: center;
 }
 .unlockables, .daily-stats, .affirmation {
-  background: #fff;
+  background: var(--card-bg);
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -135,7 +135,7 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 .progress-bar-bg {
   width: 100%;
   height: 18px;
-  background: #e0e0e0;
+  background: var(--card-bg);
   border-radius: 9px;
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,0,0,0.07);
@@ -317,42 +317,66 @@ body {
   background: var(--bg);
   color: var(--text);
 }
-.blue-bar {
-  background-color: var(--blue-bar);
+header {
+  background: var(--primary);
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
 }
-.popup {
-  background-color: var(--popup-bg);
-  border: 1.5px solid var(--popup-border);
+.container {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  background: var(--card-bg);
+  color: var(--text);
+  border-radius: 12px;
 }
-/* Dark mode toggle switch styles */
-.switch {
-  position: relative;
-  display: inline-block;
-  width: 48px;
-  height: 24px;
-  vertical-align: middle;
+section, .status-box, .pricing-option, .coach-item, .unlockables, .daily-stats, .affirmation, .progress-bar-bg, .mobile-bottom-nav, .blue-bar, .popup {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
 }
-.switch input { display: none; }
-.slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0; left: 0; right: 0; bottom: 0;
-  background-color: #ccc;
-  transition: .4s;
-  border-radius: 24px;
+ul, li {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
 }
-.slider:before {
-  position: absolute;
-  content: "";
-  height: 18px; width: 18px;
-  left: 3px; bottom: 3px;
-  background-color: white;
-  transition: .4s;
-  border-radius: 50%;
+nav, .dashboard-nav, .mobile-bottom-nav {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
 }
-input:checked + .slider {
-  background-color: #008cba;
+button, .btn, .btn-primary {
+  background: var(--primary) !important;
+  color: #fff !important;
 }
-input:checked + .slider:before {
-  transform: translateX(24px);
-} 
+h1, h2, h3, h4, h5, h6, label, p, span, strong {
+  color: var(--text) !important;
+}
+.dark-mode img, .dark-mode .icon-circle img, .dark-mode .character-img {
+  filter: brightness(0.7) contrast(1.1) !important;
+}
+.dark-mode body,
+.dark-mode .container,
+.dark-mode section,
+.dark-mode .status-box,
+.dark-mode .pricing-option,
+.dark-mode .coach-item,
+.dark-mode .unlockables,
+.dark-mode .daily-stats,
+.dark-mode .affirmation,
+.dark-mode .progress-bar-bg,
+.dark-mode .mobile-bottom-nav,
+.dark-mode .blue-bar,
+.dark-mode .popup,
+.dark-mode ul,
+.dark-mode li,
+.dark-mode nav,
+.dark-mode .dashboard-nav {
+  background: var(--card-bg) !important;
+  color: var(--text) !important;
+}
+.dark-mode button, .dark-mode .btn, .dark-mode .btn-primary {
+  background: var(--primary) !important;
+  color: #fff !important;
+}
+.dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6, .dark-mode label, .dark-mode p, .dark-mode span, .dark-mode strong {
+  color: var(--text) !important;
+}
