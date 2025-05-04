@@ -307,7 +307,7 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
 .dark-mode {
   --bg: #36393e;
   --text: #fff;
-  --primary: #7289da;
+  --primary: #40444b;
   --card-bg: #23272a;
   --blue-bar: #2f3136;
   --popup-bg: #202225;
@@ -380,6 +380,7 @@ h1, h2, h3, h4, h5, h6, label, p, span, strong {
 .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6, .dark-mode label, .dark-mode p, .dark-mode span, .dark-mode strong {
   color: var(--text) !important;
 }
-.dark-mode #newUserReward, .dark-mode #newUserReward * {
-  color: #fff !important;
+.dark-mode #newUserReward {
+  background: var(--popup-bg) !important;
+  border: 2px solid var(--popup-border) !important;
 }
