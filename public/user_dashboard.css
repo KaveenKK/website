@@ -157,19 +157,35 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 
 /* Add styles for the blue bars and icon circles */
 .blue-bar {
-  height: 830px;
-  gap: 40px;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100px;
+  height: 540px;
+  background-color: #008cba;
+  border-radius: 50px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-}
-.icon-circle {
-  flex: 0 0 auto;
+  justify-content: space-evenly;
+  padding: 30px 0;
 }
 .blue-bar.left {
   left: 0;
 }
 .blue-bar.right {
   right: 0;
+}
+.icon-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  background-color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
 }
 .icon-circle svg.ring-svg {
   position: absolute;
@@ -222,30 +238,27 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   left: auto;
 }
 
-/* Hide mobile ring SVG on desktop, show only on mobile */
-.ring-svg.mobile-ring { display: none; }
 @media (max-width: 600px) {
-  .ring-svg.mobile-ring { display: block; }
-  .icon-circle > .ring-svg:not(.mobile-ring) { display: none; }
   .character-display {
     padding-left: 4px;
     padding-right: 4px;
   }
   .blue-bar {
-    height: 320px;
-    gap: 12px;
+    width: 48px;
+    height: 260px;
+    padding: 6px 0;
   }
   .icon-circle {
-    width: 56px;
-    height: 56px;
+    width: 38px;
+    height: 38px;
   }
   .icon-circle svg.ring-svg {
-    width: 56px;
-    height: 56px;
+    width: 38px;
+    height: 38px;
   }
   .icon-circle img {
-    width: 34px;
-    height: 34px;
+    width: 22px;
+    height: 22px;
   }
   .character-img {
     max-width: 60vw !important;
