@@ -96,6 +96,10 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   flex-direction: column;
   align-items: center;
   margin-bottom: 1rem;
+  position: relative;
+  padding-left: 80px;
+  padding-right: 80px;
+  box-sizing: border-box;
 }
 .character-img {
   width: 62.4vw !important;
@@ -167,10 +171,10 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   padding: 10px 0;
 }
 .blue-bar.left {
-  left: -30px;
+  left: 0;
 }
 .blue-bar.right {
-  right: -30px;
+  right: 0;
 }
 .icon-circle {
   position: relative;
@@ -201,4 +205,15 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   font-size: 0.8em;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   z-index: 10;
+}
+
+@media (max-width: 600px) {
+  .character-display {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+  .blue-bar.left, .blue-bar.right {
+    left: 0;
+    right: 0;
+  }
 } 

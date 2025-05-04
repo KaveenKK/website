@@ -212,49 +212,19 @@
       <section id="home" class="active">
         <div class="character-display" style="position: relative;">
           <div class="blue-bar left">
-            <div class="icon-circle" onclick="showPopup(this, '1', 'Monk')">
-              <img src="images/monk.png" alt="Icon 1">
-              <div class="popup"></div>
-            </div>
-            <div class="icon-circle" onclick="showPopup(this, '2', 'Caveman')">
-              <img src="images/caveman (2).png" alt="Icon 2">
-              <div class="popup"></div>
-            </div>
-            <div class="icon-circle" onclick="showPopup(this, '3', 'Caveman')">
-              <img src="images/caveman (1).png" alt="Icon 3">
-              <div class="popup"></div>
-            </div>
-            <div class="icon-circle" onclick="showPopup(this, '4', 'Caveman')">
-              <img src="images/caveman.png" alt="Icon 4">
-              <div class="popup"></div>
-            </div>
-            <div class="icon-circle" onclick="showPopup(this, '5', 'Artifacts')">
-              <img src="images/artifacts (1).png" alt="Icon 5">
-              <div class="popup"></div>
-            </div>
+            <div class="icon-circle" data-category="physical"><img src="images/monk.png" alt="Physical"><div class="popup"></div></div>
+            <div class="icon-circle" data-category="mental"><img src="images/caveman (2).png" alt="Mental"><div class="popup"></div></div>
+            <div class="icon-circle" data-category="social"><img src="images/caveman (1).png" alt="Social"><div class="popup"></div></div>
+            <div class="icon-circle" data-category="love"><img src="images/caveman.png" alt="Love"><div class="popup"></div></div>
+            <div class="icon-circle" data-category="career"><img src="images/artifacts (1).png" alt="Career"><div class="popup"></div></div>
           </div>
           <img src="images/man.png" alt="Character" class="character-img">
           <div class="blue-bar right">
-            <div class="icon-circle" onclick="showPopup(this, '6', 'Artifacts')">
-              <img src="images/artifacts.png" alt="Icon 6">
-              <div class="popup"></div>
-            </div>
-            <div class="icon-circle" onclick="showPopup(this, '7', 'Family')">
-              <img src="images/family.png" alt="Icon 7">
-              <div class="popup"></div>
-            </div>
-            <div class="icon-circle" onclick="showPopup(this, '8', 'Hunting')">
-              <img src="images/hunting.png" alt="Icon 8">
-              <div class="popup"></div>
-            </div>
-            <div class="icon-circle" onclick="showPopup(this, '9', 'Love')">
-              <img src="images/in-love.png" alt="Icon 9">
-              <div class="popup"></div>
-            </div>
-            <div class="icon-circle" onclick="showPopup(this, '10', 'Health')">
-              <img src="images/better-health.png" alt="Icon 10">
-              <div class="popup"></div>
-            </div>
+            <div class="icon-circle" data-category="creative"><img src="images/artifacts.png" alt="Creative"><div class="popup"></div></div>
+            <div class="icon-circle" data-category="travel"><img src="images/family.png" alt="Travel"><div class="popup"></div></div>
+            <div class="icon-circle" data-category="family"><img src="images/hunting.png" alt="Family"><div class="popup"></div></div>
+            <div class="icon-circle" data-category="style"><img src="images/in-love.png" alt="Style"><div class="popup"></div></div>
+            <div class="icon-circle" data-category="spiritual"><img src="images/better-health.png" alt="Spiritual"><div class="popup"></div></div>
           </div>
           <div class="character-info">
             <h2>Level <span id="userLevel">1</span></h2>
@@ -467,6 +437,21 @@
         const mapleMax = 1000;
         document.getElementById('xpBar').style.width = Math.min(100, (xp / xpMax) * 100) + '%';
         document.getElementById('mapleBar').style.width = Math.min(100, (maples / mapleMax) * 100) + '%';
+
+        // Extract the 10 category values from user
+        userCategoryData = {
+          physical: user.physical,
+          mental: user.mental,
+          social: user.social,
+          love: user.love,
+          career: user.career,
+          creative: user.creative,
+          travel: user.travel,
+          family: user.family,
+          style: user.style,
+          spiritual: user.spiritual
+        };
+        attachIconPopups();
       }
 
       async function loadShop() {
@@ -834,6 +819,39 @@
           }
         }
       });
+
+      // Place this after user data is loaded
+      const CATEGORY_LABELS = {
+        physical: 'Physical',
+        mental: 'Mental',
+        social: 'Social',
+        love: 'Love',
+        career: 'Career',
+        creative: 'Creative',
+        travel: 'Travel',
+        family: 'Family',
+        style: 'Style',
+        spiritual: 'Spiritual'
+      };
+      let userCategoryData = {};
+
+      // After fetching user data (in loadStatus or similar):
+      // userCategoryData = { physical: 5, mental: 5, ... }
+
+      // Attach click handlers after DOMContentLoaded and after user data is loaded
+      function attachIconPopups() {
+        document.querySelectorAll('.icon-circle').forEach(icon => {
+          icon.onclick = function() {
+            const cat = icon.getAttribute('data-category');
+            const value = userCategoryData[cat] !== undefined ? userCategoryData[cat] : '-';
+            const label = CATEGORY_LABELS[cat] || cat;
+            const popup = icon.querySelector('.popup');
+            popup.textContent = `${label}: ${value}`;
+            popup.style.display = 'block';
+            setTimeout(() => { popup.style.display = 'none'; }, 2000);
+          };
+        });
+      }
     });
   </script>
 
