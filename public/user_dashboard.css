@@ -185,10 +185,29 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 0 0 3px gold inset, 0 0 8px gold;
   z-index: 10;
 }
+.icon-circle svg.ring-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  z-index: 1;
+  pointer-events: none;
+}
+.icon-circle .ring-bg {
+  stroke: #eee;
+  opacity: 1;
+}
+.icon-circle .ring-bar {
+  transition: stroke 0.3s, stroke-dasharray 0.3s;
+  stroke: #222;
+  opacity: 1;
+}
 .icon-circle img {
+  position: relative;
+  z-index: 2;
   width: 24px;
   height: 24px;
 }

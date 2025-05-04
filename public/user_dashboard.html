@@ -874,31 +874,21 @@
         document.querySelectorAll('.icon-circle').forEach(icon => {
           const cat = icon.getAttribute('data-category');
           const value = userCategoryData[cat] !== undefined ? userCategoryData[cat] : '-';
-          // Remove previous ring classes
-          icon.classList.remove('gold-ring', 'silver-ring', 'black-ring');
-          // Set ring color based on value
-          let ringColor = '#222';
-          if (typeof value === 'number') {
-            if (value >= 8) {
-              icon.classList.add('gold-ring');
-              ringColor = 'gold';
-            } else if (value >= 5) {
-              icon.classList.add('silver-ring');
-              ringColor = '#bfc1c6';
-            } else {
-              icon.classList.add('black-ring');
-              ringColor = '#222';
-            }
-          } else {
-            icon.classList.add('black-ring'); // fallback
-          }
-          // Set SVG ring fill
+          // Set SVG ring fill and color
           const ringBar = icon.querySelector('.ring-bar');
           const r = 16;
           const circumference = 2 * Math.PI * r;
           let percent = 0;
+          let ringColor = '#222';
           if (typeof value === 'number' && value >= 0 && value <= 10) {
             percent = value / 10;
+            if (value >= 8) {
+              ringColor = 'gold';
+            } else if (value >= 5) {
+              ringColor = '#bfc1c6';
+            } else {
+              ringColor = '#222';
+            }
           }
           ringBar.setAttribute('stroke', ringColor);
           ringBar.setAttribute('stroke-dasharray', `${circumference * percent} ${circumference * (1 - percent)}`);
