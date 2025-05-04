@@ -114,10 +114,14 @@
       margin-bottom: 1rem;
     }
     .character-img {
-      width: 150px;
+      width: 30vw;
+      max-width: 300px;
+      min-width: 120px;
       height: auto;
       border-radius: 50%;
       margin-bottom: 1rem;
+      display: block;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.10);
     }
     .character-info {
       text-align: center;
@@ -335,7 +339,7 @@
         <div id="reportsContainer">Loading reports…</div>
       </section>
       <!-- Settings -->
-      <section id="settings" style="display:none;">
+      <section id="settings">
         <h2>Settings</h2>
         <div style="margin-bottom:1.5rem;">
           <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Profile Gender</label>
