@@ -105,6 +105,37 @@
     @media (min-width: 769px) {
       #mobileMenu, #hamburgerMenuBtn { display: none !important; }
     }
+
+    /* Home Tab */
+    .character-display {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    .character-img {
+      width: 150px;
+      height: auto;
+      border-radius: 50%;
+      margin-bottom: 1rem;
+    }
+    .character-info {
+      text-align: center;
+    }
+    .unlockables, .daily-stats, .affirmation {
+      background: #fff;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 1rem;
+    }
+    .unlockables ul {
+      list-style: none;
+      padding: 0;
+    }
+    .unlockables li {
+      margin-bottom: 0.5rem;
+    }
   </style>
 </head>
 <body>
@@ -169,6 +200,7 @@
         <button data-tab="status">My XP & Maples</button>
         <button data-tab="plans">Pricing Plans</button>
         <button data-tab="reports">Reports</button>
+        <button data-tab="home">Home</button>
         <a href="model.html" class="btn">Go to Page 2</a>
       </nav>
 
@@ -261,6 +293,35 @@
             </ul>
             <div id="paypal-button-container-maples"></div>
           </div>
+        </div>
+      </section>
+
+      <!-- Home Tab -->
+      <section id="home" class="active">
+        <div class="character-display">
+          <img src="images/character.png" alt="Character" class="character-img">
+          <div class="character-info">
+            <h2>Level 5</h2>
+            <p><strong>XP:</strong> 1200</p>
+            <p><strong>Maples:</strong> 300</p>
+          </div>
+        </div>
+        <div class="unlockables">
+          <h3>Future Unlocks</h3>
+          <ul>
+            <li>Exclusive Nevengi Club Card</li>
+            <li>Special Character Skins</li>
+            <li>Daily Challenges</li>
+          </ul>
+        </div>
+        <div class="daily-stats">
+          <h3>Today's Stats</h3>
+          <p>Steps: 5000</p>
+          <p>Calories Burned: 300</p>
+        </div>
+        <div class="affirmation">
+          <h3>Daily Affirmation</h3>
+          <p>"Every day is a new opportunity to grow and improve."</p>
         </div>
       </section>
 
