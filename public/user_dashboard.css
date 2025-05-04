@@ -228,11 +228,24 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 
 @media (max-width: 600px) {
   .character-display {
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 4px;
+    padding-right: 4px;
   }
-  .blue-bar.left, .blue-bar.right {
-    left: 0;
-    right: 0;
+  .blue-bar {
+    width: 32px;
+    height: 160px;
+    padding: 2px 0;
+  }
+  .icon-circle {
+    width: 28px;
+    height: 28px;
+  }
+  .icon-circle img {
+    width: 16px;
+    height: 16px;
+  }
+  .character-img {
+    max-width: 60vw !important;
+    min-width: 80px !important;
   }
 } 
