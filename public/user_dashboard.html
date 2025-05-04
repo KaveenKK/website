@@ -167,24 +167,45 @@
       width: 0;
     }
 
-    /* Add styles for the vertical icons */
-    .vertical-icons {
+    /* Add styles for the blue bars and icon circles */
+    .blue-bar {
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
+      width: 60px;
+      height: 300px;
+      background-color: #008cba;
+      border-radius: 30px;
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
+      align-items: center;
+      justify-content: space-around;
+      padding: 10px 0;
     }
-    .vertical-icons.left {
-      left: 0;
+    .blue-bar.left {
+      left: -30px;
     }
-    .vertical-icons.right {
-      right: 0;
+    .blue-bar.right {
+      right: -30px;
     }
-    .vertical-icons img {
+    .icon-circle {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .icon-circle img {
       width: 24px;
       height: 24px;
+    }
+    .icon-label {
+      text-align: center;
+      font-size: 0.8em;
+      color: #333;
     }
   </style>
 </head>
@@ -374,20 +395,50 @@
       <!-- Home Tab -->
       <section id="home" class="active">
         <div class="character-display" style="position: relative;">
-          <div class="vertical-icons left">
-            <img src="images/monk.png" alt="Icon 1">
-            <img src="images/caveman (2).png" alt="Icon 2">
-            <img src="images/caveman (1).png" alt="Icon 3">
-            <img src="images/caveman.png" alt="Icon 4">
-            <img src="images/artifacts (1).png" alt="Icon 5">
+          <div class="blue-bar left">
+            <div class="icon-circle">
+              <img src="images/monk.png" alt="Icon 1">
+              <div class="icon-label">1<br>Monk</div>
+            </div>
+            <div class="icon-circle">
+              <img src="images/caveman (2).png" alt="Icon 2">
+              <div class="icon-label">2<br>Caveman</div>
+            </div>
+            <div class="icon-circle">
+              <img src="images/caveman (1).png" alt="Icon 3">
+              <div class="icon-label">3<br>Caveman</div>
+            </div>
+            <div class="icon-circle">
+              <img src="images/caveman.png" alt="Icon 4">
+              <div class="icon-label">4<br>Caveman</div>
+            </div>
+            <div class="icon-circle">
+              <img src="images/artifacts (1).png" alt="Icon 5">
+              <div class="icon-label">5<br>Artifacts</div>
+            </div>
           </div>
           <img src="images/man.png" alt="Character" class="character-img">
-          <div class="vertical-icons right">
-            <img src="images/artifacts.png" alt="Icon 6">
-            <img src="images/family.png" alt="Icon 7">
-            <img src="images/hunting.png" alt="Icon 8">
-            <img src="images/in-love.png" alt="Icon 9">
-            <img src="images/better-health.png" alt="Icon 10">
+          <div class="blue-bar right">
+            <div class="icon-circle">
+              <img src="images/artifacts.png" alt="Icon 6">
+              <div class="icon-label">6<br>Artifacts</div>
+            </div>
+            <div class="icon-circle">
+              <img src="images/family.png" alt="Icon 7">
+              <div class="icon-label">7<br>Family</div>
+            </div>
+            <div class="icon-circle">
+              <img src="images/hunting.png" alt="Icon 8">
+              <div class="icon-label">8<br>Hunting</div>
+            </div>
+            <div class="icon-circle">
+              <img src="images/in-love.png" alt="Icon 9">
+              <div class="icon-label">9<br>Love</div>
+            </div>
+            <div class="icon-circle">
+              <img src="images/better-health.png" alt="Icon 10">
+              <div class="icon-label">10<br>Health</div>
+            </div>
           </div>
           <div class="character-info">
             <h2>Level <span id="userLevel">1</span></h2>
