@@ -203,6 +203,7 @@
         <button data-tab="plans">Pricing Plans</button>
         <button data-tab="reports">Reports</button>
         <button data-tab="home">Home</button>
+        <button data-tab="settings">Settings</button>
         <a href="model.html" class="btn">Go to Page 2</a>
       </nav>
 
@@ -336,15 +337,14 @@
       <!-- Settings -->
       <section id="settings" style="display:none;">
         <h2>Settings</h2>
-        <form id="settingsForm">
-          <div style="margin-bottom:1rem;">
-            <label style="font-weight:bold;">Profile Gender:</label><br>
-            <label><input type="radio" name="gender" value="male"> Male</label>
-            <label style="margin-left:1em;"><input type="radio" name="gender" value="female"> Female</label>
+        <div style="margin-bottom:1.5rem;">
+          <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Profile Gender</label>
+          <div id="genderToggleWrapper" style="display:flex;align-items:center;gap:1em;">
+            <span id="genderLabel" style="font-size:1.1em;font-weight:500;">Male</span>
+            <button id="genderToggleBtn" type="button" style="background:#e6f7ff;color:#008cba;border:1px solid #008cba;padding:0.5em 1.5em;border-radius:20px;font-size:1em;transition:background 0.2s;">Switch to Female</button>
           </div>
-          <button type="submit">Save</button>
           <span id="settingsSavedMsg" style="margin-left:1em;color:green;display:none;">Saved!</span>
-        </form>
+        </div>
       </section>
     </div>
   </div>
@@ -409,7 +409,7 @@
       });
 
       // Set initial active tab
-      handleTabClick('explore');
+      handleTabClick('home');
 
       // Helper: render one coach, with optional pinned styling
       function renderCoachItem(coach, pinned = false) {
@@ -666,19 +666,25 @@
         });
       }
       // Settings section logic
-      const settingsForm = document.getElementById('settingsForm');
+      const genderToggleBtn = document.getElementById('genderToggleBtn');
+      const genderLabel = document.getElementById('genderLabel');
       const settingsSavedMsg = document.getElementById('settingsSavedMsg');
-      if (settingsForm) {
-        settingsForm.addEventListener('submit', async function(e) {
-          e.preventDefault();
-          const gender = settingsForm.gender.value;
-          const headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token };
-          const res = await fetch('/api/user-profile', { method: 'PUT', headers, body: JSON.stringify({ gender }) });
-          if (res.ok) {
-            settingsSavedMsg.style.display = 'inline';
-            setTimeout(()=>settingsSavedMsg.style.display='none', 1500);
-            updateCharacterImage(gender);
-          }
+      let currentGender = 'male';
+      async function saveGender(gender) {
+        const headers = { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token };
+        const res = await fetch('/api/user-profile', { method: 'PUT', headers, body: JSON.stringify({ gender }) });
+        if (res.ok) {
+          settingsSavedMsg.style.display = 'inline';
+          setTimeout(()=>settingsSavedMsg.style.display='none', 1500);
+          updateCharacterImage(gender);
+        }
+      }
+      if (genderToggleBtn && genderLabel) {
+        genderToggleBtn.addEventListener('click', function() {
+          currentGender = currentGender === 'male' ? 'female' : 'male';
+          genderLabel.textContent = currentGender.charAt(0).toUpperCase() + currentGender.slice(1);
+          genderToggleBtn.textContent = currentGender === 'male' ? 'Switch to Female' : 'Switch to Male';
+          saveGender(currentGender);
         });
       }
       // Helper to update character image
@@ -688,15 +694,16 @@
           img.src = gender === 'female' ? 'images/lady.png' : 'images/man.png';
         }
       }
-      // On load, set gender radio and character image
+      // On load, set gender toggle and character image
       async function loadUserGenderAndSetImage() {
         const headers = { Authorization: 'Bearer ' + token };
         const res = await fetch('/api/user-profile', { headers });
         if (!res.ok) return;
         const user = await res.json();
         if (user.gender) {
-          const radio = document.querySelector(`input[name='gender'][value='${user.gender}']`);
-          if (radio) radio.checked = true;
+          currentGender = user.gender;
+          genderLabel.textContent = currentGender.charAt(0).toUpperCase() + currentGender.slice(1);
+          genderToggleBtn.textContent = currentGender === 'male' ? 'Switch to Female' : 'Switch to Male';
           updateCharacterImage(user.gender);
         }
       }
