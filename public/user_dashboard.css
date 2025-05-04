@@ -161,7 +161,7 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   top: 50%;
   transform: translateY(-50%);
   width: 100px;
-  height: 540px;
+  height: 320px;
   background-color: #008cba;
   border-radius: 50px;
   display: flex;
@@ -178,8 +178,8 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 }
 .icon-circle {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 54px;
+  height: 54px;
   background-color: white;
   border-radius: 50%;
   display: flex;
@@ -191,8 +191,8 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   position: absolute;
   top: 0;
   left: 0;
-  width: 150px;
-  height: 150px;
+  width: 54px;
+  height: 54px;
   z-index: 1;
   pointer-events: none;
 }
@@ -212,8 +212,8 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
 .icon-circle img {
   position: relative;
   z-index: 2;
-  width: 95px;
-  height: 95px;
+  width: 32px;
+  height: 32px;
 }
 .popup {
   display: none;
