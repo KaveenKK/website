@@ -55,6 +55,8 @@ const coachSchema = new mongoose.Schema({
   // Ratings given by users
   ratings: [ratingSchema],
 
+  average_rating: { type: Number, default: 0 },
+
   // ────────────────────────────────────────────────────────
   createdAt: {
     type: Date,

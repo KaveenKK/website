@@ -196,9 +196,11 @@ router.post('/rate', authMiddleware, async (req, res) => {
     // Replace any previous rating by this user
     coach.ratings = coach.ratings.filter(r => r.user.toString() !== userId);
     coach.ratings.push({ user: userId, rating: Number(rating) });
+    // Calculate and save average rating
+    const avg = coach.ratings.reduce((sum, r) => sum + r.rating, 0) / coach.ratings.length;
+    coach.average_rating = avg;
     await coach.save();
 
-    const avg = coach.ratings.reduce((sum, r) => sum + r.rating, 0) / coach.ratings.length;
     return res.json({ success: true, averageRating: avg.toFixed(2) });
   } catch (err) {
     console.error('❌ Rating error:', err);

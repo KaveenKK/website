@@ -460,14 +460,34 @@
 
       // Helper: render one coach, with optional pinned styling and subscription status
       function renderCoachItem(coach, isSubscribed = false, pinned = false) {
+        // Social links icons
+        const socials = coach.social_links || {};
+        const socialIcons = [
+          socials.instagram ? `<a href='${socials.instagram}' target='_blank' title='Instagram'><img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/instagram.svg' style='width:20px;height:20px;margin-right:4px;vertical-align:middle;'></a>` : '',
+          socials.twitter ? `<a href='${socials.twitter}' target='_blank' title='Twitter'><img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/twitter.svg' style='width:20px;height:20px;margin-right:4px;vertical-align:middle;'></a>` : '',
+          socials.linkedin ? `<a href='${socials.linkedin}' target='_blank' title='LinkedIn'><img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/linkedin.svg' style='width:20px;height:20px;margin-right:4px;vertical-align:middle;'></a>` : '',
+          socials.youtube ? `<a href='${socials.youtube}' target='_blank' title='YouTube'><img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/youtube.svg' style='width:20px;height:20px;margin-right:4px;vertical-align:middle;'></a>` : '',
+          socials.tiktok ? `<a href='${socials.tiktok}' target='_blank' title='TikTok'><img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/tiktok.svg' style='width:20px;height:20px;margin-right:4px;vertical-align:middle;'></a>` : '',
+          socials.threads ? `<a href='${socials.threads}' target='_blank' title='Threads'><img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/threads.svg' style='width:20px;height:20px;margin-right:4px;vertical-align:middle;'></a>` : '',
+          socials.facebook ? `<a href='${socials.facebook}' target='_blank' title='Facebook'><img src='https://cdn.jsdelivr.net/npm/simple-icons@v9/icons/facebook.svg' style='width:20px;height:20px;margin-right:4px;vertical-align:middle;'></a>` : ''
+        ].join('');
+        const profilePic = coach.profile_picture ? coach.profile_picture : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+        const avgRating = coach.average_rating ? Number(coach.average_rating).toFixed(2) : 'N/A';
         return `
           <li class="coach-item${pinned ? ' pinned' : ''}">
-            <div class="coach-info">
-              ${pinned ? '<strong style="color:#008cba;">[Invited Coach]</strong> ' : ''}
-              <strong>${coach.name}</strong> – ${(coach.specialties || []).join(', ')}
+            <div class="coach-info" style="display:flex;align-items:center;gap:1em;">
+              <img src="${profilePic}" alt="Profile" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #eee;background:#fff;">
+              <div style="flex:1;">
+                ${pinned ? '<strong style=\"color:#008cba;\">[Invited Coach]</strong> ' : ''}
+                <strong>${coach.name}</strong> – ${(coach.specialties || []).join(', ')}<br>
+                <span style='font-size:0.95em;color:#888;'>${coach.experience || ''}</span><br>
+                <span style='font-size:0.95em;'>${socialIcons}</span><br>
+                <span style='font-size:0.95em;color:#f39c12;'>⭐ ${avgRating}</span>
+              </div>
             </div>
             <div class="coach-action">
               <button ${isSubscribed ? 'disabled' : ''} onclick="${isSubscribed ? '' : `subscribe('${coach._id}')`}">${isSubscribed ? 'Subscribed' : 'Subscribe'}</button>
+              ${isSubscribed ? `<button onclick=\"unsubscribe('${coach._id}')\" style=\"background:#d32f2f;\">Unsubscribe</button>` : ''}
               <button onclick="rate('${coach._id}')">Rate</button>
             </div>
           </li>
@@ -662,6 +682,7 @@
       }
 
       document.getElementById('logoutBtn').addEventListener('click', function() {
+        if (!confirm('Are you sure you want to log out?')) return;
         localStorage.removeItem('userToken');
         localStorage.removeItem('discordId');
         localStorage.removeItem('expectedPWA');
@@ -789,6 +810,7 @@
       // Logout button logic
       if (mobileLogoutBtn) {
         mobileLogoutBtn.addEventListener('click', function() {
+          if (!confirm('Are you sure you want to log out?')) return;
           localStorage.removeItem('userToken');
           localStorage.removeItem('discordId');
           localStorage.removeItem('expectedPWA');
@@ -846,6 +868,30 @@
             alert('Could not claim reward.');
           }
         });
+      }
+
+      window.unsubscribe = async function(coachId) {
+        if (!confirm('Are you sure you want to unsubscribe? Your money won\'t be refunded if you already have paid.')) return;
+        try {
+          const res = await fetch(`${API_BASE}/api/unsubscribe`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token
+            },
+            body: JSON.stringify({ coachId })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            alert('You have unsubscribed from this coach.');
+            loadCoaches();
+            loadStatus();
+          } else {
+            alert(data.error || 'Failed to unsubscribe.');
+          }
+        } catch (err) {
+          alert('An error occurred. Please try again.');
+        }
       }
     });
   </script>
