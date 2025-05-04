@@ -161,14 +161,14 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
   top: 50%;
   transform: translateY(-50%);
   width: 100px;
-  height: 320px;
+  height: 400px;
   background-color: #008cba;
   border-radius: 50px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  padding: 30px 0;
+  padding: 50px 0;
 }
 .blue-bar.left {
   left: 0;
@@ -244,9 +244,8 @@ li { background: white; margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 
     padding-right: 4px;
   }
   .blue-bar {
-    width: 48px;
-    height: 260px;
-    padding: 6px 0;
+    height: 320px;
+    padding: 18px 0;
   }
   .icon-circle {
     width: 54px;

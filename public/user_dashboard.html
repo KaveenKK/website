@@ -885,10 +885,6 @@
           const cat = icon.getAttribute('data-category');
           const value = userCategoryData[cat] !== undefined ? userCategoryData[cat] : '-';
           const numValue = Number(value);
-          // Set SVG ring fill and color
-          const ringBar = icon.querySelector('.ring-bar');
-          const r = 60; // match new SVG radius
-          const circumference = 2 * Math.PI * r;
           let percent = 0;
           let ringColor = '#222';
           icon.classList.remove('black-smoky', 'left-popup', 'right-popup');
@@ -908,9 +904,14 @@
               icon.classList.add('black-smoky');
             }
           }
-          ringBar.setAttribute('stroke', ringColor);
-          ringBar.setAttribute('stroke-dasharray', `${circumference * percent} ${circumference * (1 - percent)}`);
-          ringBar.setAttribute('stroke-dashoffset', 0);
+          // Update both desktop and mobile ring bars
+          icon.querySelectorAll('.ring-bar').forEach((ringBar, idx) => {
+            const r = idx === 0 ? 60 : 22;
+            const circumference = 2 * Math.PI * r;
+            ringBar.setAttribute('stroke', ringColor);
+            ringBar.setAttribute('stroke-dasharray', `${circumference * percent} ${circumference * (1 - percent)}`);
+            ringBar.setAttribute('stroke-dashoffset', 0);
+          });
           icon.onclick = function() {
             const label = CATEGORY_LABELS[cat] || cat;
             const popup = icon.querySelector('.popup');
