@@ -88,7 +88,7 @@ router.post("/submit", async (req, res) => {
 router.get('/coaches', authMiddleware, async (req, res) => {
   try {
     const coaches = await Coach.find({ approved: true })
-      .select('name specialties monthly_price_maples profile_picture');
+      .select('name specialties monthly_price_maples profile_picture social_links experience average_rating');
     return res.json(coaches);
   } catch (err) {
     console.error('❌ Error fetching coaches:', err);

@@ -473,6 +473,14 @@
         ].join('');
         const profilePic = coach.profile_picture ? coach.profile_picture : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
         const avgRating = coach.average_rating ? Number(coach.average_rating).toFixed(2) : 'N/A';
+        // Star rating UI for subscribed users
+        let ratingUI = '';
+        if (isSubscribed) {
+          ratingUI = `<span class='star-rating' data-coach='${coach._id}'>
+            ${[1,2,3,4,5].map(i => `<span class='star' data-value='${i}' style='font-size:1.3em;cursor:pointer;color:#ccc;'>&#9733;</span>`).join('')}
+            <span class='rate-label' style='font-size:0.95em;color:#888;margin-left:0.5em;'></span>
+          </span>`;
+        }
         return `
           <li class="coach-item${pinned ? ' pinned' : ''}">
             <div class="coach-info" style="display:flex;align-items:center;gap:1em;">
@@ -483,12 +491,12 @@
                 <span style='font-size:0.95em;color:#888;'>${coach.experience || ''}</span><br>
                 <span style='font-size:0.95em;'>${socialIcons}</span><br>
                 <span style='font-size:0.95em;color:#f39c12;'>⭐ ${avgRating}</span>
+                ${ratingUI}
               </div>
             </div>
             <div class="coach-action">
               <button ${isSubscribed ? 'disabled' : ''} onclick="${isSubscribed ? '' : `subscribe('${coach._id}')`}">${isSubscribed ? 'Subscribed' : 'Subscribe'}</button>
               ${isSubscribed ? `<button onclick=\"unsubscribe('${coach._id}')\" style=\"background:#d32f2f;\">Unsubscribe</button>` : ''}
-              <button onclick="rate('${coach._id}')">Rate</button>
             </div>
           </li>
         `;
@@ -893,6 +901,38 @@
           alert('An error occurred. Please try again.');
         }
       }
+
+      // Star rating event delegation
+      document.addEventListener('click', async function(e) {
+        if (e.target.classList.contains('star')) {
+          const span = e.target.closest('.star-rating');
+          const coachId = span.getAttribute('data-coach');
+          const value = Number(e.target.getAttribute('data-value'));
+          // Highlight stars
+          span.querySelectorAll('.star').forEach(star => {
+            star.style.color = Number(star.getAttribute('data-value')) <= value ? '#f39c12' : '#ccc';
+          });
+          span.querySelector('.rate-label').textContent = `You rated ${value} star${value > 1 ? 's' : ''}`;
+          // Send to backend
+          const headers = { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token };
+          try {
+            const res = await fetch(`${API_BASE}/api/rate`, {
+              method: 'POST',
+              headers,
+              body: JSON.stringify({ coachId, rating: value })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+              alert('Thank you for rating!');
+              loadCoaches();
+            } else {
+              alert(data.error || 'Failed to rate coach.');
+            }
+          } catch (err) {
+            alert('An error occurred. Please try again.');
+          }
+        }
+      });
     });
   </script>
 
