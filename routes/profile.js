@@ -84,4 +84,29 @@ router.post("/profile", authMiddleware, async (req, res) => {
   }
 });
 
+// GET /profile/subscribers
+router.get("/profile/subscribers", authMiddleware, async (req, res) => {
+  try {
+    const coach = await Coach.findById(req.user.id).populate({
+      path: 'subscribers',
+      select: 'username email discord_id avatar'
+    });
+    if (!coach) return res.status(404).json({ error: "Coach not found" });
+    res.json(coach.subscribers || []);
+  } catch (err) {
+    console.error("❌ Failed to fetch subscribers:", err);
+    res.status(500).json({ error: "Failed to fetch subscribers" });
+  }
+});
+
+// GET /profile/invited
+router.get("/profile/invited", authMiddleware, async (req, res) => {
+  try {
+    // No invited_by or referred_coach_id field in User model, so return empty array for now
+    res.json([]);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch invited users" });
+  }
+});
+
 export default router;

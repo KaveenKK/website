@@ -183,6 +183,56 @@ document.addEventListener("DOMContentLoaded", async () => {
     updateFormState();
   });
 
+  // Load and render subscribers
+  async function loadSubscribers() {
+    const list = document.getElementById('subscriberList');
+    list.innerHTML = '<li>Loading subscribers…</li>';
+    try {
+      const res = await api('/profile/subscribers');
+      const users = await res.json();
+      if (!users.length) {
+        list.innerHTML = '<li>No subscribers yet.</li>';
+        return;
+      }
+      list.innerHTML = users.map(u => `
+        <li>
+          <img src="${u.avatar ? `https://cdn.discordapp.com/avatars/${u.discord_id}/${u.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:32px;height:32px;border-radius:50%;vertical-align:middle;margin-right:8px;">
+          <strong>${u.username || u.email || u.discord_id}</strong>
+        </li>
+      `).join('');
+    } catch (err) {
+      list.innerHTML = '<li>Failed to load subscribers.</li>';
+    }
+  }
+
+  // Load and render invited users
+  async function loadInvited() {
+    const list = document.getElementById('inviteList');
+    list.innerHTML = '<li>Loading invited members…</li>';
+    try {
+      const res = await api('/profile/invited');
+      const users = await res.json();
+      if (!users.length) {
+        list.innerHTML = '<li>No invited users yet.</li>';
+        return;
+      }
+      list.innerHTML = users.map(u => `
+        <li>
+          <img src="${u.avatar ? `https://cdn.discordapp.com/avatars/${u.discord_id}/${u.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:32px;height:32px;border-radius:50%;vertical-align:middle;margin-right:8px;">
+          <strong>${u.username || u.email || u.discord_id}</strong>
+        </li>
+      `).join('');
+    } catch (err) {
+      list.innerHTML = '<li>Failed to load invited users.</li>';
+    }
+  }
+
+  // Tab navigation: load data when switching to Subscribers or Invites
+  tabs.forEach(t => t.addEventListener('click', () => {
+    if (t.dataset.tab === 'subscribers') loadSubscribers();
+    if (t.dataset.tab === 'invites') loadInvited();
+  }));
+
   // Initial load
   await loadCoachData();
 });
