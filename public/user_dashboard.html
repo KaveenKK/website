@@ -114,13 +114,13 @@
       margin-bottom: 1rem;
     }
     .character-img {
-      width: 39vw;
-      max-width: 390px;
-      min-width: 156px;
-      height: auto;
-      border-radius: 50%;
-      margin-bottom: 1rem;
-      display: block;
+      width: 39vw !important;
+      max-width: 390px !important;
+      min-width: 156px !important;
+      height: auto !important;
+      border-radius: 50% !important;
+      margin-bottom: 1rem !important;
+      display: block !important;
     }
     .character-info {
       text-align: center;
@@ -138,6 +138,33 @@
     }
     .unlockables li {
       margin-bottom: 0.5rem;
+    }
+    .progress-bar-wrapper {
+      width: 100%;
+      margin-top: 0.3em;
+      margin-bottom: 0.5em;
+    }
+    .progress-bar-bg {
+      width: 100%;
+      height: 18px;
+      background: #e0e0e0;
+      border-radius: 9px;
+      overflow: hidden;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .progress-bar-xp {
+      height: 100%;
+      background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+      border-radius: 9px 0 0 9px;
+      transition: width 0.5s cubic-bezier(.4,2,.6,1);
+      width: 0;
+    }
+    .progress-bar-maple {
+      height: 100%;
+      background: linear-gradient(90deg, #ffb347 0%, #ff7f50 100%);
+      border-radius: 9px 0 0 9px;
+      transition: width 0.5s cubic-bezier(.4,2,.6,1);
+      width: 0;
     }
   </style>
 </head>
@@ -232,8 +259,22 @@
       <section id="status">
         <h2>My Status</h2>
         <div class="status-box">
-          <p><strong>XP:</strong> <span id="xpAmount">0</span></p>
-          <p><strong>Maples:</strong> <span id="mapleAmount">0</span></p>
+          <div style="margin-bottom:1em;">
+            <strong>XP:</strong> <span id="xpAmount">0</span>
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-xp" id="xpBar"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <strong>Maples:</strong> <span id="mapleAmount">0</span>
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-maple" id="mapleBar"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -308,9 +349,9 @@
         <div class="character-display">
           <img src="images/man.png" alt="Character" class="character-img">
           <div class="character-info">
-            <h2>Level 5</h2>
-            <p><strong>XP:</strong> 1200</p>
-            <p><strong>Maples:</strong> 300</p>
+            <h2>Level <span id="userLevel">1</span></h2>
+            <p><strong>XP:</strong> <span id="homeXp">0</span></p>
+            <p><strong>Maples:</strong> <span id="homeMaples">0</span></p>
           </div>
         </div>
         <div class="unlockables">
@@ -465,10 +506,25 @@
       }
 
       async function loadStatus() {
-        const res = await fetch(`${API_BASE}/api/status`, { headers: { Authorization: 'Bearer ' + token } });
-        const st = await res.json();
-        document.getElementById('xpAmount').textContent = st.xp;
-        document.getElementById('mapleAmount').textContent = st.maples;
+        // Get level, xp, maples from user-profile (not just status)
+        const headers = { Authorization: 'Bearer ' + token };
+        const res = await fetch(`${API_BASE}/api/user-profile`, { headers });
+        if (!res.ok) return;
+        const user = await res.json();
+        const xp = Number(user.xp) || 0;
+        const maples = Number(user.maples) || 0;
+        const level = Number(user.level) || 1;
+        document.getElementById('xpAmount').textContent = xp;
+        document.getElementById('mapleAmount').textContent = maples;
+        // Home tab
+        document.getElementById('userLevel').textContent = level;
+        document.getElementById('homeXp').textContent = xp;
+        document.getElementById('homeMaples').textContent = maples;
+        // Progress bars (set max as you wish)
+        const xpMax = 5000;
+        const mapleMax = 1000;
+        document.getElementById('xpBar').style.width = Math.min(100, (xp / xpMax) * 100) + '%';
+        document.getElementById('mapleBar').style.width = Math.min(100, (maples / mapleMax) * 100) + '%';
       }
 
       async function loadShop() {

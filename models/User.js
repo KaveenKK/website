@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
   // Dashboard metrics
   xp: { type: Number, default: 0 },
   maples: { type: Number, default: 0 },
+  level: { type: Number, default: 1 },
 
   // Legacy subscriptions by coach ID
   subscriptions: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Coach' }],
