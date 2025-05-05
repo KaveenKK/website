@@ -256,7 +256,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       // Step 1: Create upload session on backend
       let uploadUrl, contentId;
       try {
-        const res = await fetch('/coach/exclusive-content/upload', {
+        const res = await fetch('/api/coach/exclusive-content/upload', {
           method: 'POST',
           headers: {
             'Authorization': 'Bearer ' + (localStorage.getItem('coachToken') || ''),
