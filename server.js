@@ -66,6 +66,7 @@ app.use('/api', webhookRoutes);
 
 // mount admin
 app.use('/api/admin', adminRoutes);
+app.use('/api/coach', coachRoutes);
 
 // Form submission endpoint
 app.post('/api/submit', async (req, res) => {
