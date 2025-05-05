@@ -235,4 +235,59 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // Initial load
   await loadCoachData();
+
+  // Exclusive Video Upload Logic
+  const exclusiveForm = document.getElementById('exclusiveUploadForm');
+  const exclusiveStatus = document.getElementById('exclusiveUploadStatus');
+
+  if (exclusiveForm) {
+    exclusiveForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      exclusiveStatus.textContent = '';
+      const title = document.getElementById('exclusiveTitle').value.trim();
+      const description = document.getElementById('exclusiveDescription').value.trim();
+      const niche = document.getElementById('exclusiveNiche').value.trim();
+      const fileInput = document.getElementById('exclusiveVideo');
+      const file = fileInput.files[0];
+      if (!title || !niche || !file) {
+        exclusiveStatus.textContent = 'Please fill all required fields.';
+        return;
+      }
+      // Step 1: Create upload session on backend
+      let uploadUrl, contentId;
+      try {
+        const res = await fetch('/coach/exclusive-content/upload', {
+          method: 'POST',
+          headers: {
+            'Authorization': 'Bearer ' + (localStorage.getItem('coachToken') || ''),
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ title, description, niche })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to create upload');
+        uploadUrl = data.uploadUrl;
+        contentId = data.contentId;
+      } catch (err) {
+        exclusiveStatus.textContent = 'Error: ' + err.message;
+        return;
+      }
+      // Step 2: Upload video file directly to Mux
+      exclusiveStatus.textContent = 'Uploading video to Mux...';
+      try {
+        const uploadRes = await fetch(uploadUrl, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': file.type
+          },
+          body: file
+        });
+        if (!uploadRes.ok) throw new Error('Mux upload failed');
+        exclusiveStatus.textContent = 'Upload complete! Your video will be available after processing.';
+        exclusiveForm.reset();
+      } catch (err) {
+        exclusiveStatus.textContent = 'Mux upload error: ' + err.message;
+      }
+    });
+  }
 });

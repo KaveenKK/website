@@ -111,6 +111,27 @@ if (expectedPWA !== null) {
       </form>
     </div>
 
+    <!-- Exclusive Video Upload Card -->
+    <div class="exclusive-upload card">
+      <h2>Upload Exclusive Video</h2>
+      <form id="exclusiveUploadForm">
+        <label>Title:</label>
+        <input type="text" name="title" id="exclusiveTitle" required>
+
+        <label>Description:</label>
+        <textarea name="description" id="exclusiveDescription" rows="2"></textarea>
+
+        <label>Niche:</label>
+        <input type="text" name="niche" id="exclusiveNiche" required>
+
+        <label>Video File:</label>
+        <input type="file" name="video" id="exclusiveVideo" accept="video/*" required>
+
+        <button type="submit" id="exclusiveUploadBtn">Upload Exclusive Video</button>
+        <div id="exclusiveUploadStatus" style="margin-top:10px;"></div>
+      </form>
+    </div>
+
     <!-- Legal notice Card -->
     <div class="legal card">
       <p><strong>Legal Notice:</strong> You are responsible for your own taxes. Nevengi is not liable for reporting or paying taxes on your earnings. Ensure you comply with local laws.</p>
