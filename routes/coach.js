@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import Coach from '../models/Coach.js';
 import ExclusiveContent from '../models/ExclusiveContent.js';
-import { authenticateCoach } from '../middleware/authMiddleware.js';
+import authMiddleware from '../middleware/authMiddleware.js';
 import Mux from '@mux/mux-node';
 // import multer from 'multer'; // Uncomment if you want to handle file uploads directly
 // import Mux integration here when ready
@@ -15,7 +15,7 @@ const mux = new Mux({
 });
 
 // POST /coach/exclusive-content/upload
-router.post('/exclusive-content/upload', authenticateCoach, async (req, res) => {
+router.post('/exclusive-content/upload', authMiddleware, async (req, res) => {
   try {
     // 1. Find the coach
     const coach = await Coach.findById(req.user._id);
