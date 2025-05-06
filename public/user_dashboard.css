@@ -315,14 +315,19 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    max-height: 320px;
+    height: calc(5 * 54px + 4 * 8px); /* 5 icons + 4 gaps */
+    max-height: calc(5 * 54px + 4 * 8px);
     width: 54px;
     overflow-y: auto;
     background: transparent;
     z-index: 20;
     gap: 8px;
-    scrollbar-width: thin;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
     -webkit-overflow-scrolling: touch;
+  }
+  .mobile-icon-scroll-container::-webkit-scrollbar {
+    display: none;
   }
   .mobile-icon-scroll-container .icon-circle {
     margin: 0 auto;
