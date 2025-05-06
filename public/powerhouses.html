@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Power Houses</title>
+  <link rel="stylesheet" href="user_dashboard.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #e9eafc 0%, #f7f8fd 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', sans-serif;
+      color: #222;
+    }
+    .ph-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.2em 1.5em 0.5em 1.5em;
+    }
+    .ph-title {
+      font-size: 1.7em;
+      font-weight: 700;
+      color: #5a5ad6;
+      letter-spacing: 0.01em;
+    }
+    .ph-user-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 0.5em;
+      margin-bottom: 1.2em;
+    }
+    .ph-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid #b3b3f7;
+      background: #fff;
+      box-shadow: 0 2px 12px rgba(90,90,214,0.08);
+    }
+    .ph-username {
+      margin-top: 0.5em;
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #5a5ad6;
+    }
+    .ph-scan-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1.5em;
+      margin-bottom: 2em;
+    }
+    .ph-scan-circle {
+      position: relative;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #e9eafc 60%, #d1d3f7 100%);
+      box-shadow: 0 4px 32px rgba(90,90,214,0.10);
+      overflow: visible;
+      margin-bottom: 1.5em;
+      animation: ph-pulse 2.2s infinite cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes ph-pulse {
+      0% { box-shadow: 0 0 0 0 rgba(90,90,214,0.13); }
+      70% { box-shadow: 0 0 0 32px rgba(90,90,214,0.01); }
+      100% { box-shadow: 0 0 0 0 rgba(90,90,214,0.13); }
+    }
+    .ph-scan-btn {
+      background: linear-gradient(90deg, #5a5ad6 60%, #8f6ed5 100%);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 74px;
+      height: 74px;
+      font-size: 2.1em;
+      font-weight: 700;
+      box-shadow: 0 2px 16px rgba(90,90,214,0.13);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      transition: background 0.2s;
+      outline: none;
+      z-index: 2;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .ph-scan-btn:active {
+      background: linear-gradient(90deg, #4a4ac6 60%, #7f5ec5 100%);
+    }
+    .ph-scan-entity {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.7s cubic-bezier(0.4,0,0.2,1), opacity 0.7s;
+      opacity: 0;
+      z-index: 1;
+    }
+    .ph-scan-entity.show {
+      opacity: 1;
+    }
+    .ph-entity-avatar, .ph-entity-house {
+      width: 54px;
+      height: 54px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #fff;
+      border: 2.5px solid #8f6ed5;
+      box-shadow: 0 2px 8px rgba(90,90,214,0.10);
+      margin-bottom: 0.2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ph-entity-house {
+      background: #fff url('images/house-icon.png') center/60% no-repeat;
+      border: 2.5px solid #5a5ad6;
+    }
+    .ph-entity-name {
+      font-size: 0.98em;
+      color: #5a5ad6;
+      font-weight: 500;
+      text-align: center;
+      max-width: 80px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .ph-entity-sim {
+      margin-top: 0.1em;
+      font-size: 0.93em;
+      color: #888;
+      background: #e9eafc;
+      border-radius: 8px;
+      padding: 0.1em 0.7em;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      box-shadow: 0 1px 4px rgba(90,90,214,0.04);
+    }
+    .ph-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 1.5em;
+      gap: 0.7em;
+    }
+    .ph-toggle-label {
+      font-size: 1.05em;
+      color: #5a5ad6;
+      font-weight: 500;
+    }
+    .ph-toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      display: inline-block;
+    }
+    .ph-toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .ph-toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #d1d3f7;
+      border-radius: 24px;
+      transition: background 0.2s;
+    }
+    .ph-toggle-switch input:checked + .ph-toggle-slider {
+      background: #5a5ad6;
+    }
+    .ph-toggle-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(90,90,214,0.10);
+    }
+    .ph-toggle-switch input:checked + .ph-toggle-slider:before {
+      transform: translateX(20px);
+    }
+    @media (max-width: 600px) {
+      .ph-scan-circle { width: 98vw; height: 98vw; max-width: 360px; max-height: 360px; }
+      .ph-header { padding: 1em 0.5em 0.5em 0.5em; }
+    }
+  </style>
+</head>
+<body>
+  <div class="ph-header">
+    <span class="ph-title">Power Houses</span>
+    <a href="user_dashboard.html" style="color:#5a5ad6;font-weight:500;font-size:1.1em;text-decoration:none;">← Dashboard</a>
+  </div>
+  <div class="ph-user-center">
+    <img id="phUserAvatar" class="ph-avatar" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Avatar">
+    <span id="phUsername" class="ph-username"></span>
+  </div>
+  <div class="ph-tabs" style="display:flex;justify-content:center;gap:2em;margin-top:1.2em;">
+    <button id="phTabScan" class="ph-tab-btn ph-tab-active" style="background:none;border:none;font-size:1.1em;font-weight:600;color:#5a5ad6;cursor:pointer;padding:0.5em 1.2em;border-bottom:2.5px solid #5a5ad6;">Scan</button>
+    <button id="phTabMyHouses" class="ph-tab-btn" style="background:none;border:none;font-size:1.1em;font-weight:600;color:#888;cursor:pointer;padding:0.5em 1.2em;border-bottom:2.5px solid transparent;">My Houses</button>
+  </div>
+  <div id="phScanTab" style="display:block;">
+    <div class="ph-scan-container">
+      <div class="ph-scan-circle" id="phScanCircle">
+        <button class="ph-scan-btn" id="phScanBtn">Scan</button>
+        <!-- Entities will be injected here -->
+      </div>
+    </div>
+    <div class="ph-toggle-row">
+      <span class="ph-toggle-label">Allow others to add me to houses</span>
+      <label class="ph-toggle-switch">
+        <input type="checkbox" id="phAllowInvitesToggle">
+        <span class="ph-toggle-slider"></span>
+      </label>
+    </div>
+  </div>
+  <div id="phMyHousesTab" style="display:none;padding:2em 0 4em 0;max-width:480px;margin:0 auto;">
+    <div id="phMyHousesList">Loading…</div>
+  </div>
+  <div id="phModal" style="display:none;"></div>
+  <div id="phNotification" style="display:none;position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:4000;min-width:220px;max-width:90vw;padding:1em 2em;border-radius:10px;font-size:1.08em;font-weight:600;box-shadow:0 2px 16px rgba(90,90,214,0.13);text-align:center;transition:opacity 0.2s;opacity:0;"></div>
+  <button id="phCreateHouseBtn" style="display:none;position:fixed;bottom:32px;right:32px;background:#5a5ad6;color:#fff;border:none;border-radius:50%;width:64px;height:64px;font-size:2.2em;box-shadow:0 4px 16px rgba(90,90,214,0.13);z-index:2000;cursor:pointer;">+</button>
+  <script>
+    const API_BASE = '';
+    let userToken = localStorage.getItem('userToken');
+    if (!userToken) window.location.href = '/user_dashboard.html';
+    let userData = {};
+    // Load user info
+    async function loadUser() {
+      const headers = { Authorization: 'Bearer ' + userToken };
+      const res = await fetch(`${API_BASE}/api/user-profile`, { headers });
+      if (!res.ok) return;
+      const user = await res.json();
+      userData = user;
+      document.getElementById('phUserAvatar').src = user.avatar ? `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
+      document.getElementById('phUsername').textContent = user.username || '';
+      document.getElementById('phAllowInvitesToggle').checked = user.allowHouseInvites !== false;
+    }
+    loadUser().then(() => {
+      if (userData.energy >= 500) {
+        document.getElementById('phCreateHouseBtn').style.display = 'block';
+      }
+    });
+    // Toggle allowHouseInvites
+    document.getElementById('phAllowInvitesToggle').onchange = async function() {
+      const checked = this.checked;
+      const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+      await fetch(`${API_BASE}/api/user-profile`, { method: 'PATCH', headers, body: JSON.stringify({ allowHouseInvites: checked }) });
+    };
+    // Scan logic
+    document.getElementById('phScanBtn').onclick = async function() {
+      const scanBtn = this;
+      scanBtn.disabled = true;
+      scanBtn.textContent = '...';
+      const scanCircle = document.getElementById('phScanCircle');
+      // Remove old entities
+      Array.from(scanCircle.querySelectorAll('.ph-scan-entity')).forEach(e => e.remove());
+      // Animate pulse
+      scanCircle.classList.add('ph-scan-anim');
+      setTimeout(() => scanCircle.classList.remove('ph-scan-anim'), 1200);
+      // Fetch scan results
+      const headers = { Authorization: 'Bearer ' + userToken };
+      const res = await fetch(`${API_BASE}/api/scan`, { headers });
+      const { users, houses } = await res.json();
+      // Place entities in a circle
+      const total = users.length + houses.length;
+      const R = 140;
+      let angle = 0;
+      const step = total > 0 ? (2 * Math.PI) / total : 1;
+      let idx = 0;
+      // Animate in users
+      users.forEach((u, i) => {
+        setTimeout(() => {
+          const theta = angle + i * step;
+          const x = R * Math.cos(theta) + 170 - 27;
+          const y = R * Math.sin(theta) + 170 - 27;
+          const div = document.createElement('div');
+          div.className = 'ph-scan-entity';
+          div.style.transform = `translate(${x}px,${y}px)`;
+          div.innerHTML = `
+            <img class="ph-entity-avatar" src="${u.avatar ? `https://cdn.discordapp.com/avatars/${u.discord_id || ''}/${u.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" alt="Avatar">
+            <span class="ph-entity-name">${u.username}</span>
+            <span class="ph-entity-sim">${u.similarity}%</span>
+          `;
+          div.onclick = () => showUserModal(u);
+          scanCircle.appendChild(div);
+          setTimeout(() => div.classList.add('show'), 100);
+        }, 200 + i * 80);
+      });
+      // Animate in houses
+      houses.forEach((h, i) => {
+        setTimeout(() => {
+          const theta = angle + (users.length + i) * step;
+          const x = R * Math.cos(theta) + 170 - 27;
+          const y = R * Math.sin(theta) + 170 - 27;
+          const div = document.createElement('div');
+          div.className = 'ph-scan-entity';
+          div.style.transform = `translate(${x}px,${y}px)`;
+          div.innerHTML = `
+            <div class="ph-entity-house" style="background-image:url('images/house-icon.png');"></div>
+            <span class="ph-entity-name">${h.name}</span>
+            <span class="ph-entity-sim">${h.similarity}%</span>
+          `;
+          div.onclick = () => showHouseModal(h);
+          scanCircle.appendChild(div);
+          setTimeout(() => div.classList.add('show'), 100);
+        }, 200 + (users.length + i) * 80);
+      });
+      setTimeout(() => {
+        scanBtn.disabled = false;
+        scanBtn.textContent = 'Scan';
+      }, 200 + total * 80 + 400);
+    };
+    // User modal
+    function showUserModal(u) {
+      const modal = document.getElementById('phModal');
+      modal.style.display = 'flex';
+      modal.style.position = 'fixed';
+      modal.style.top = 0;
+      modal.style.left = 0;
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.background = 'rgba(90,90,214,0.13)';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = 3000;
+      modal.innerHTML = `
+        <div style="background:#fff;border-radius:16px;max-width:340px;width:90vw;padding:2em 1.2em;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;">
+          <button onclick="document.getElementById('phModal').style.display='none'" style="position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;">&times;</button>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <img src="${u.avatar ? `https://cdn.discordapp.com/avatars/${u.discord_id || ''}/${u.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:72px;height:72px;border-radius:50%;border:2.5px solid #8f6ed5;margin-bottom:0.7em;">
+            <div style="font-size:1.2em;font-weight:600;color:#5a5ad6;">${u.username}</div>
+            <div style="margin:0.5em 0 1em 0;color:#888;">Similarity: <b>${u.similarity}%</b></div>
+            ${userData.energy >= 500 ? `<button style="background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.6em 1.5em;font-size:1.1em;font-weight:600;cursor:pointer;" onclick="inviteToHouse('${u._id}')">Invite to House</button>` : `<div style='color:#d32f2f;font-weight:500;'>You need 500+ energy to invite</div>`}
+          </div>
+        </div>
+      `;
+    }
+    // House modal
+    function showHouseModal(h) {
+      const modal = document.getElementById('phModal');
+      modal.style.display = 'flex';
+      modal.style.position = 'fixed';
+      modal.style.top = 0;
+      modal.style.left = 0;
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.background = 'rgba(90,90,214,0.13)';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = 3000;
+      const isMember = h.members.some(m => m._id === userData._id);
+      modal.innerHTML = `
+        <div style="background:#fff;border-radius:16px;max-width:340px;width:90vw;padding:2em 1.2em;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;">
+          <button onclick="document.getElementById('phModal').style.display='none'" style="position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;">&times;</button>
+          <div style="display:flex;flex-direction:column;align-items:center;">
+            <div class="ph-entity-house" style="width:72px;height:72px;background-image:url('images/house-icon.png');margin-bottom:0.7em;"></div>
+            <div style="font-size:1.2em;font-weight:600;color:#5a5ad6;">${h.name}</div>
+            <div style="margin:0.5em 0 1em 0;color:#888;">Similarity: <b>${h.similarity}%</b></div>
+            <div style="display:flex;gap:0.3em;flex-wrap:wrap;justify-content:center;margin-bottom:0.7em;">
+              ${h.members.map(m => `<img src="${m.avatar ? `https://cdn.discordapp.com/avatars/${m._id || ''}/${m.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:32px;height:32px;border-radius:50%;border:2px solid #b3b3f7;">`).join('')}
+            </div>
+            <button style="background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.6em 1.5em;font-size:1.1em;font-weight:600;cursor:pointer;" onclick="joinHouse('${h._id}')">Request to Join</button>
+            ${isMember ? `<button style='background:#fff;color:#5a5ad6;border:2px solid #5a5ad6;border-radius:8px;padding:0.6em 1.5em;font-size:1.1em;font-weight:600;cursor:pointer;margin-top:0.7em;' onclick='openHouseChat("${h._id}", "${h.name.replace(/"/g, '&quot;')}")'>Chat</button>` : ''}
+          </div>
+        </div>
+      `;
+    }
+    // Invite to house (stub)
+    window.inviteToHouse = async function(userId) {
+      // Fetch user's houses (created by user, not full)
+      const headers = { Authorization: 'Bearer ' + userToken };
+      const res = await fetch(`${API_BASE}/api/houses`, { headers });
+      const houses = res.ok ? await res.json() : [];
+      const myHouses = houses.filter(h => h.creator === userData._id && h.members.length < 6);
+      const modal = document.getElementById('phModal');
+      modal.style.display = 'flex';
+      modal.style.position = 'fixed';
+      modal.style.top = 0;
+      modal.style.left = 0;
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.background = 'rgba(90,90,214,0.13)';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = 3000;
+      if (!myHouses.length) {
+        modal.innerHTML = `<div style='background:#fff;border-radius:16px;max-width:340px;width:90vw;padding:2em 1.2em;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;text-align:center;'><button onclick=\"document.getElementById('phModal').style.display='none'\" style=\"position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;\">&times;</button><div style='font-size:1.1em;color:#5a5ad6;font-weight:600;margin-bottom:1em;'>No available houses.<br>Create one first!</div></div>`;
+        return;
+      }
+      modal.innerHTML = `<div style='background:#fff;border-radius:16px;max-width:340px;width:90vw;padding:2em 1.2em;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;'><button onclick=\"document.getElementById('phModal').style.display='none'\" style=\"position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;\">&times;</button><div style='font-size:1.1em;color:#5a5ad6;font-weight:600;margin-bottom:1em;'>Invite to which house?</div><div id='phInviteHouseList'></div><div id='phInviteMsg' style='margin-top:0.7em;color:#d32f2f;text-align:center;'></div></div>`;
+      const listDiv = modal.querySelector('#phInviteHouseList');
+      myHouses.forEach(h => {
+        const btn = document.createElement('button');
+        btn.textContent = h.name;
+        btn.style = 'display:block;width:100%;margin-bottom:0.5em;padding:0.6em 0.8em;font-size:1em;border-radius:8px;border:1.5px solid #e0e0e0;background:#e9eafc;color:#5a5ad6;font-weight:600;cursor:pointer;';
+        btn.onclick = async function() {
+          const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+          const res = await fetch(`${API_BASE}/api/houses/${h._id}/invite`, {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ userId })
+          });
+          if (res.ok) {
+            modal.querySelector('#phInviteMsg').style.color = '#2e7d32';
+            modal.querySelector('#phInviteMsg').textContent = 'Invite sent!';
+            setTimeout(() => { modal.style.display = 'none'; }, 1200);
+          } else {
+            const data = await res.json();
+            modal.querySelector('#phInviteMsg').style.color = '#d32f2f';
+            modal.querySelector('#phInviteMsg').textContent = data.error || 'Failed to invite.';
+          }
+        };
+        listDiv.appendChild(btn);
+      });
+    };
+    // Join house (stub)
+    window.joinHouse = async function(houseId) {
+      const modal = document.getElementById('phModal');
+      const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+      const res = await fetch(`${API_BASE}/api/houses/${houseId}/join`, {
+        method: 'POST', headers
+      });
+      let msg = '';
+      let color = '#2e7d32';
+      if (res.ok) {
+        msg = 'Request sent! The house creator will review it.';
+      } else {
+        const data = await res.json();
+        msg = data.error || 'Failed to request join.';
+        color = '#d32f2f';
+      }
+      // Show message in modal
+      const msgDiv = document.createElement('div');
+      msgDiv.textContent = msg;
+      msgDiv.style = `margin-top:1em;color:${color};font-weight:600;text-align:center;`;
+      modal.querySelector('div').appendChild(msgDiv);
+      if (res.ok) setTimeout(() => { modal.style.display = 'none'; }, 1200);
+    };
+    // Create House logic
+    document.getElementById('phCreateHouseBtn').onclick = function() {
+      const modal = document.getElementById('phModal');
+      modal.style.display = 'flex';
+      modal.style.position = 'fixed';
+      modal.style.top = 0;
+      modal.style.left = 0;
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.background = 'rgba(90,90,214,0.13)';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = 3000;
+      modal.innerHTML = `
+        <div style="background:#fff;border-radius:16px;max-width:340px;width:90vw;padding:2em 1.2em;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;">
+          <button onclick=\"document.getElementById('phModal').style.display='none'\" style=\"position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;\">&times;</button>
+          <div style=\"font-size:1.2em;font-weight:600;color:#5a5ad6;margin-bottom:1em;text-align:center;\">Create House</div>
+          <input id='phHouseName' placeholder='House Name' style='width:100%;margin-bottom:0.7em;padding:0.6em 0.8em;font-size:1em;border-radius:8px;border:1.5px solid #e0e0e0;'>
+          <input id='phHouseDesc' placeholder='Description (optional)' style='width:100%;margin-bottom:0.7em;padding:0.6em 0.8em;font-size:1em;border-radius:8px;border:1.5px solid #e0e0e0;'>
+          <input id='phHouseInterests' placeholder='Interests (comma separated)' style='width:100%;margin-bottom:1em;padding:0.6em 0.8em;font-size:1em;border-radius:8px;border:1.5px solid #e0e0e0;'>
+          <button id='phCreateHouseSubmit' style='background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.7em 1.5em;font-size:1.1em;font-weight:600;cursor:pointer;width:100%;'>Create</button>
+          <div id='phCreateHouseMsg' style='margin-top:0.7em;color:#d32f2f;text-align:center;'></div>
+        </div>
+      `;
+      document.getElementById('phCreateHouseSubmit').onclick = async function() {
+        const name = document.getElementById('phHouseName').value.trim();
+        const description = document.getElementById('phHouseDesc').value.trim();
+        const interests = document.getElementById('phHouseInterests').value.split(',').map(s => s.trim()).filter(Boolean);
+        if (!name) {
+          document.getElementById('phCreateHouseMsg').textContent = 'Name required.';
+          return;
+        }
+        const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+        const res = await fetch(`${API_BASE}/api/houses`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({ name, description, interests })
+        });
+        if (res.ok) {
+          document.getElementById('phCreateHouseMsg').style.color = '#2e7d32';
+          document.getElementById('phCreateHouseMsg').textContent = 'House created! Refresh scan to see it.';
+          setTimeout(() => { modal.style.display = 'none'; }, 1200);
+        } else {
+          const data = await res.json();
+          document.getElementById('phCreateHouseMsg').style.color = '#d32f2f';
+          document.getElementById('phCreateHouseMsg').textContent = data.error || 'Failed to create house.';
+        }
+      };
+    };
+    // House chat modal
+    window.openHouseChat = async function(houseId, houseName) {
+      const modal = document.getElementById('phModal');
+      modal.style.display = 'flex';
+      modal.style.position = 'fixed';
+      modal.style.top = 0;
+      modal.style.left = 0;
+      modal.style.width = '100vw';
+      modal.style.height = '100vh';
+      modal.style.background = 'rgba(90,90,214,0.13)';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = 3000;
+      modal.innerHTML = `
+        <div id='phChatBox' style="background:#fff;border-radius:16px;max-width:420px;width:98vw;height:80vh;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;">
+          <button onclick=\"document.getElementById('phModal').style.display='none'\" style=\"position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;z-index:2;\">&times;</button>
+          <div style='font-size:1.2em;font-weight:700;color:#5a5ad6;text-align:center;padding:1em 0 0.5em 0;border-bottom:1.5px solid #e9eafc;'>${houseName}</div>
+          <div id='phChatMessages' style='flex:1;overflow-y:auto;padding:1em 0.7em 0.7em 0.7em;display:flex;flex-direction:column-reverse;'></div>
+          <form id='phChatForm' style='display:flex;gap:0.5em;padding:0.7em;border-top:1.5px solid #e9eafc;background:#fafbfc;'>
+            <input id='phChatInput' autocomplete='off' placeholder='Type a message...' style='flex:1;padding:0.7em 1em;font-size:1em;border-radius:8px;border:1.5px solid #e0e0e0;'>
+            <button type='submit' style='background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.7em 1.2em;font-size:1.1em;font-weight:600;cursor:pointer;'>Send</button>
+          </form>
+        </div>
+      `;
+      let page = 1, limit = 30, loading = false, done = false;
+      const chatDiv = modal.querySelector('#phChatMessages');
+      async function loadMessages(initial) {
+        if (loading || done) return;
+        loading = true;
+        const headers = { Authorization: 'Bearer ' + userToken };
+        const res = await fetch(`${API_BASE}/api/houses/${houseId}/chat?page=${page}&limit=${limit}`, { headers });
+        if (!res.ok) { loading = false; return; }
+        const msgs = await res.json();
+        if (msgs.length < limit) done = true;
+        msgs.reverse().forEach(msg => {
+          const msgDiv = document.createElement('div');
+          msgDiv.style = `display:flex;align-items:flex-start;gap:0.7em;margin-bottom:0.7em;`;
+          msgDiv.innerHTML = `
+            <img src="${msg.user?.avatar ? `https://cdn.discordapp.com/avatars/${msg.user._id || ''}/${msg.user.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:32px;height:32px;border-radius:50%;border:2px solid #b3b3f7;">
+            <div style="flex:1;">
+              <div style="font-weight:600;color:#5a5ad6;font-size:1em;">${msg.user?.username || 'User'} <span style='color:#aaa;font-size:0.93em;font-weight:400;'>${new Date(msg.createdAt).toLocaleString()}</span></div>
+              <div style="font-size:1.07em;color:#222;margin-top:0.1em;">${escapeHtml(msg.message)}</div>
+            </div>
+          `;
+          chatDiv.prepend(msgDiv);
+        });
+        if (initial) chatDiv.scrollTop = chatDiv.scrollHeight;
+        loading = false;
+        page++;
+      }
+      loadMessages(true);
+      // Pagination on scroll up
+      chatDiv.onscroll = function() {
+        if (chatDiv.scrollTop === 0 && !loading && !done) loadMessages();
+      };
+      // Send message
+      modal.querySelector('#phChatForm').onsubmit = async function(e) {
+        e.preventDefault();
+        const input = modal.querySelector('#phChatInput');
+        const text = input.value.trim();
+        if (!text) return;
+        const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+        const res = await fetch(`${API_BASE}/api/houses/${houseId}/chat`, {
+          method: 'POST', headers, body: JSON.stringify({ message: text })
+        });
+        if (res.ok) {
+          input.value = '';
+          page = 1; done = false; chatDiv.innerHTML = '';
+          await loadMessages(true);
+        }
+      };
+    };
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, function(c) {
+        return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c];
+      });
+    }
+    // Tab switching logic
+    document.getElementById('phTabScan').onclick = function() {
+      document.getElementById('phTabScan').classList.add('ph-tab-active');
+      document.getElementById('phTabMyHouses').classList.remove('ph-tab-active');
+      document.getElementById('phScanTab').style.display = 'block';
+      document.getElementById('phMyHousesTab').style.display = 'none';
+    };
+    document.getElementById('phTabMyHouses').onclick = function() {
+      document.getElementById('phTabScan').classList.remove('ph-tab-active');
+      document.getElementById('phTabMyHouses').classList.add('ph-tab-active');
+      document.getElementById('phScanTab').style.display = 'none';
+      document.getElementById('phMyHousesTab').style.display = 'block';
+      loadMyHouses();
+    };
+    // Load My Houses (with management actions)
+    async function loadMyHouses() {
+      const listDiv = document.getElementById('phMyHousesList');
+      listDiv.textContent = 'Loading…';
+      const headers = { Authorization: 'Bearer ' + userToken };
+      let houses = [];
+      try {
+        const res = await fetch(`${API_BASE}/api/houses`, { headers });
+        houses = res.ok ? await res.json() : [];
+      } catch (e) { houses = []; }
+      if (!houses.length) {
+        listDiv.innerHTML = '<div style="color:#888;text-align:center;">No houses found.</div>';
+        return;
+      }
+      listDiv.innerHTML = '';
+      houses.forEach(h => {
+        const isCreator = h.creator === userData._id;
+        const div = document.createElement('div');
+        div.style = 'background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(90,90,214,0.07);margin-bottom:1.5em;padding:1.2em 1em;';
+        // Members HTML
+        const membersHtml = h.members.map(m => `<span style=\'margin-right:0.4em;\'><img src=\'${m.avatar ? `https://cdn.discordapp.com/avatars/${m._id || ''}/${m.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}\' style=\'width:28px;height:28px;border-radius:50%;border:2px solid #b3b3f7;vertical-align:middle;\'> ${m.username}</span>`).join('');
+        // Requests HTML (if creator)
+        let requestsHtml = '';
+        if (isCreator && h.requests.length) {
+          requestsHtml = `<div style='margin-bottom:0.7em;'><b>Requests:</b> ${h.requests.map(r => `<span style=\'margin-right:0.4em;\'><img src=\'${r.avatar ? `https://cdn.discordapp.com/avatars/${r._id || ''}/${r.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}\' style=\'width:24px;height:24px;border-radius:50%;border:2px solid #e0e0e0;vertical-align:middle;\'> ${r.username} <button style=\'background:#5a5ad6;color:#fff;border:none;border-radius:6px;padding:0.2em 0.7em;font-size:0.97em;font-weight:600;cursor:pointer;\' data-accept='${r._id}' data-house='${h._id}'>Accept</button> <button style=\'background:#fff;color:#d32f2f;border:1.5px solid #d32f2f;border-radius:6px;padding:0.2em 0.7em;font-size:0.97em;font-weight:600;cursor:pointer;\' data-reject='${r._id}' data-house='${h._id}'>Reject</button></span>`).join('')}</div>`;
+        }
+        // Action buttons
+        let actionsHtml = '';
+        if (isCreator) {
+          actionsHtml += `<button style='background:#fff;color:#d32f2f;border:1.5px solid #d32f2f;border-radius:8px;padding:0.4em 1.1em;font-size:1em;font-weight:600;cursor:pointer;' data-delete='${h._id}'>Delete</button>`;
+          actionsHtml += h.members.filter(m => m._id !== userData._id).map(m => `<button style='background:#fff;color:#d32f2f;border:1.5px solid #d32f2f;border-radius:8px;padding:0.4em 1.1em;font-size:1em;font-weight:600;cursor:pointer;' data-remove='${m._id}' data-house='${h._id}'>Remove ${m.username}</button>`).join('');
+        } else {
+          actionsHtml += `<button style='background:#fff;color:#d32f2f;border:1.5px solid #d32f2f;border-radius:8px;padding:0.4em 1.1em;font-size:1em;font-weight:600;cursor:pointer;' data-leave='${h._id}'>Leave</button>`;
+        }
+        div.innerHTML = `
+          <div style='font-size:1.15em;font-weight:700;color:#5a5ad6;margin-bottom:0.3em;'>${h.name}</div>
+          <div style='color:#888;font-size:0.98em;margin-bottom:0.7em;'>${h.description || ''}</div>
+          <div style='margin-bottom:0.7em;'><b>Members:</b> ${membersHtml}</div>
+          ${requestsHtml}
+          <div style='margin-top:0.7em;display:flex;gap:0.7em;flex-wrap:wrap;'>${actionsHtml}</div>
+        `;
+        listDiv.appendChild(div);
+      });
+      // Attach action handlers
+      listDiv.querySelectorAll('[data-leave]').forEach(btn => {
+        btn.onclick = async function() {
+          const houseId = btn.getAttribute('data-leave');
+          btn.disabled = true;
+          btn.textContent = 'Leaving...';
+          const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+          const res = await fetch(`${API_BASE}/api/houses/${houseId}/leave`, { method: 'POST', headers });
+          if (res.ok) { showNotification('Left house.', 'success'); loadMyHouses(); }
+          else { showNotification('Failed to leave house.', 'error'); btn.textContent = 'Error'; setTimeout(() => loadMyHouses(), 1200); }
+        };
+      });
+      listDiv.querySelectorAll('[data-remove]').forEach(btn => {
+        btn.onclick = async function() {
+          const houseId = btn.getAttribute('data-house');
+          const memberId = btn.getAttribute('data-remove');
+          btn.disabled = true;
+          btn.textContent = 'Removing...';
+          const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+          const res = await fetch(`${API_BASE}/api/houses/${houseId}/remove`, { method: 'POST', headers, body: JSON.stringify({ memberId }) });
+          if (res.ok) { showNotification('Member removed.', 'success'); loadMyHouses(); }
+          else { showNotification('Failed to remove member.', 'error'); btn.textContent = 'Error'; setTimeout(() => loadMyHouses(), 1200); }
+        };
+      });
+      listDiv.querySelectorAll('[data-delete]').forEach(btn => {
+        btn.onclick = async function() {
+          const houseId = btn.getAttribute('data-delete');
+          if (!confirm('Delete this house? This cannot be undone.')) return;
+          btn.disabled = true;
+          btn.textContent = 'Deleting...';
+          const headers = { Authorization: 'Bearer ' + userToken };
+          const res = await fetch(`${API_BASE}/api/houses/${houseId}`, { method: 'DELETE', headers });
+          if (res.ok) { showNotification('House deleted.', 'success'); loadMyHouses(); }
+          else { showNotification('Failed to delete house.', 'error'); btn.textContent = 'Error'; setTimeout(() => loadMyHouses(), 1200); }
+        };
+      });
+      listDiv.querySelectorAll('[data-accept]').forEach(btn => {
+        btn.onclick = async function() {
+          const houseId = btn.getAttribute('data-house');
+          const userId = btn.getAttribute('data-accept');
+          btn.disabled = true;
+          btn.textContent = 'Accepting...';
+          const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+          const res = await fetch(`${API_BASE}/api/houses/${houseId}/accept`, { method: 'POST', headers, body: JSON.stringify({ userId }) });
+          if (res.ok) { showNotification('Request accepted.', 'success'); loadMyHouses(); }
+          else { showNotification('Failed to accept request.', 'error'); btn.textContent = 'Error'; setTimeout(() => loadMyHouses(), 1200); }
+        };
+      });
+      listDiv.querySelectorAll('[data-reject]').forEach(btn => {
+        btn.onclick = async function() {
+          const houseId = btn.getAttribute('data-house');
+          const userId = btn.getAttribute('data-reject');
+          btn.disabled = true;
+          btn.textContent = 'Rejecting...';
+          const headers = { Authorization: 'Bearer ' + userToken, 'Content-Type': 'application/json' };
+          const res = await fetch(`${API_BASE}/api/houses/${houseId}/reject`, { method: 'POST', headers, body: JSON.stringify({ userId }) });
+          if (res.ok) { showNotification('Request rejected.', 'success'); loadMyHouses(); }
+          else { showNotification('Failed to reject request.', 'error'); btn.textContent = 'Error'; setTimeout(() => loadMyHouses(), 1200); }
+        };
+      });
+    }
+    // Notification function
+    function showNotification(msg, type = 'success') {
+      const notif = document.getElementById('phNotification');
+      notif.textContent = msg;
+      notif.style.background = type === 'success' ? '#e9fbe9' : '#fdeaea';
+      notif.style.color = type === 'success' ? '#2e7d32' : '#d32f2f';
+      notif.style.border = type === 'success' ? '1.5px solid #b2dfb2' : '1.5px solid #f7bdbd';
+      notif.style.display = 'block';
+      notif.style.opacity = '1';
+      setTimeout(() => {
+        notif.style.opacity = '0';
+        setTimeout(() => { notif.style.display = 'none'; }, 300);
+      }, 2200);
+    }
+  </script>
+</body>
+</html> 

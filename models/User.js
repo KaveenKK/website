@@ -47,6 +47,8 @@ const userSchema = new mongoose.Schema({
   }],
 
   avatar: { type: String, default: null },
+  energy: { type: Number, default: 0 },
+  allowHouseInvites: { type: Boolean, default: true },
 }, {
   timestamps: true
 });
