@@ -492,6 +492,8 @@
       <div class="footer-col footer-brand">
         <p>© 2025 Nevengi. All Rights Reserved.</p>
       </div>
+    </div>
+  </footer>
 
   <script>
     const discordLink = 'https://discord.gg/SYtbqPMqju';
@@ -726,7 +728,7 @@
           if (isPWA) {
             e.preventDefault();
             // Build the Discord OAuth2 URL with correct redirect_uri and #pwa hash
-            const clientId = 'DISCORD_CLIENT_ID'; // TODO: Replace with your actual client ID or inject from server
+            const clientId = '1362382273369997462';
             const redirectUri = 'https://www.nevengi.com/auth/discord/user/pwa-callback';
             const scope = 'identify email';
             const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}#pwa`;
