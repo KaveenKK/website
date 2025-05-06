@@ -45,7 +45,7 @@ router.get('/scan', authMiddleware, async (req, res) => {
   })).sort((a, b) => b.similarity - a.similarity).slice(0, 20);
 
   // Find houses (not full)
-  const houses = await House.find({ $expr: { $lt: [ { $size: "$members" }, 6 ] } }).populate('members', 'country gender channels date_of_birth').lean();
+  const houses = await House.find({ $expr: { $lt: [ { $size: "$members" }, 5 ] } }).populate('members', 'country gender channels date_of_birth').lean();
   function calcHouseSimilarity(house) {
     // Compare user to house interests/country/age of members
     let score = 0;
@@ -121,7 +121,7 @@ router.post('/:id/join', authMiddleware, async (req, res) => {
   const user = await User.findById(req.user._id);
   const house = await House.findById(req.params.id);
   if (!house) return res.status(404).json({ error: 'House not found' });
-  if (house.members.length >= 6) return res.status(400).json({ error: 'House is full' });
+  if (house.members.length >= 5) return res.status(400).json({ error: 'House is full' });
   if (house.members.includes(user._id)) return res.status(400).json({ error: 'Already a member' });
   if (house.requests.includes(user._id)) return res.status(400).json({ error: 'Already requested' });
   house.requests.push(user._id);
@@ -139,7 +139,7 @@ router.post('/:id/invite', authMiddleware, async (req, res) => {
   if (!invitee.allowHouseInvites) return res.status(403).json({ error: 'User does not allow invites' });
   const house = await House.findById(req.params.id);
   if (!house) return res.status(404).json({ error: 'House not found' });
-  if (house.members.length >= 6) return res.status(400).json({ error: 'House is full' });
+  if (house.members.length >= 5) return res.status(400).json({ error: 'House is full' });
   if (house.members.includes(invitee._id)) return res.status(400).json({ error: 'Already a member' });
   if (house.requests.includes(invitee._id)) return res.status(400).json({ error: 'Already requested/invited' });
   house.requests.push(invitee._id);
@@ -154,7 +154,7 @@ router.post('/:id/accept', authMiddleware, async (req, res) => {
   const house = await House.findById(req.params.id);
   if (!house) return res.status(404).json({ error: 'House not found' });
   if (!house.creator.equals(user._id)) return res.status(403).json({ error: 'Only creator can accept requests' });
-  if (house.members.length >= 6) return res.status(400).json({ error: 'House is full' });
+  if (house.members.length >= 5) return res.status(400).json({ error: 'House is full' });
   const idx = house.requests.indexOf(userId);
   if (idx === -1) return res.status(400).json({ error: 'No such request' });
   house.requests.splice(idx, 1);
