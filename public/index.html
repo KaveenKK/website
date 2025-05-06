@@ -730,6 +730,48 @@
         });
       }
     });
+
+    // Hash fragment PWA OAuth handler
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.location.pathname === '/auth/discord/user/pwa-callback' && window.location.hash === '#pwa') {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        if (code && !window._pwaOAuthCodeUsed) {
+          window._pwaOAuthCodeUsed = true;
+          fetch(`/auth/discord/user/pwa-callback?code=${encodeURIComponent(code)}`, {
+            method: 'GET',
+            headers: {
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0'
+            }
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Auth request failed');
+            }
+            return response.json();
+          })
+          .then(data => {
+            if (data.token) {
+              localStorage.setItem('userToken', data.token);
+              if (data.discord_id) {
+                localStorage.setItem('discordId', data.discord_id);
+              }
+              window.location.href = '/user_dashboard.html';
+            } else {
+              throw new Error('No token received');
+            }
+          })
+          .catch(error => {
+            console.error('Auth error:', error);
+            localStorage.removeItem('userToken');
+            localStorage.removeItem('discordId');
+            window.location.href = '/';
+          });
+        }
+      }
+    });
   </script>
 </body>
 </html>
