@@ -2,7 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import { createHmac } from 'crypto';
 import ExclusiveContent from '../models/ExclusiveContent.js';
-import { Webhooks } from '@mux/mux-node';
+import Mux from '@mux/mux-node';
 
 const router = express.Router();
 
@@ -69,7 +69,7 @@ router.post('/mux', express.raw({ type: '*/*' }), async (req, res) => {
       return res.status(403).send('Missing signature or secret');
     }
     try {
-      Webhooks.verifyHeader(rawBody, signature, secret);
+      Mux.Webhooks.verifyHeader(rawBody, signature, secret);
     } catch (err) {
       console.error('❌ Invalid Mux webhook signature:', err);
       return res.status(403).send('Invalid signature');
