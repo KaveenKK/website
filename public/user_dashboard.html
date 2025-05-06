@@ -55,6 +55,11 @@
     <div style="display:flex;align-items:center;gap:1rem;">
       <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #fff;background:#eee;">
       <span id="userName" style="font-size:1.3rem;font-weight:bold;"></span>
+      <div style="width:100%;display:flex;justify-content:flex-start;margin-top:0.3em;">
+        <a href="powerhouses.html" id="powerHouseBtnHeader" style="background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.4em 1em;font-size:1em;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:0.5em;box-shadow:0 2px 8px rgba(90,90,214,0.08);transition:background 0.2s;margin-top:0.2em;">
+          <span style="font-size:1.2em;">🏠</span> Power House
+        </a>
+      </div>
     </div>
     <div id="headerRightBtns" style="display:flex;align-items:center;gap:1rem;">
       <button id="reportsTopBtn" style="background:#005f7a;">Reports</button>
@@ -143,6 +148,14 @@
             <div class="progress-bar-wrapper">
               <div class="progress-bar-bg">
                 <div class="progress-bar-maple" id="mapleBar"></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:1em;">
+            <strong>Energy:</strong> <span id="energyAmount">0</span>
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-energy" id="energyBar" style="background:#ffd600;"></div>
               </div>
             </div>
           </div>
@@ -516,8 +529,10 @@
         const xp = Number(user.xp) || 0;
         const maples = Number(user.maples) || 0;
         const level = Number(user.level) || 1;
+        const energy = Number(user.energy) || 0;
         document.getElementById('xpAmount').textContent = xp;
         document.getElementById('mapleAmount').textContent = maples;
+        document.getElementById('energyAmount').textContent = energy;
         // Home tab
         document.getElementById('userLevel').textContent = level;
         document.getElementById('homeXp').textContent = xp;
@@ -525,9 +540,10 @@
         // Progress bars (set max as you wish)
         const xpMax = 5000;
         const mapleMax = 1000;
+        const energyMax = 1000;
         document.getElementById('xpBar').style.width = Math.min(100, (xp / xpMax) * 100) + '%';
         document.getElementById('mapleBar').style.width = Math.min(100, (maples / mapleMax) * 100) + '%';
-
+        document.getElementById('energyBar').style.width = Math.min(100, (energy / energyMax) * 100) + '%';
         // Extract the 10 category values from user, check both top-level and user.niches
         userCategoryData = {
           physical: user.physical ?? user.niches?.physical,
@@ -1136,6 +1152,12 @@
       height: 100%;
       border: none;
       border-radius: 12px;
+    }
+    .progress-bar-energy {
+      height: 16px;
+      border-radius: 8px;
+      background: #ffd600;
+      transition: width 0.4s;
     }
   </style>
 </body>
