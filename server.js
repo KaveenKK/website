@@ -46,8 +46,8 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-
+// Mount webhook routes at /webhook for Mux and Tally webhooks
+app.use('/webhook', webhookRoutes);
 
 // Express middleware
 app.use(cors());
@@ -63,9 +63,6 @@ app.use('/api', profileRoutes);
 app.use('/api', userRoutes);
 //tally form submission from coaches
 app.use('/api', webhookRoutes);
-
-// Mount webhook routes at /webhook for Mux and Tally webhooks
-app.use('/webhook', webhookRoutes);
 
 // mount admin
 app.use('/api/admin', adminRoutes);
