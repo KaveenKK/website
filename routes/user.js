@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import Coach from "../models/Coach.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import WeeklyReport from '../models/WeeklyReport.js';
+import ExclusiveContent from "../models/ExclusiveContent.js";
 
 const router = express.Router();
 
@@ -334,6 +335,28 @@ router.post('/claim-new-user-xp', authMiddleware, async (req, res) => {
   } catch (err) {
     console.error('❌ Claim new user XP error:', err);
     res.status(500).json({ success: false, error: 'Failed to claim reward' });
+  }
+});
+
+/**
+ * GET /api/resources
+ * Returns all active exclusive content from the user's subscribed coaches
+ */
+router.get('/resources', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('my_coaches');
+    if (!user) return res.status(404).json({ error: 'User not found' });
+    const coachIds = user.my_coaches.map(c => c.coach_id);
+    if (!coachIds.length) return res.json([]);
+    const resources = await ExclusiveContent.find({
+      coach: { $in: coachIds },
+      visibility: 'active',
+      muxPlaybackId: { $ne: null }
+    }).populate('coach', 'name profile_picture');
+    res.json(resources);
+  } catch (err) {
+    console.error('❌ Error fetching resources:', err);
+    res.status(500).json({ error: 'Failed to fetch resources' });
   }
 });
 
