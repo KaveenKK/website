@@ -111,7 +111,18 @@
         
         // Get the original auth URL from state
         const authType = oauthStateParam.split('_')[0]; // 'user' or 'coach'
-        const authUrl = `/auth/discord/${authType}`;
+        let authUrl = `/auth/discord/${authType}`;
+        let callbackUrl = null;
+        if (isPWA || isPwaAuth) {
+          if (authType === 'user') {
+            // Use the new PWA callback for user
+            callbackUrl = '/auth/discord/user/pwa-callback';
+          } else {
+            callbackUrl = `/auth/discord/${authType}/callback`;
+          }
+        } else {
+          callbackUrl = `/auth/discord/${authType}/callback`;
+        }
         
         // For PWA, we need to handle the OAuth flow differently
         if (isPWA || isPwaAuth) {
@@ -127,9 +138,9 @@
                 console.log('[PWA OAuth] Fetching token with:', {
                   code: oauthCode,
                   state: oauthStateParam,
-                  url: `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`
+                  url: `${callbackUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`
                 });
-                fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
+                fetch(`${callbackUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
                   method: 'GET',
                   headers: {
                     'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',

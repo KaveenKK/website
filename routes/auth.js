@@ -181,6 +181,72 @@ router.get("/discord/callback", async (req, res) => {
   }
 });
 
+// STEP 2 – Callback endpoint for USERS (PWA only, JSON response)
+router.get("/discord/user/pwa-callback", async (req, res) => {
+  console.log("[OAuth USER PWA CALLBACK] Query:", req.query);
+  const code = req.query.code;
+  if (!code) return res.status(400).json({ error: 'Missing code' });
+
+  try {
+    // Exchange code for access token
+    const tokenRes = await axios.post(
+      `${DISCORD_API}/oauth2/token`,
+      new URLSearchParams({
+        client_id: process.env.DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: process.env.DISCORD_USER_PWA_REDIRECT_URI,
+        scope: "identify email"
+      }).toString(),
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+    const accessToken = tokenRes.data.access_token;
+
+    // Fetch user info from Discord
+    const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const discordUser = userRes.data;
+
+    // Find or create our User record
+    let user = await User.findOne({ discord_id: discordUser.id });
+    if (!user) {
+      user = await User.create({
+        discord_id: discordUser.id,
+        email: discordUser.email,
+        username: discordUser.username,
+        avatar: discordUser.avatar || null,
+        identity_completed: false,
+        xp: 0,
+        maples: 0,
+        role: 'user'
+      });
+    } else if (user.avatar !== discordUser.avatar) {
+      user.avatar = discordUser.avatar || null;
+      await user.save();
+    }
+
+    // Only issue a JWT once they've completed identity check
+    if (!user.identity_completed) {
+      return res.status(403).json({ error: 'Identity not completed', discord_id: discordUser.id });
+    }
+
+    // At this point identity_completed === true, so we can sign the token
+    const token = jwt.sign(
+      { id: user._id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+
+    // Always respond with JSON for PWA
+    return res.json({ token, discord_id: discordUser.id });
+  } catch (err) {
+    console.error("OAuth User PWA Error:", err.response?.data || err.message);
+    return res.status(500).json({ error: 'OAuth failed', details: err.response?.data || err.message });
+  }
+});
+
 // Token validation endpoints
 router.get("/validate-user", authMiddleware, (req, res) => {
   if (req.user.role !== 'user') {
