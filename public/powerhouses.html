@@ -595,6 +595,24 @@
           });
         }
       };
+      // Real-time message handler (add only once per chat open)
+      socket.off('houseMessage'); // Remove previous handler to avoid duplicates
+      socket.on('houseMessage', function(data) {
+        if (!data || data.houseId !== houseId) return;
+        // Append the new message to the chat
+        const msgDiv = document.createElement('div');
+        msgDiv.style = `display:flex;align-items:flex-start;gap:0.7em;margin-bottom:0.7em;`;
+        msgDiv.innerHTML = `
+          <img src="${data.user?.avatar ? `https://cdn.discordapp.com/avatars/${data.user.discord_id || data.user._id || ''}/${data.user.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:32px;height:32px;border-radius:50%;border:2px solid #b3b3f7;">
+          <div style="flex:1;">
+            <div style="font-weight:600;color:#5a5ad6;font-size:1em;">${data.user?.username || 'User'} <span style='color:#aaa;font-size:0.93em;font-weight:400;'>${new Date(data.createdAt).toLocaleString()}</span></div>
+            <div style="font-size:1.07em;color:#222;margin-top:0.1em;">${escapeHtml(data.message)}</div>
+          </div>
+        `;
+        chatDiv.appendChild(msgDiv);
+        // Scroll to bottom
+        chatDiv.scrollTop = chatDiv.scrollHeight;
+      });
       // When modal is closed, clear currentHouseId
       modal.querySelector('button[onclick*="phModal"]').onclick = function() {
         currentHouseId = null;
