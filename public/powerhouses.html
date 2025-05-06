@@ -599,6 +599,8 @@
       socket.off('houseMessage'); // Remove previous handler to avoid duplicates
       socket.on('houseMessage', function(data) {
         if (!data || data.houseId !== houseId) return;
+        // Avoid double message for sender
+        if (data.user && data.user._id === userData._id) return;
         // Append the new message to the chat
         const msgDiv = document.createElement('div');
         msgDiv.style = `display:flex;align-items:flex-start;gap:0.7em;margin-bottom:0.7em;`;

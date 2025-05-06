@@ -193,6 +193,11 @@ if (expectedPWA !== null) {
       window.location.href = '/';
     });
   </script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+  </script>
   <script src="coach_dashboard.js"></script>
 </body>
 </html>

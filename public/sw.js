@@ -17,7 +17,9 @@ const urlsToCache = [
   '/images/mentorship.gif',
   '/images/manthink.jpg',
   '/images/mylogo_nevengi_circle.webp',
-  '/images/companyoffer.png'
+  '/images/companyoffer.png',
+  '/user_dashboard.html',
+  '/coach_dashboard.html'
 ];
 
 self.addEventListener('install', event => {
