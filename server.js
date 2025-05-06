@@ -177,8 +177,8 @@ io.on('connection', (socket) => {
   // Handle new chat message (expects { houseId, message, user })
   socket.on('houseMessage', (data) => {
     const { houseId, message, user } = data;
-    // Broadcast to all in the house room except sender
-    socket.to(`house_${houseId}`).emit('houseMessage', { houseId, message, user, createdAt: new Date() });
+    // Broadcast to all in the house room (including sender)
+    io.to(`house_${houseId}`).emit('houseMessage', { houseId, message, user, createdAt: new Date() });
   });
 
   // Optionally handle disconnects, etc.
