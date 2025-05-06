@@ -220,8 +220,6 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
   display: none;
   position: absolute;
   top: 50%;
-  left: 110%;
-  right: auto;
   transform: translateY(-50%);
   background-color: #fff;
   border: 1.5px solid #ccc;
@@ -229,8 +227,16 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
   padding: 10px 18px;
   font-size: 1.1em;
   box-shadow: 0 2px 8px rgba(0,0,0,0.13);
-  z-index: 9999;
+  z-index: 20;
   white-space: nowrap;
+}
+.icon-circle.left-popup .popup {
+  left: 110%;
+  right: auto;
+}
+.icon-circle.right-popup .popup {
+  right: 110%;
+  left: auto;
 }
 
 @media (max-width: 600px) {
@@ -524,6 +530,24 @@ h1, h2, h3, h4, h5, h6, label, p, span, strong {
     height: 16px;
   }
   .icon-scroll-container .popup {
+    left: 115%;
+    min-width: 70px;
+    max-width: 140px;
+    font-size: 1em;
+  }
+}
+.icon-circle.popup-right .popup {
+  left: 120%;
+  right: auto;
+  top: 50%;
+  transform: translateY(-50%);
+  min-width: 90px;
+  max-width: 200px;
+  z-index: 100;
+  white-space: normal;
+}
+@media (max-width: 600px) {
+  .icon-circle.popup-right .popup {
     left: 115%;
     min-width: 70px;
     max-width: 140px;
