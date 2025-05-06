@@ -45,7 +45,7 @@ router.get('/scan', authMiddleware, async (req, res) => {
   })).sort((a, b) => b.similarity - a.similarity).slice(0, 20);
 
   // Find houses (not full)
-  const houses = await House.find({ members: { $size: { $lt: 6 } } }).populate('members', 'country gender channels date_of_birth').lean();
+  const houses = await House.find({ $expr: { $lt: [ { $size: "$members" }, 6 ] } }).populate('members', 'country gender channels date_of_birth').lean();
   function calcHouseSimilarity(house) {
     // Compare user to house interests/country/age of members
     let score = 0;
