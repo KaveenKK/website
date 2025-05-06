@@ -91,6 +91,11 @@ router.get("/discord/user/callback", async (req, res) => {
       { expiresIn: '7d' }
     );
 
+    // PWA support: return JSON if pwa=true
+    if (req.query.pwa === 'true') {
+      return res.json({ token, discord_id: discordUser.id });
+    }
+
     // Redirect to user dashboard with token & discord_id
     return res.redirect(
       `/user_dashboard.html?token=${token}&discord_id=${encodeURIComponent(discordUser.id)}`
@@ -154,6 +159,11 @@ router.get("/discord/callback", async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
+
+    // PWA support: return JSON if pwa=true
+    if (req.query.pwa === 'true') {
+      return res.json({ token, discord_id: discordUser.id });
+    }
 
     // Redirect to coach dashboard with token & discord_id
     return res.redirect(
