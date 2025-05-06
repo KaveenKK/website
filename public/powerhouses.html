@@ -241,6 +241,8 @@
     let userToken = localStorage.getItem('userToken');
     if (!userToken) window.location.href = '/user_dashboard.html';
     let userData = {};
+    const socket = io();
+    let currentHouseId = null;
     // Load user info
     async function loadUser() {
       const headers = { Authorization: 'Bearer ' + userToken };
@@ -508,6 +510,8 @@
     };
     // House chat modal
     window.openHouseChat = async function(houseId, houseName) {
+      currentHouseId = houseId;
+      socket.emit('joinHouseRoom', houseId);
       const modal = document.getElementById('phModal');
       modal.style.display = 'flex';
       modal.style.position = 'fixed';
@@ -578,7 +582,23 @@
           await loadMessages(true);
           // Scroll to bottom after sending
           chatDiv.scrollTop = chatDiv.scrollHeight;
+          // Emit real-time message to others
+          socket.emit('houseMessage', {
+            houseId,
+            message: text,
+            user: {
+              username: userData.username,
+              avatar: userData.avatar,
+              discord_id: userData.discord_id,
+              _id: userData._id
+            }
+          });
         }
+      };
+      // When modal is closed, clear currentHouseId
+      modal.querySelector('button[onclick*="phModal"]').onclick = function() {
+        currentHouseId = null;
+        modal.style.display = 'none';
       };
     };
     function escapeHtml(text) {
