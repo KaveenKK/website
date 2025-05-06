@@ -609,6 +609,7 @@
       listDiv.innerHTML = '';
       houses.forEach(h => {
         const isCreator = h.creator === userData._id;
+        const isMember = h.members.some(m => m._id === userData._id);
         const div = document.createElement('div');
         div.style = 'background:#fff;border-radius:14px;box-shadow:0 2px 12px rgba(90,90,214,0.07);margin-bottom:1.5em;padding:1.2em 1em;';
         // Members HTML
@@ -626,12 +627,17 @@
         } else {
           actionsHtml += `<button style='background:#fff;color:#d32f2f;border:1.5px solid #d32f2f;border-radius:8px;padding:0.4em 1.1em;font-size:1em;font-weight:600;cursor:pointer;' data-leave='${h._id}'>Leave</button>`;
         }
+        // Chat button if member or creator
+        let chatHtml = '';
+        if (isMember || isCreator) {
+          chatHtml = `<button style='background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.4em 1.1em;font-size:1em;font-weight:600;cursor:pointer;' data-chat='${h._id}' data-chatname='${h.name.replace(/'/g, '&#39;').replace(/"/g, '&quot;')}'>Chat</button>`;
+        }
         div.innerHTML = `
-          <div style='font-size:1.15em;font-weight:700;color:#5a5ad6;margin-bottom:0.3em;'>${h.name}</div>
+          <div style='font-size:1.15em;font-weight:700;color:#5a5ad6;margin-bottom:0.3em;cursor:pointer;text-decoration:underline;' data-chat='${h._id}' data-chatname='${h.name.replace(/'/g, '&#39;').replace(/"/g, '&quot;')}'>${h.name}</div>
           <div style='color:#888;font-size:0.98em;margin-bottom:0.7em;'>${h.description || ''}</div>
           <div style='margin-bottom:0.7em;'><b>Members:</b> ${membersHtml}</div>
           ${requestsHtml}
-          <div style='margin-top:0.7em;display:flex;gap:0.7em;flex-wrap:wrap;'>${actionsHtml}</div>
+          <div style='margin-top:0.7em;display:flex;gap:0.7em;flex-wrap:wrap;'>${chatHtml}${actionsHtml}</div>
         `;
         listDiv.appendChild(div);
       });
@@ -693,6 +699,15 @@
           const res = await fetch(`${API_BASE}/api/houses/${houseId}/reject`, { method: 'POST', headers, body: JSON.stringify({ userId }) });
           if (res.ok) { showNotification('Request rejected.', 'success'); loadMyHouses(); }
           else { showNotification('Failed to reject request.', 'error'); btn.textContent = 'Error'; setTimeout(() => loadMyHouses(), 1200); }
+        };
+      });
+      // Chat button handler
+      listDiv.querySelectorAll('[data-chat]').forEach(btn => {
+        btn.onclick = function(e) {
+          const houseId = btn.getAttribute('data-chat');
+          const houseName = btn.getAttribute('data-chatname');
+          window.openHouseChat(houseId, houseName);
+          e.stopPropagation();
         };
       });
     }
