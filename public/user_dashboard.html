@@ -925,6 +925,10 @@
           } else if (icon.closest('.blue-bar.right')) {
             icon.classList.add('right-popup');
           }
+          // For icon-circles inside .icon-scroll-container, always show popup to the right
+          if (icon.closest('.icon-scroll-container')) {
+            icon.classList.add('popup-right');
+          }
           if (!isNaN(numValue) && numValue >= 0 && numValue <= 10) {
             percent = numValue / 10;
             if (numValue >= 8) {
