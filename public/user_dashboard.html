@@ -92,6 +92,9 @@
         <button data-tab="reports">Reports</button>
         <button data-tab="home">Home</button>
         <button data-tab="settings">Settings</button>
+        <button data-tab="discussionBtn" style="background:none;border:none;color:#008cba;font-size:1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.25rem 0 0.1rem 0;">
+          <span>💬</span><div>Discussion</div>
+        </button>
         <a href="model.html" class="btn">Go to Page 2</a>
       </nav>
 
@@ -1029,6 +1032,14 @@
           </div>
         `).join('')}</div>`;
       }
+
+      // Attach handler to Discussion buttons
+      document.getElementById('discussionBtn')?.addEventListener('click', function() {
+        window.location.href = 'discussion.html';
+      });
+      document.getElementById('mobileDiscussionBtn')?.addEventListener('click', function() {
+        window.location.href = 'discussion.html';
+      });
     });
   </script>
 
@@ -1039,6 +1050,9 @@
     <button data-tab="home"><span>🏠</span><div>Home</div></button>
     <button data-tab="resources"><span>🎬</span><div>Resources</div></button>
     <button data-tab="reports"><span>📄</span><div>Reports</div></button>
+    <button id="mobileDiscussionBtn" style="background:none;border:none;color:#008cba;font-size:1.1rem;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.25rem 0 0.1rem 0;">
+      <span>💬</span><div>Discussion</div>
+    </button>
   </nav>
 
   <style>
