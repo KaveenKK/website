@@ -308,6 +308,33 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
     padding: 0.4rem 0.7rem !important;
     font-size: 0.95rem !important;
   }
+  .mobile-icon-scroll-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    max-height: 320px;
+    width: 54px;
+    overflow-y: auto;
+    background: transparent;
+    z-index: 20;
+    gap: 8px;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-icon-scroll-container .icon-circle {
+    margin: 0 auto;
+  }
+  .desktop-only {
+    display: none !important;
+  }
+}
+@media (min-width: 601px) {
+  .mobile-icon-scroll-container {
+    display: none !important;
+  }
 }
 
 :root {
