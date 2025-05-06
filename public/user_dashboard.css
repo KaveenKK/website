@@ -309,22 +309,12 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
     font-size: 0.95rem !important;
   }
   .mobile-icon-scroll-container {
-    display: flex;
-    flex-direction: column;
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    height: calc(5 * 54px + 4 * 18px); /* 5 icons + 4 larger gaps */
-    max-height: calc(5 * 54px + 4 * 18px);
-    width: 54px;
-    overflow-y: auto;
-    background: transparent;
-    z-index: 20;
-    gap: 18px;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE/Edge */
-    -webkit-overflow-scrolling: touch;
+    background: rgba(0,0,0,0.92);
+    border-radius: 22px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.18);
+    width: 64px;
+    padding: 10px 0;
+    align-items: center;
   }
   .mobile-icon-scroll-container::-webkit-scrollbar {
     display: none;
@@ -430,4 +420,7 @@ h1, h2, h3, h4, h5, h6, label, p, span, strong {
 .dark-mode #newUserReward {
   background: var(--popup-bg) !important;
   border: 2px solid var(--popup-border) !important;
+}
+.silver-glow .ring-bar {
+  filter: drop-shadow(0 0 6px #C0C0C0) drop-shadow(0 0 12px #fff);
 }
