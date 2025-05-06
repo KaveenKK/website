@@ -1024,7 +1024,7 @@
             </div>
             <div class="resource-description">${resource.description || ''}</div>
             <div class="resource-video-wrapper">
-              <iframe src="https://stream.mux.com/${resource.muxPlaybackId}/iframe" allow="autoplay; fullscreen" allowfullscreen></iframe>
+              <iframe src="https://player.mux.com/${resource.muxPlaybackId}" style="width: 100%; border: none; aspect-ratio: 1/1;" allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;" allowfullscreen></iframe>
             </div>
           </div>
         `).join('')}</div>`;
