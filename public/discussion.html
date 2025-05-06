@@ -259,13 +259,35 @@
         height: 36px;
       }
     }
+    #postThreadModal.modal {
+      background: rgba(0,0,0,0.18);
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 3000;
+      display: flex;
+    }
+    #postThreadModal .modal-content {
+      animation: slideUpModal 0.32s cubic-bezier(0.4,0,0.2,1);
+    }
+    @keyframes slideUpModal {
+      from { transform: translateY(100%); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @media (max-width:600px) {
+      #postThreadModal .modal-content {
+        max-width: 100vw;
+        border-radius: 18px 18px 0 0;
+        padding: 1.2em 0.7em 1em 0.7em;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="discussion-container">
     <div class="discussion-header">
-      <button class="back-btn" onclick="window.location.href='user_dashboard.html'">← Back</button>
-      <h2 style="margin:0;">Discussion Forum</h2>
+      <button class="back-btn" onclick="window.location.href='user_dashboard.html?tab=home'">← Back</button>
+      <h2 style="margin:0;flex:1;">Discussion Forum</h2>
+      <button id="openPostThreadModalBtn" style="background:#008cba;color:#fff;border:none;border-radius:6px;padding:0.5em 1.2em;font-size:1em;cursor:pointer;box-shadow:0 2px 8px rgba(0,140,186,0.08);transition:background 0.2s;">+ Post</button>
     </div>
     <div class="discussion-search">
       <input type="text" id="searchInput" placeholder="Search threads...">
@@ -283,7 +305,7 @@
         <option value="travel">Travel</option>
       </select>
     </div>
-    <div class="new-thread-box">
+    <div class="new-thread-box" id="newThreadBox">
       <textarea id="newThreadContent" placeholder="What's on your mind?"></textarea>
       <select id="newThreadTag">
         <option value="">Select Tag</option>
@@ -310,6 +332,28 @@
       <div class="new-thread-box" style="margin-top:1em;">
         <textarea id="replyContent" placeholder="Write a reply..."></textarea>
         <button id="postReplyBtn">Reply</button>
+      </div>
+    </div>
+  </div>
+  <div id="postThreadModal" class="modal" style="display:none;align-items:flex-end;justify-content:center;">
+    <div class="modal-content" style="width:100%;max-width:500px;border-radius:16px 16px 0 0;padding:1.5em 1em 1em 1em;box-shadow:0 -4px 24px rgba(0,0,0,0.18);position:relative;">
+      <button class="modal-close" onclick="closePostThreadModal()" style="top:0.7em;right:0.7em;">&times;</button>
+      <div class="new-thread-box" style="margin-bottom:0;box-shadow:none;border:0;background:transparent;padding:0;">
+        <textarea id="modalNewThreadContent" placeholder="What's on your mind?"></textarea>
+        <select id="modalNewThreadTag">
+          <option value="">Select Tag</option>
+          <option value="creative">Creative</option>
+          <option value="family">Family</option>
+          <option value="gender">Gender</option>
+          <option value="love">Love</option>
+          <option value="mental">Mental</option>
+          <option value="physical">Physical</option>
+          <option value="social">Social</option>
+          <option value="spiritual">Spiritual</option>
+          <option value="style">Style</option>
+          <option value="travel">Travel</option>
+        </select>
+        <button id="modalPostThreadBtn">Post</button>
       </div>
     </div>
   </div>
@@ -486,6 +530,42 @@
     }
     // Initial load
     loadThreads();
+    // Hide inline new-thread-box, show modal on +Post
+    document.getElementById('openPostThreadModalBtn').onclick = function() {
+      document.getElementById('postThreadModal').style.display = 'flex';
+      document.getElementById('modalNewThreadContent').value = '';
+      document.getElementById('modalNewThreadTag').value = '';
+    };
+    function closePostThreadModal() {
+      document.getElementById('postThreadModal').style.display = 'none';
+    }
+    window.closePostThreadModal = closePostThreadModal;
+    // Hide inline new-thread-box by default
+    document.getElementById('newThreadBox').style.display = 'none';
+    // Modal post logic
+    document.getElementById('modalPostThreadBtn').onclick = async function() {
+      const content = document.getElementById('modalNewThreadContent').value.trim();
+      const tag = document.getElementById('modalNewThreadTag').value;
+      if (!content || !tag) {
+        alert('Please enter content and select a tag.');
+        return;
+      }
+      const headers = {
+        'Authorization': 'Bearer ' + userToken,
+        'Content-Type': 'application/json'
+      };
+      const res = await fetch(`${API_BASE}/api/forum/threads`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ content, tag })
+      });
+      if (res.ok) {
+        closePostThreadModal();
+        await loadThreads();
+      } else {
+        alert('Failed to post thread.');
+      }
+    };
   </script>
 </body>
 </html> 
