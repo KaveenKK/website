@@ -293,6 +293,21 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
     white-space: normal;
     z-index: 100;
   }
+  header {
+    padding: 0.4rem 0.7rem !important;
+    min-height: unset !important;
+  }
+  header img#userProfilePic {
+    width: 36px !important;
+    height: 36px !important;
+  }
+  header span#userName {
+    font-size: 1rem !important;
+  }
+  #headerRightBtns button, #mobileMenu button {
+    padding: 0.4rem 0.7rem !important;
+    font-size: 0.95rem !important;
+  }
 }
 
 :root {
