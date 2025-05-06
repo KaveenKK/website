@@ -69,7 +69,8 @@ router.post('/mux', express.raw({ type: '*/*' }), async (req, res) => {
       return res.status(403).send('Missing signature or secret');
     }
     try {
-      Mux.Webhooks.verifyHeader(rawBody, signature, secret);
+      const webhooks = new Mux.Webhooks();
+      webhooks.verifySignature(rawBody, { 'mux-signature': signature }, secret);
     } catch (err) {
       console.error('❌ Invalid Mux webhook signature:', err);
       return res.status(403).send('Invalid signature');
