@@ -14,8 +14,16 @@ router.get('/threads', authMiddleware, async (req, res) => {
   if (search) query.content = { $regex: search, $options: 'i' };
   const threads = await ForumThread.find(query)
     .sort({ createdAt: -1 })
-    .populate('user', 'username avatar')
+    .populate('user', 'username avatar discord_id')
     .lean();
+  const threadIds = threads.map(t => t._id);
+  const replyCounts = await ForumReply.aggregate([
+    { $match: { thread: { $in: threadIds } } },
+    { $group: { _id: '$thread', count: { $sum: 1 } } }
+  ]);
+  const replyCountMap = {};
+  replyCounts.forEach(rc => { replyCountMap[rc._id.toString()] = rc.count; });
+  threads.forEach(t => { t.replyCount = replyCountMap[t._id.toString()] || 0; });
   res.json(threads);
 });
 
@@ -35,12 +43,12 @@ router.post('/threads', authMiddleware, async (req, res) => {
 // GET /api/forum/threads/:id
 router.get('/threads/:id', authMiddleware, async (req, res) => {
   const thread = await ForumThread.findById(req.params.id)
-    .populate('user', 'username avatar')
+    .populate('user', 'username avatar discord_id')
     .lean();
   if (!thread) return res.status(404).json({ error: 'Thread not found' });
   const replies = await ForumReply.find({ thread: thread._id })
     .sort({ createdAt: 1 })
-    .populate('user', 'username avatar')
+    .populate('user', 'username avatar discord_id')
     .lean();
   res.json({ thread, replies });
 });

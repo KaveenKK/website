@@ -412,13 +412,8 @@
         btn.addEventListener('click', () => handleTabClick(btn.dataset.tab));
       });
 
-      // Check for ?tab=home in URL and activate Home tab if present
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('tab') === 'home') {
-        handleTabClick('home');
-      } else {
-        handleTabClick('home');
-      }
+      // Set initial active tab
+      handleTabClick('home');
 
       // Helper: render one coach, with optional pinned styling and subscription status
       function renderCoachItem(coach, isSubscribed = false, pinned = false) {
