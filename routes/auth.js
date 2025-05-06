@@ -195,7 +195,8 @@ router.get("/discord/callback", async (req, res) => {
 // STEP 2 – Callback endpoint for USERS (PWA only, JSON response)
 router.get("/discord/user/pwa-callback", async (req, res) => {
   console.log("[OAuth USER PWA CALLBACK] Query:", req.query);
-  console.log("[OAuth USER PWA CALLBACK] Using redirect_uri for token exchange:", process.env.DISCORD_USER_PWA_REDIRECT_URI);
+  const redirectUri = "https://www.nevengi.com/pwa-oauth-landing.html";
+  console.log("[OAuth USER PWA CALLBACK] Using redirect_uri for token exchange:", redirectUri);
   const code = req.query.code;
   if (!code) return res.status(400).json({ error: 'Missing code' });
 
@@ -208,7 +209,7 @@ router.get("/discord/user/pwa-callback", async (req, res) => {
         client_secret: process.env.DISCORD_CLIENT_SECRET,
         grant_type: "authorization_code",
         code,
-        redirect_uri: process.env.DISCORD_USER_PWA_REDIRECT_URI,
+        redirect_uri: redirectUri,
         scope: "identify email"
       }).toString(),
       { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
