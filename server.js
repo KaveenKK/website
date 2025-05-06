@@ -14,6 +14,8 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { Server as SocketIOServer } from 'socket.io';
+import http from 'http';
 
 // Import routers & models
 import authRoutes from './routes/auth.js';
@@ -42,8 +44,14 @@ mongoose.connect(process.env.MONGODB_URI, {
     process.exit(1);
   });
 
-// Initialize Express
+// Initialize Express and HTTP server
 const app = express();
+const server = http.createServer(app);
+const io = new SocketIOServer(server, {
+  cors: { origin: '*', methods: ['GET', 'POST'] }
+});
+app.set('io', io); // Make io accessible in routes if needed
+
 // Compute __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -159,8 +167,25 @@ app.get('*', (req, res, next) => {
   res.sendFile(path.join(publicPath, 'index.html'));
 });
 
-// Start the server
+// Socket.IO real-time chat logic
+io.on('connection', (socket) => {
+  // Join a house room
+  socket.on('joinHouseRoom', (houseId) => {
+    socket.join(`house_${houseId}`);
+  });
+
+  // Handle new chat message (expects { houseId, message, user })
+  socket.on('houseMessage', (data) => {
+    const { houseId, message, user } = data;
+    // Broadcast to all in the house room except sender
+    socket.to(`house_${houseId}`).emit('houseMessage', { houseId, message, user, createdAt: new Date() });
+  });
+
+  // Optionally handle disconnects, etc.
+});
+
+// Start the server (with Socket.IO)
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`🚀 Server is running on port ${PORT}`);
 });
