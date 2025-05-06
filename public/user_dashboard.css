@@ -315,13 +315,13 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    height: calc(5 * 54px + 4 * 8px); /* 5 icons + 4 gaps */
-    max-height: calc(5 * 54px + 4 * 8px);
+    height: calc(5 * 54px + 4 * 18px); /* 5 icons + 4 larger gaps */
+    max-height: calc(5 * 54px + 4 * 18px);
     width: 54px;
     overflow-y: auto;
     background: transparent;
     z-index: 20;
-    gap: 8px;
+    gap: 18px;
     scrollbar-width: none; /* Firefox */
     -ms-overflow-style: none; /* IE/Edge */
     -webkit-overflow-scrolling: touch;
