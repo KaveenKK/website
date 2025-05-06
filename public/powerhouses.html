@@ -468,6 +468,10 @@
       modal.innerHTML = `
         <div style="background:#fff;border-radius:16px;max-width:340px;width:90vw;padding:2em 1.2em;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;">
           <button onclick=\"document.getElementById('phModal').style.display='none'\" style=\"position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;\">&times;</button>
+          <div style='display:flex;flex-direction:column;align-items:center;margin-bottom:1em;'>
+            <img src="${userData.avatar ? `https://cdn.discordapp.com/avatars/${userData.discord_id}/${userData.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:54px;height:54px;border-radius:50%;border:2.5px solid #8f6ed5;margin-bottom:0.5em;">
+            <div style='font-size:1.1em;font-weight:600;color:#5a5ad6;'>${userData.username || ''}</div>
+          </div>
           <div style=\"font-size:1.2em;font-weight:600;color:#5a5ad6;margin-bottom:1em;text-align:center;\">Create House</div>
           <input id='phHouseName' placeholder='House Name' style='width:100%;margin-bottom:0.7em;padding:0.6em 0.8em;font-size:1em;border-radius:8px;border:1.5px solid #e0e0e0;'>
           <input id='phHouseDesc' placeholder='Description (optional)' style='width:100%;margin-bottom:0.7em;padding:0.6em 0.8em;font-size:1em;border-radius:8px;border:1.5px solid #e0e0e0;'>
@@ -515,10 +519,10 @@
       modal.style.justifyContent = 'center';
       modal.style.zIndex = 3000;
       modal.innerHTML = `
-        <div id='phChatBox' style="background:#fff;border-radius:16px;max-width:420px;width:98vw;height:80vh;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;">
+        <div id='phChatBox' style="background:#fff;border-radius:0px;max-width:100vw;width:100vw;height:100vh;display:flex;flex-direction:column;box-shadow:0 4px 24px rgba(90,90,214,0.13);position:relative;">
           <button onclick=\"document.getElementById('phModal').style.display='none'\" style=\"position:absolute;top:1em;right:1em;background:none;border:none;font-size:1.5em;color:#888;cursor:pointer;z-index:2;\">&times;</button>
           <div style='font-size:1.2em;font-weight:700;color:#5a5ad6;text-align:center;padding:1em 0 0.5em 0;border-bottom:1.5px solid #e9eafc;'>${houseName}</div>
-          <div id='phChatMessages' style='flex:1;overflow-y:auto;padding:1em 0.7em 0.7em 0.7em;display:flex;flex-direction:column-reverse;'></div>
+          <div id='phChatMessages' style='flex:1;overflow-y:auto;padding:1em 0.7em 0.7em 0.7em;display:flex;flex-direction:column-reverse;min-height:0;max-height:calc(100vh - 120px);'></div>
           <form id='phChatForm' style='display:flex;gap:0.5em;padding:0.7em;border-top:1.5px solid #e9eafc;background:#fafbfc;'>
             <input id='phChatInput' autocomplete='off' placeholder='Type a message...' style='flex:1;padding:0.7em 1em;font-size:1em;border-radius:8px;border:1.5px solid #e0e0e0;'>
             <button type='submit' style='background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.7em 1.2em;font-size:1.1em;font-weight:600;cursor:pointer;'>Send</button>
@@ -539,7 +543,7 @@
           const msgDiv = document.createElement('div');
           msgDiv.style = `display:flex;align-items:flex-start;gap:0.7em;margin-bottom:0.7em;`;
           msgDiv.innerHTML = `
-            <img src="${msg.user?.avatar ? `https://cdn.discordapp.com/avatars/${msg.user._id || ''}/${msg.user.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:32px;height:32px;border-radius:50%;border:2px solid #b3b3f7;">
+            <img src="${msg.user?.avatar ? `https://cdn.discordapp.com/avatars/${msg.user.discord_id || msg.user._id || ''}/${msg.user.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" style="width:32px;height:32px;border-radius:50%;border:2px solid #b3b3f7;">
             <div style="flex:1;">
               <div style="font-weight:600;color:#5a5ad6;font-size:1em;">${msg.user?.username || 'User'} <span style='color:#aaa;font-size:0.93em;font-weight:400;'>${new Date(msg.createdAt).toLocaleString()}</span></div>
               <div style="font-size:1.07em;color:#222;margin-top:0.1em;">${escapeHtml(msg.message)}</div>
