@@ -31,6 +31,17 @@ router.get("/discord", (req, res) => {
   res.redirect(`${DISCORD_API}/oauth2/authorize?${params.toString()}`);
 });
 
+// USER Discord Login (PWA)
+router.get("/discord/user/pwa-start", (req, res) => {
+  const params = new URLSearchParams({
+    client_id: process.env.DISCORD_CLIENT_ID,
+    redirect_uri: process.env.DISCORD_USER_PWA_REDIRECT_URI,
+    response_type: "code",
+    scope: "identify email"
+  });
+  res.redirect(`${DISCORD_API}/oauth2/authorize?${params.toString()}`);
+});
+
 // STEP 2 – Callback endpoint for USERS
 router.get("/discord/user/callback", async (req, res) => {
   console.log("[OAuth USER CALLBACK] Query:", req.query);

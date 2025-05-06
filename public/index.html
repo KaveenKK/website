@@ -714,6 +714,22 @@
         }
       });
     }
+
+    // Update User Login button for PWA
+    document.addEventListener('DOMContentLoaded', function() {
+      const userLoginBtn = document.querySelector('a[href="/auth/discord/user"]');
+      if (userLoginBtn) {
+        userLoginBtn.addEventListener('click', function(e) {
+          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone ||
+                        document.referrer.includes('android-app://');
+          if (isPWA) {
+            e.preventDefault();
+            window.location.href = '/auth/discord/user/pwa-start';
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
