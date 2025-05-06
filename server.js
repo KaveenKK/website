@@ -25,6 +25,7 @@ import userRoutes from "./routes/user.js";
 import './models/WeeklyReport.js';
 import coachRoutes from './routes/coach.js';
 import forumRoutes from './routes/forum.js';
+import houseRoutes from './routes/house.js';
 
 // Prefer IPv4 to avoid potential DNS v6 issues
 dns.setDefaultResultOrder('ipv4first');
@@ -69,6 +70,7 @@ app.use('/api', webhookRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/coach', coachRoutes);
 app.use('/api/forum', forumRoutes);
+app.use('/api/houses', houseRoutes);
 
 // Form submission endpoint
 app.post('/api/submit', async (req, res) => {
