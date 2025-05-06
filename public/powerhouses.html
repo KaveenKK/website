@@ -275,7 +275,7 @@
       setTimeout(() => scanCircle.classList.remove('ph-scan-anim'), 1200);
       // Fetch scan results
       const headers = { Authorization: 'Bearer ' + userToken };
-      const res = await fetch(`${API_BASE}/api/scan`, { headers });
+      const res = await fetch(`${API_BASE}/api/houses/scan`, { headers });
       const { users, houses } = await res.json();
       // Place entities in a circle
       const total = users.length + houses.length;

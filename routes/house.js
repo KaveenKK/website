@@ -36,6 +36,7 @@ router.get('/scan', authMiddleware, async (req, res) => {
     _id: u._id,
     username: u.username,
     avatar: u.avatar,
+    discord_id: u.discord_id,
     country: u.country,
     gender: u.gender,
     channels: u.channels,
