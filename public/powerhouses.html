@@ -539,7 +539,7 @@
         if (!res.ok) { loading = false; return; }
         const msgs = await res.json();
         if (msgs.length < limit) done = true;
-        msgs.reverse().forEach(msg => {
+        msgs.forEach(msg => {
           const msgDiv = document.createElement('div');
           msgDiv.style = `display:flex;align-items:flex-start;gap:0.7em;margin-bottom:0.7em;`;
           msgDiv.innerHTML = `
@@ -549,9 +549,10 @@
               <div style="font-size:1.07em;color:#222;margin-top:0.1em;">${escapeHtml(msg.message)}</div>
             </div>
           `;
-          chatDiv.prepend(msgDiv);
+          chatDiv.appendChild(msgDiv);
         });
-        if (initial) chatDiv.scrollTop = chatDiv.scrollHeight;
+        // Always scroll to bottom after loading
+        chatDiv.scrollTop = chatDiv.scrollHeight;
         loading = false;
         page++;
       }
@@ -574,6 +575,8 @@
           input.value = '';
           page = 1; done = false; chatDiv.innerHTML = '';
           await loadMessages(true);
+          // Scroll to bottom after sending
+          chatDiv.scrollTop = chatDiv.scrollHeight;
         }
       };
     };

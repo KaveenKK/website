@@ -187,7 +187,7 @@ router.post('/:id/chat', authMiddleware, async (req, res) => {
     user: user._id,
     message: message.trim()
   });
-  await chatMsg.populate('user', 'username avatar');
+  await chatMsg.populate('user', 'username avatar discord_id');
   res.status(201).json(chatMsg);
 });
 
@@ -202,7 +202,7 @@ router.get('/:id/chat', authMiddleware, async (req, res) => {
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit))
-    .populate('user', 'username avatar')
+    .populate('user', 'username avatar discord_id')
     .lean();
   res.json(messages.reverse()); // return oldest first
 });
