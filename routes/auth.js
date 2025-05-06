@@ -33,6 +33,7 @@ router.get("/discord", (req, res) => {
 
 // STEP 2 – Callback endpoint for USERS
 router.get("/discord/user/callback", async (req, res) => {
+  console.log("[OAuth USER CALLBACK] Query:", req.query);
   const code = req.query.code;
   if (!code) return res.redirect('/login');
 
@@ -108,6 +109,7 @@ router.get("/discord/user/callback", async (req, res) => {
 
 // STEP 2 – Callback endpoint for COACHES
 router.get("/discord/callback", async (req, res) => {
+  console.log("[OAuth COACH CALLBACK] Query:", req.query);
   const code = req.query.code;
   if (!code) return res.redirect('/login');
 

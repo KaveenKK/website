@@ -124,6 +124,11 @@
               navigator.serviceWorker.getRegistrations().then(registrations => {
                 registrations.forEach(registration => registration.unregister());
                 // Make the token request directly after unregistering
+                console.log('[PWA OAuth] Fetching token with:', {
+                  code: oauthCode,
+                  state: oauthStateParam,
+                  url: `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`
+                });
                 fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
                   method: 'GET',
                   headers: {
