@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PWA Discord OAuth Landing (Coach)</title>
+  <style>
+    body { font-family: sans-serif; background: #111; color: #fff; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    .card { background: #222; padding: 2rem; border-radius: 1rem; box-shadow: 0 2px 16px #0008; text-align: center; }
+    .spinner { margin: 2rem auto; border: 4px solid #333; border-top: 4px solid #4fc3f7; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="spinner"></div>
+    <div id="status">Completing Discord login…</div>
+  </div>
+  <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('code');
+      const state = params.get('state');
+      const status = document.getElementById('status');
+      if (!code) {
+        status.textContent = 'No code found in URL.';
+        return;
+      }
+      fetch(`/auth/discord/coach/pwa-callback?code=${encodeURIComponent(code)}${state ? `&state=${encodeURIComponent(state)}` : ''}`, {
+        method: 'GET',
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Pragma': 'no-cache',
+          'Expires': '0'
+        }
+      })
+      .then(response => {
+        if (!response.ok) throw new Error('Auth request failed');
+        return response.json();
+      })
+      .then(data => {
+        if (data.token) {
+          localStorage.setItem('coachToken', data.token);
+          if (data.discord_id) {
+            localStorage.setItem('discordId', data.discord_id);
+          }
+          status.textContent = 'Login successful! Redirecting…';
+          setTimeout(() => {
+            window.location.href = '/coach_dashboard.html';
+          }, 1000);
+        } else {
+          throw new Error('No token received');
+        }
+      })
+      .catch(error => {
+        status.textContent = 'Login failed. Please try again.';
+        localStorage.removeItem('coachToken');
+        localStorage.removeItem('discordId');
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      });
+    })();
+  </script>
+</body>
+</html> 

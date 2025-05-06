@@ -93,8 +93,9 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
 /* Home Tab */
 .character-display {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
   margin-bottom: 1rem;
   position: relative;
   padding-left: 80px;
@@ -240,6 +241,7 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
 
 @media (max-width: 600px) {
   .character-display {
+    flex-direction: column;
     padding-left: 4px;
     padding-right: 4px;
   }

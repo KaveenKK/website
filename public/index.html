@@ -744,6 +744,32 @@
           }
         });
       }
+      // Coach PWA login logic
+      const coachLoginBtn = document.querySelector('a[href="/auth/discord"]');
+      if (coachLoginBtn) {
+        coachLoginBtn.addEventListener('click', function(e) {
+          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone ||
+                        document.referrer.includes('android-app://');
+          if (isPWA) {
+            e.preventDefault();
+            // Build the Discord OAuth2 URL with correct redirect_uri for PWA (coach)
+            const clientId = '1362382273369997462';
+            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing-coach.html';
+            const scope = 'identify email';
+            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+            // Unregister all service workers before redirecting
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+                window.location.href = discordOAuthUrl;
+              });
+            } else {
+              window.location.href = discordOAuthUrl;
+            }
+          }
+        });
+      }
     });
 
     document.getElementById('logoutBtn').addEventListener('click', function() {

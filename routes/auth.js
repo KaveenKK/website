@@ -260,6 +260,69 @@ router.get("/discord/user/pwa-callback", async (req, res) => {
   }
 });
 
+// STEP 2 – Callback endpoint for COACHES (PWA only, JSON response)
+router.get("/discord/coach/pwa-callback", async (req, res) => {
+  console.log("[OAuth COACH PWA CALLBACK] Query:", req.query);
+  const redirectUri = "https://www.nevengi.com/pwa-oauth-landing-coach.html";
+  console.log("[OAuth COACH PWA CALLBACK] Using redirect_uri for token exchange:", redirectUri);
+  const code = req.query.code;
+  if (!code) return res.status(400).json({ error: 'Missing code' });
+
+  try {
+    // Exchange code for access token
+    const tokenRes = await axios.post(
+      `${DISCORD_API}/oauth2/token`,
+      new URLSearchParams({
+        client_id: process.env.DISCORD_CLIENT_ID,
+        client_secret: process.env.DISCORD_CLIENT_SECRET,
+        grant_type: "authorization_code",
+        code,
+        redirect_uri: redirectUri,
+        scope: "identify email"
+      }).toString(),
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+    const accessToken = tokenRes.data.access_token;
+
+    // Fetch coach info from Discord
+    const userRes = await axios.get(`${DISCORD_API}/users/@me`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    });
+    const discordUser = userRes.data;
+
+    // Find or create our Coach record
+    let coach = await Coach.findOne({ discord_id: discordUser.id });
+    if (!coach) {
+      coach = await Coach.create({
+        discord_id: discordUser.id,
+        email: discordUser.email,
+        name: discordUser.username,
+        specialties: [],
+        approved: false,
+        profile_picture: discordUser.avatar
+          ? `https://cdn.discordapp.com/avatars/${discordUser.id}/${discordUser.avatar}.png`
+          : null,
+        social_links: { instagram: null, twitter: null, linkedin: null, discord: null },
+        experience: "",
+        monthly_price_usd: 0,
+        monthly_price_maples: 0,
+        role: "coach"
+      });
+    }
+
+    // Always respond with JSON for PWA
+    const token = jwt.sign(
+      { id: coach._id, role: coach.role || 'coach' },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    return res.json({ token, discord_id: discordUser.id });
+  } catch (err) {
+    console.error("OAuth Coach PWA Error:", err.response?.data || err.message);
+    return res.status(500).json({ error: 'OAuth failed', details: err.response?.data || err.message });
+  }
+});
+
 // Token validation endpoints
 router.get("/validate-user", authMiddleware, (req, res) => {
   if (req.user.role !== 'user') {
