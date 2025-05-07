@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nevengi-v1';
+const CACHE_NAME = 'nevengi-v2';
 const urlsToCache = [
   '/',
   '/index.html',
