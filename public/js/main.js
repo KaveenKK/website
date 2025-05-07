@@ -36,8 +36,11 @@ scene.add(dir);
 let mixer;
 const loader = new GLTFLoader();
 
+const isMobile = window.innerWidth <= 600;
+const modelFile = isMobile ? 'caveman.glb' : 'truffle-man.glb';
+
 loader.load(
-  'truffle-man.glb',                // single self-contained file
+  modelFile,                // load mobile or desktop model
   (gltf) => {
     console.log('✅ GLTF/GLB loaded');
     const model = gltf.scene;
