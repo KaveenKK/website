@@ -283,7 +283,10 @@
               <img src="images/better-health.png" alt="Spiritual"><div class="popup"></div>
             </div>
           </div>
-          <video src="images/character animation.mp4" class="character-img" autoplay loop muted playsinline style="object-fit:cover;"></video>
+          <video class="character-img" autoplay loop muted playsinline style="object-fit:cover; width: 100%; max-width: 624px; border-radius: 50%; margin-bottom: 1rem; display: block;">
+            <source src="images/character animation.mp4" type="video/mp4">
+            <img src="images/man.png" alt="Character" style="width:100%;border-radius:50%;"/>
+          </video>
           <div class="blue-bar right desktop-only">
             <div class="icon-circle" data-category="creative">
               <svg class="ring-svg ring-svg-desktop"><circle class="ring-bg" cx="19" cy="19" r="15" stroke="#eee" stroke-width="6" fill="none"/><circle class="ring-bar" cx="19" cy="19" r="15" stroke="#222" stroke-width="6" fill="none" stroke-linecap="round"/></svg>
@@ -841,10 +844,7 @@
       // Settings section logic
       const genderLabel = document.getElementById('genderLabel');
       function updateCharacterImage(gender) {
-        const img = document.querySelector('.character-img');
-        if (img) {
-          img.src = gender === 'female' ? 'images/lady.png' : 'images/man.png';
-        }
+        // No longer update .character-img src, as it is a <video> now
       }
       async function loadUserGenderAndSetImage() {
         const headers = { Authorization: 'Bearer ' + token };
