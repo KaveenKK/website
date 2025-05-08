@@ -290,4 +290,71 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   }
+
+  // --- Mobile Navigation Logic ---
+  function isMobile() {
+    return window.innerWidth <= 768;
+  }
+
+  // Hamburger menu logic
+  const hamburgerBtn = document.getElementById('hamburgerBtn');
+  const mobileMenu = document.getElementById('mobileMenu');
+  const closeMenuBtn = document.getElementById('closeMenuBtn');
+  const moreBtn = document.getElementById('moreBtn');
+  const mobileBottomNav = document.getElementById('mobileBottomNav');
+  const logoutBtnMobile = document.getElementById('logoutBtnMobile');
+
+  if (hamburgerBtn && mobileMenu && closeMenuBtn) {
+    hamburgerBtn.addEventListener('click', () => {
+      mobileMenu.classList.add('show');
+    });
+    closeMenuBtn.addEventListener('click', () => {
+      mobileMenu.classList.remove('show');
+    });
+    // Hide menu on click outside
+    document.addEventListener('click', (e) => {
+      if (mobileMenu.classList.contains('show') && !mobileMenu.contains(e.target) && e.target !== hamburgerBtn) {
+        mobileMenu.classList.remove('show');
+      }
+    });
+  }
+  if (moreBtn && hamburgerBtn) {
+    moreBtn.addEventListener('click', () => {
+      hamburgerBtn.click();
+    });
+  }
+  // Tab switching for mobile nav and hamburger menu
+  function handleMobileTabSwitch(e) {
+    const tab = e.target.getAttribute('data-tab');
+    if (tab) {
+      showTab(tab);
+      if (mobileMenu.classList.contains('show')) mobileMenu.classList.remove('show');
+    }
+  }
+  if (mobileBottomNav) {
+    mobileBottomNav.querySelectorAll('button[data-tab]').forEach(btn => {
+      btn.addEventListener('click', handleMobileTabSwitch);
+    });
+  }
+  if (mobileMenu) {
+    mobileMenu.querySelectorAll('button[data-tab]').forEach(btn => {
+      btn.addEventListener('click', handleMobileTabSwitch);
+    });
+  }
+  // Mobile logout
+  if (logoutBtnMobile) {
+    logoutBtnMobile.addEventListener('click', function() {
+      localStorage.removeItem('coachToken');
+      localStorage.removeItem('expectedPWA');
+      window.location.href = '/';
+    });
+  }
+  // Hide hamburger and bottom nav on desktop
+  function updateMobileNavVisibility() {
+    const show = isMobile();
+    document.getElementById('mobile-hamburger').style.display = show ? 'block' : 'none';
+    document.getElementById('mobileBottomNav').style.display = show ? 'flex' : 'none';
+  }
+  window.addEventListener('resize', updateMobileNavVisibility);
+  updateMobileNavVisibility();
 });

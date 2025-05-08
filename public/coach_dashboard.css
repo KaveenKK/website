@@ -231,4 +231,113 @@ li {
   .pic-uploader {
     margin: 0 auto 20px;
   }
+
+  .mobile-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100vw;
+    background: #fff;
+    border-top: 1px solid #ddd;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.07);
+    z-index: 1000;
+    justify-content: space-around;
+    align-items: center;
+    height: 60px;
+  }
+  .mobile-bottom-nav button {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #008cba;
+    font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0 0.1rem 0;
+    height: 100%;
+    border-radius: 0;
+    margin: 0;
+  }
+  .mobile-bottom-nav button:active, .mobile-bottom-nav button:focus {
+    background: #e6f7ff;
+    color: #005f7f;
+  }
+  .tabs {
+    display: none;
+  }
+  #mobile-hamburger {
+    display: block;
+    position: fixed;
+    top: 12px;
+    right: 16px;
+    z-index: 1100;
+  }
+  #hamburgerBtn {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 2rem;
+    color: #008cba;
+    padding: 6px 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  }
+  .mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 70vw;
+    max-width: 320px;
+    height: 100vh;
+    background: #fff;
+    box-shadow: -2px 0 16px rgba(0,0,0,0.15);
+    z-index: 1200;
+    padding: 2rem 1.5rem 1.5rem 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    animation: slideInMenu 0.2s;
+  }
+  .mobile-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 100%;
+  }
+  .mobile-menu li {
+    margin-bottom: 1.2rem;
+    width: 100%;
+  }
+  .mobile-menu button {
+    width: 100%;
+    background: none;
+    border: none;
+    color: #008cba;
+    font-size: 1.1rem;
+    text-align: left;
+    padding: 0.7rem 0;
+    border-radius: 6px;
+  }
+  .mobile-menu button.menu-close {
+    position: absolute;
+    top: 10px;
+    right: 18px;
+    font-size: 2rem;
+    background: none;
+    border: none;
+    color: #888;
+    padding: 0;
+  }
+  .mobile-menu.show {
+    display: flex;
+  }
+}
+@keyframes slideInMenu {
+  from { right: -320px; opacity: 0; }
+  to { right: 0; opacity: 1; }
+}
+@media (min-width: 769px) {
+  .mobile-bottom-nav, #mobile-hamburger, .mobile-menu { display: none !important; }
 }

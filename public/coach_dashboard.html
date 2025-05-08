@@ -199,5 +199,27 @@ if (expectedPWA !== null) {
     }
   </script>
   <script src="coach_dashboard.js"></script>
+  <div id="mobile-hamburger" class="mobile-hamburger">
+    <button id="hamburgerBtn" aria-label="Open menu">☰</button>
+    <div id="mobileMenu" class="mobile-menu">
+      <button class="menu-close" id="closeMenuBtn">×</button>
+      <ul>
+        <li><button data-tab="dashboard">Dashboard</button></li>
+        <li><button data-tab="subscribers">Subscribers</button></li>
+        <li><button data-tab="invites">Invites</button></li>
+        <li><button data-tab="earnings">Earnings</button></li>
+        <li><button data-tab="starterCourse">Starter Course</button></li>
+        <li><button id="logoutBtnMobile">Logout</button></li>
+      </ul>
+    </div>
+  </div>
+  <nav class="mobile-bottom-nav" id="mobileBottomNav">
+    <button data-tab="dashboard"><span>🏠</span><div>Dashboard</div></button>
+    <button data-tab="subscribers"><span>👥</span><div>Subscribers</div></button>
+    <button data-tab="invites"><span>✉️</span><div>Invites</div></button>
+    <button data-tab="earnings"><span>💰</span><div>Earnings</div></button>
+    <button data-tab="starterCourse"><span>🎓</span><div>Course</div></button>
+    <button id="moreBtn"><span>☰</span><div>More</div></button>
+  </nav>
 </body>
 </html>
