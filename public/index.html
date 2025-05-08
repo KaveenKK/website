@@ -177,8 +177,19 @@
                   localStorage.removeItem('userToken');
                   localStorage.removeItem('coachToken');
                   localStorage.removeItem('discordId');
-                  // Redirect to home page
-                  window.location.href = '/';
+                  // Show modal
+                  var modal = document.getElementById('oauthErrorModal');
+                  if (modal) {
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                    document.getElementById('oauthErrorCloseBtn').onclick = function() {
+                      modal.style.display = 'none';
+                      document.body.style.overflow = '';
+                      window.location.href = '/';
+                    };
+                  } else {
+                    window.location.href = '/';
+                  }
                 })
                 .finally(() => {
                   oauthState.processing = false;
@@ -231,8 +242,19 @@
           localStorage.removeItem('userToken');
           localStorage.removeItem('coachToken');
           localStorage.removeItem('discordId');
-          // Redirect to home page
-          window.location.href = '/';
+          // Show modal
+          var modal = document.getElementById('oauthErrorModal');
+          if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('oauthErrorCloseBtn').onclick = function() {
+              modal.style.display = 'none';
+              document.body.style.overflow = '';
+              window.location.href = '/';
+            };
+          } else {
+            window.location.href = '/';
+          }
         })
         .finally(() => {
           oauthState.processing = false;
@@ -321,19 +343,26 @@
   const userToken = localStorage.getItem('userToken');
   const coachToken = localStorage.getItem('coachToken');
 
+  console.log('userToken:', userToken);
+  console.log('coachToken:', coachToken);
+
   if (coachToken) {
     if (await validateToken(coachToken, 'coach')) {
+      console.log('Valid coach token, redirecting...');
       window.location.href = '/coach_dashboard.html';
       return;
     } else {
+      console.log('Invalid coach token');
       localStorage.removeItem('coachToken');
     }
   }
   if (userToken) {
     if (await validateToken(userToken, 'user')) {
+      console.log('Valid user token, redirecting...');
       window.location.href = '/user_dashboard.html';
       return;
     } else {
+      console.log('Invalid user token');
       localStorage.removeItem('userToken');
     }
   }
@@ -789,5 +818,14 @@
       window.location.href = '/';
     });
   </script>
+
+  <!-- Add this just before </body> -->
+  <div id="oauthErrorModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;color:#222;padding:2.5rem 2rem;border-radius:18px;max-width:90vw;text-align:center;box-shadow:0 4px 32px #0008;">
+      <h2 style="margin-bottom:1rem;">Login Failed</h2>
+      <p style="font-size:1.1rem;margin-bottom:1.5rem;">Your login session expired or was invalid.<br>Please try logging in again from the login page.<br>If the problem persists, clear your browser cache or try a different browser.</p>
+      <button id="oauthErrorCloseBtn" style="background:#008cba;color:#fff;padding:0.7rem 2.2rem;border:none;border-radius:8px;font-size:1.1rem;">OK</button>
+    </div>
+  </div>
 </body>
 </html>

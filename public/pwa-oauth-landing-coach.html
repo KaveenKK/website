@@ -53,12 +53,12 @@
         }
       })
       .catch(error => {
-        status.textContent = 'Login failed. Please try again.';
+        status.textContent = 'Login failed or expired. Please try logging in again from the login page. If the problem persists, clear your browser cache or try a different browser.';
         localStorage.removeItem('coachToken');
         localStorage.removeItem('discordId');
         setTimeout(() => {
           window.location.href = '/';
-        }, 2000);
+        }, 4000);
       });
     })();
   </script>
