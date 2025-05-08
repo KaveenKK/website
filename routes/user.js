@@ -360,4 +360,13 @@ router.get('/resources', authMiddleware, async (req, res) => {
   }
 });
 
+// GET /api/check-identity-completed?discord_id=...
+router.get('/check-identity-completed', async (req, res) => {
+  const { discord_id } = req.query;
+  if (!discord_id) return res.status(400).json({ error: "Missing discord_id" });
+  const user = await User.findOne({ discord_id });
+  if (!user) return res.json({ completed: false });
+  return res.json({ completed: !!user.identity_completed });
+});
+
 export default router;

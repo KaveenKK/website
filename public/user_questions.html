@@ -111,7 +111,22 @@
   </style>
 </head>
 <body>
-  <div class="card">
+  <!-- Add this just after <body> -->
+  <div id="discord-signup-card" style="display:none; max-width: 420px; margin: 60px auto 0; background: rgba(30, 32, 40, 0.95); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); color: #fff; text-align: center; padding: 2.5rem 2rem;">
+    <img src="images/discord-icon.png" alt="Discord" style="width: 64px; height: 64px; margin-bottom: 1.5rem;">
+    <h2 style="margin-bottom: 1rem; font-size: 1.5rem;">Sign up with Discord</h2>
+    <p style="margin-bottom: 2rem; font-size: 1.1rem;">To complete your profile and get your personalized channels, please sign up with Discord first.</p>
+    <a href="/auth/discord/user" style="display: inline-block; background: #5865F2; color: #fff; font-weight: bold; border-radius: 24px; padding: 1rem 2.5rem; font-size: 1.1rem; text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transition: background 0.2s;">Sign up with Discord</a>
+  </div>
+
+  <!-- Add this after the discord-signup-card -->
+  <div id="already-completed-card" style="display:none; max-width: 420px; margin: 60px auto 0; background: rgba(30, 32, 40, 0.95); border-radius: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.25); color: #fff; text-align: center; padding: 2.5rem 2rem;">
+    <img src="images/mylogo_nevengi_circle.webp" alt="Profile Complete" style="width: 64px; height: 64px; margin-bottom: 1.5rem;">
+    <h2 style="margin-bottom: 1rem; font-size: 1.5rem;">Profile Already Completed</h2>
+    <p style="margin-bottom: 2rem; font-size: 1.1rem;">You have already completed your profile! Redirecting you to your dashboard...</p>
+  </div>
+
+  <div class="card" id="profile-form-card">
     <h2>Complete Your Profile</h2>
     <form id="multiStepForm">
 
@@ -373,8 +388,30 @@
     // Auto-fill Discord ID from URL parameter
     const params = new URLSearchParams(window.location.search);
     const discordId = params.get('discord_id');
+
     if (discordId) {
-      document.getElementById('discord_id').value = discordId;
+      // Check if already completed
+      fetch(`/api/check-identity-completed?discord_id=${encodeURIComponent(discordId)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.completed) {
+            document.getElementById('profile-form-card').style.display = 'none';
+            document.getElementById('discord-signup-card').style.display = 'none';
+            document.getElementById('already-completed-card').style.display = '';
+            setTimeout(() => {
+              window.location.href = '/user_dashboard.html';
+            }, 2000);
+          } else {
+            document.getElementById('discord_id').value = discordId;
+            document.getElementById('profile-form-card').style.display = '';
+            document.getElementById('discord-signup-card').style.display = 'none';
+            document.getElementById('already-completed-card').style.display = 'none';
+          }
+        });
+    } else {
+      document.getElementById('profile-form-card').style.display = 'none';
+      document.getElementById('discord-signup-card').style.display = '';
+      document.getElementById('already-completed-card').style.display = 'none';
     }
 
     // Update slider value display for range inputs
