@@ -238,19 +238,20 @@ li {
     bottom: 0;
     left: 0;
     width: 100vw;
-    background: #fff;
-    border-top: 1px solid #ddd;
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.07);
+    background: rgba(30, 32, 40, 0.98);
+    border-top: 1px solid #222;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.15);
     z-index: 1000;
     justify-content: space-around;
     align-items: center;
-    height: 60px;
+    height: 62px;
+    padding: 0;
   }
   .mobile-bottom-nav button {
     flex: 1;
     background: none;
     border: none;
-    color: #008cba;
+    color: #fff;
     font-size: 1.1rem;
     display: flex;
     flex-direction: column;
@@ -260,10 +261,12 @@ li {
     height: 100%;
     border-radius: 0;
     margin: 0;
+    font-weight: 600;
+    transition: background 0.15s, color 0.15s;
   }
   .mobile-bottom-nav button:active, .mobile-bottom-nav button:focus {
-    background: #e6f7ff;
-    color: #005f7f;
+    background: #222b;
+    color: #4fc3f7;
   }
   .tabs {
     display: none;
@@ -276,29 +279,32 @@ li {
     z-index: 1100;
   }
   #hamburgerBtn {
-    background: #fff;
-    border: 1px solid #ddd;
+    background: #222;
+    border: 1px solid #444;
     border-radius: 8px;
     font-size: 2rem;
-    color: #008cba;
+    color: #fff;
     padding: 6px 14px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   }
   .mobile-menu {
     display: none;
     position: fixed;
     top: 0;
     right: 0;
-    width: 70vw;
-    max-width: 320px;
+    width: 72vw;
+    max-width: 340px;
     height: 100vh;
-    background: #fff;
-    box-shadow: -2px 0 16px rgba(0,0,0,0.15);
+    background: #23243a;
+    box-shadow: -2px 0 16px rgba(0,0,0,0.25);
     z-index: 1200;
     padding: 2rem 1.5rem 1.5rem 1.5rem;
     flex-direction: column;
     align-items: flex-start;
     animation: slideInMenu 0.2s;
+    color: #fff;
+    border-top-left-radius: 18px;
+    border-bottom-left-radius: 18px;
   }
   .mobile-menu ul {
     list-style: none;
@@ -314,11 +320,13 @@ li {
     width: 100%;
     background: none;
     border: none;
-    color: #008cba;
+    color: #fff;
     font-size: 1.1rem;
     text-align: left;
     padding: 0.7rem 0;
     border-radius: 6px;
+    font-weight: 600;
+    transition: background 0.15s, color 0.15s;
   }
   .mobile-menu button.menu-close {
     position: absolute;
@@ -329,6 +337,10 @@ li {
     border: none;
     color: #888;
     padding: 0;
+  }
+  .mobile-menu button:active, .mobile-menu button:focus {
+    background: #2c5364;
+    color: #4fc3f7;
   }
   .mobile-menu.show {
     display: flex;
