@@ -15,6 +15,13 @@
   <div class="card">
     <div class="spinner"></div>
     <div id="status">Completing Discord login…</div>
+    <div id="processingOverlay" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;">
+      <div style="background:#222;color:#fff;padding:2.5rem 2rem;border-radius:18px;max-width:90vw;text-align:center;box-shadow:0 4px 32px #0008;">
+        <div class="spinner" style="margin-bottom:1.5rem;"></div>
+        <h2 style="margin-bottom:1rem;">Processing…</h2>
+        <p style="font-size:1.1rem;">Please wait. Do not reload or close this page.</p>
+      </div>
+    </div>
   </div>
   <script>
     (function() {
@@ -22,10 +29,20 @@
       const code = params.get('code');
       const state = params.get('state');
       const status = document.getElementById('status');
+      const overlay = document.getElementById('processingOverlay');
       if (!code) {
         status.textContent = 'No code found in URL.';
         return;
       }
+      // Robust: prevent double-processing of the same code (even on reload)
+      const lastProcessedCode = localStorage.getItem('lastProcessedOAuthCode');
+      if (lastProcessedCode === code) {
+        status.textContent = 'This login link has already been used or expired. Please start the login process again.';
+        setTimeout(() => { window.location.href = '/'; }, 4000);
+        return;
+      }
+      localStorage.setItem('lastProcessedOAuthCode', code);
+      overlay.style.display = 'flex';
       fetch(`/auth/discord/user/pwa-callback?code=${encodeURIComponent(code)}${state ? `&state=${encodeURIComponent(state)}` : ''}`, {
         method: 'GET',
         headers: {
@@ -35,6 +52,7 @@
         }
       })
       .then(response => {
+        overlay.style.display = 'none';
         if (!response.ok) throw new Error('Auth request failed');
         return response.json();
       })
@@ -53,6 +71,7 @@
         }
       })
       .catch(error => {
+        overlay.style.display = 'none';
         status.textContent = 'Login failed or expired. Please try logging in again from the login page. If the problem persists, clear your browser cache or try a different browser.';
         localStorage.removeItem('userToken');
         localStorage.removeItem('discordId');
