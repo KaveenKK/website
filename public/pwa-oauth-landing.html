@@ -62,6 +62,13 @@
           if (data.discord_id) {
             localStorage.setItem('discordId', data.discord_id);
           }
+          if (data.identity_completed === false) {
+            status.textContent = 'Almost done! Redirecting to complete your profile…';
+            setTimeout(() => {
+              window.location.href = `/user_questions.html?discord_id=${encodeURIComponent(data.discord_id)}`;
+            }, 1000);
+            return;
+          }
           status.textContent = 'Login successful! Redirecting…';
           setTimeout(() => {
             window.location.href = '/user_dashboard.html';

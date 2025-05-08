@@ -90,15 +90,18 @@ router.get("/discord/user/callback", async (req, res) => {
 
     // Only issue a JWT once they've completed identity check
     if (!user.identity_completed) {
-      // Redirect them to a "complete your registration" page
-      return res.redirect(
-        `/user_questions.html?discord_id=${encodeURIComponent(discordUser.id)}`
+      // Issue a token with identity_completed: false
+      const token = jwt.sign(
+        { id: user._id, role: user.role, identity_completed: false },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
       );
+      return res.json({ token, discord_id: discordUser.id, identity_completed: false });
     }
 
     // At this point identity_completed === true, so we can sign the token
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, identity_completed: true },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
@@ -242,18 +245,24 @@ router.get("/discord/user/pwa-callback", async (req, res) => {
 
     // Only issue a JWT once they've completed identity check
     if (!user.identity_completed) {
-      return res.status(403).json({ error: 'Identity not completed', discord_id: discordUser.id });
+      // Issue a token with identity_completed: false
+      const token = jwt.sign(
+        { id: user._id, role: user.role, identity_completed: false },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+      return res.json({ token, discord_id: discordUser.id, identity_completed: false });
     }
 
     // At this point identity_completed === true, so we can sign the token
     const token = jwt.sign(
-      { id: user._id, role: user.role },
+      { id: user._id, role: user.role, identity_completed: true },
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
 
     // Always respond with JSON for PWA
-    return res.json({ token, discord_id: discordUser.id });
+    return res.json({ token, discord_id: discordUser.id, identity_completed: true });
   } catch (err) {
     console.error("OAuth User PWA Error:", err.response?.data || err.message);
     return res.status(500).json({ error: 'OAuth failed', details: err.response?.data || err.message });
