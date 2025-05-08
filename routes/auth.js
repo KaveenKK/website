@@ -92,7 +92,7 @@ router.get("/discord/user/callback", async (req, res) => {
     if (!user.identity_completed) {
       // Redirect them to a "complete your registration" page
       return res.redirect(
-        `/complete-registration.html?discord_id=${encodeURIComponent(discordUser.id)}`
+        `/user_questions.html?discord_id=${encodeURIComponent(discordUser.id)}`
       );
     }
 
