@@ -153,11 +153,21 @@ export class DecisionHelperUI extends LitElement {
         return;
       }
       const data = await res.json();
+      // Debug log
+      console.log('AI response data:', data);
       // Add AI response
-      this.messages = [
-        ...this.messages,
-        { sender: 'ai', text: data.response }
-      ];
+      let aiText = data.response;
+      if (typeof aiText !== 'string') {
+        aiText = JSON.stringify(aiText);
+      }
+      if (aiText && aiText.trim()) {
+        this.messages = [
+          ...this.messages,
+          { sender: 'ai', text: aiText }
+        ];
+      } else {
+        this._showWarning('No response from AI.');
+      }
       // Add follow-up questions if any
       if (data.followUpQuestions && Array.isArray(data.followUpQuestions)) {
         data.followUpQuestions.forEach(q => {

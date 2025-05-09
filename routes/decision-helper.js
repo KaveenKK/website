@@ -66,11 +66,14 @@ router.post("/", authMiddleware, async (req, res) => {
     const prompt = buildPrompt(question, user, braveResults);
 
     // 3. Call Ollama
-    const aiResponse = await callOllama(prompt);
+    let aiResponse = await callOllama(prompt);
+    if (typeof aiResponse !== 'string') {
+      aiResponse = JSON.stringify(aiResponse);
+    }
 
     // 4. Extract follow-up questions (simple heuristic: look for questions in the response)
     const followUpQuestions = [];
-    const questionMatches = aiResponse.match(/[^.?!]*\?/g);
+    const questionMatches = aiResponse && typeof aiResponse === 'string' ? aiResponse.match(/[^.?!]*\?/g) : null;
     if (questionMatches) {
       questionMatches.forEach(q => {
         if (q.length > 10 && !followUpQuestions.includes(q.trim())) followUpQuestions.push(q.trim());
@@ -85,10 +88,14 @@ router.post("/", authMiddleware, async (req, res) => {
       followUpQuestions
     });
 
-    res.json({ response: aiResponse, followUpQuestions });
+    // Extra logging for outgoing response
+    console.log('[Decision Helper] Sending response:', { response: aiResponse, followUpQuestions });
+
+    // Always send a valid response field
+    res.json({ response: aiResponse || 'Sorry, no response from AI.', followUpQuestions });
   } catch (err) {
     console.error("[Decision Helper] Error:", err);
-    res.status(500).json({ error: "Failed to process decision helper request" });
+    res.status(500).json({ error: "Failed to process decision helper request", response: "Sorry, an error occurred." });
   }
 });
 
