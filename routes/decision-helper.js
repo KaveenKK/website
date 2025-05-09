@@ -61,15 +61,18 @@ async function callOllama(prompt) {
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
-    const { question } = req.body;
+    const { question, useWebSearch } = req.body;
     if (!question) return res.status(400).json({ error: "Missing question" });
 
     // Fetch user data
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    // 1. Brave search
-    const braveResults = await braveSearch(question);
+    // 1. Brave search (optional)
+    let braveResults = '';
+    if (useWebSearch !== false) {
+      braveResults = await braveSearch(question);
+    }
 
     // 2. Build prompt
     const prompt = buildPrompt(question, user, braveResults);

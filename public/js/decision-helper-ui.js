@@ -5,6 +5,7 @@ export class DecisionHelperUI extends LitElement {
     messages: { type: Array },
     loading: { type: Boolean },
     warning: { type: String },
+    useWebSearch: { type: Boolean },
   };
 
   static styles = css`
@@ -105,6 +106,7 @@ export class DecisionHelperUI extends LitElement {
     this.messages = [];
     this.loading = false;
     this.warning = '';
+    this.useWebSearch = true;
   }
 
   _showWarning(msg) {
@@ -125,17 +127,8 @@ export class DecisionHelperUI extends LitElement {
     const input = this.renderRoot.querySelector('input[type="text"]');
     const text = input.value.trim();
     if (!text) return;
-    // Optimistically add the user's question
     this.messages = [...this.messages, { sender: 'user', text }];
     input.value = '';
-    // Fire a custom event for backend integration
-    // this.dispatchEvent(new CustomEvent('decision-question', {
-    //   detail: { question: text },
-    //   bubbles: true,
-    //   composed: true
-    // }));
-
-    // API integration
     this.loading = true;
     try {
       const token = localStorage.getItem('userToken');
@@ -145,7 +138,7 @@ export class DecisionHelperUI extends LitElement {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         },
-        body: JSON.stringify({ question: text })
+        body: JSON.stringify({ question: text, useWebSearch: this.useWebSearch })
       });
       if (!res.ok) {
         this._showWarning('Failed to get AI response.');
@@ -153,9 +146,7 @@ export class DecisionHelperUI extends LitElement {
         return;
       }
       const data = await res.json();
-      // Debug log
       console.log('AI response data:', data);
-      // Add AI response
       let aiText = data.response;
       if (typeof aiText !== 'string') {
         aiText = JSON.stringify(aiText);
@@ -168,7 +159,6 @@ export class DecisionHelperUI extends LitElement {
       } else {
         this._showWarning('No response from AI.');
       }
-      // Add follow-up questions if any
       if (data.followUpQuestions && Array.isArray(data.followUpQuestions)) {
         data.followUpQuestions.forEach(q => {
           this.messages = [
@@ -213,10 +203,16 @@ export class DecisionHelperUI extends LitElement {
       });
   }
 
+  _toggleWebSearch() {
+    this.useWebSearch = !this.useWebSearch;
+    this.requestUpdate();
+  }
+
   render() {
     return html`
       <div class="decision-header">
         Decision Helper
+        <button @click="${this._toggleWebSearch}" style="float:right;margin-right:1em;background:${this.useWebSearch ? '#2e7d32' : '#888'};color:#fff;border:none;border-radius:8px;padding:0.4em 1em;font-size:0.95em;cursor:pointer;">${this.useWebSearch ? 'Web Search: ON' : 'Web Search: OFF'}</button>
       </div>
       <div class="messages">
         ${this.messages.map(msg => html`
