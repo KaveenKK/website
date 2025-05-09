@@ -38,7 +38,7 @@ async function callOllama(prompt) {
       { message: prompt },
       { headers: { 'Content-Type': 'application/json' } }
     );
-    // Adjust this if the response format is different
+    console.log('[Ollama API] Raw response:', res.data);
     if (res.data && res.data.response) return res.data.response;
     if (typeof res.data === 'string') return res.data;
     return JSON.stringify(res.data);
