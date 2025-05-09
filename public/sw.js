@@ -1,5 +1,6 @@
-const CACHE_NAME = 'nevengi-v2';
+const CACHE_NAME = 'nevengi-v3';
 const urlsToCache = [
+  // Main site files
   '/',
   '/index.html',
   '/styles.css',
@@ -19,46 +20,58 @@ const urlsToCache = [
   '/images/mylogo_nevengi_circle.webp',
   '/images/companyoffer.png',
   '/user_dashboard.html',
-  '/coach_dashboard.html'
+  '/coach_dashboard.html',
+  // React chat build files
+  '/powerhouses-react/build/index.html',
+  '/powerhouses-react/build/asset-manifest.json',
+  '/powerhouses-react/build/robots.txt',
+  '/powerhouses-react/build/logo512.png',
+  '/powerhouses-react/build/logo192.png',
+  '/powerhouses-react/build/manifest.json',
+  '/powerhouses-react/build/favicon.ico',
+  '/powerhouses-react/build/static/js/main.bec1f3d7.js',
+  '/powerhouses-react/build/static/js/453.ef9f2792.chunk.js',
+  '/powerhouses-react/build/static/css/main.17c42e5c.css',
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
+      .then(cache => cache.addAll(urlsToCache))
   );
 });
 
 self.addEventListener('fetch', event => {
   const url = new URL(event.request.url);
-  
-  // For OAuth flows, completely bypass the service worker
-  if (url.pathname.includes('/auth/') || 
-      url.pathname.includes('/api/') ||
-      url.searchParams.has('code') ||
-      url.searchParams.has('token') ||
-      url.searchParams.has('state') ||
-      event.request.headers.get('Authorization') ||
-      url.pathname.includes('discord.com') ||
-      url.pathname.includes('oauth2')) {
-    // Unregister the service worker during OAuth flow
-    if (url.searchParams.has('code')) {
-      self.registration.unregister();
-    }
+
+  // Bypass API/auth
+  if (
+    url.pathname.includes('/auth/') ||
+    url.pathname.includes('/api/') ||
+    url.searchParams.has('code') ||
+    url.searchParams.has('token') ||
+    url.searchParams.has('state') ||
+    event.request.headers.get('Authorization') ||
+    url.pathname.includes('discord.com') ||
+    url.pathname.includes('oauth2')
+  ) {
     return fetch(event.request);
   }
 
-  // For all other requests, try cache first, then network
+  // SPA fallback for React chat
+  if (
+    url.pathname.startsWith('/powerhouses-react/build/') &&
+    !url.pathname.match(/\.[a-zA-Z0-9]+$/) // not a file with extension
+  ) {
+    event.respondWith(
+      caches.match('/powerhouses-react/build/index.html').then(response => response || fetch(event.request))
+    );
+    return;
+  }
+
+  // Default: cache first, then network
   event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        if (response) {
-          return response;
-        }
-        return fetch(event.request);
-      })
+    caches.match(event.request).then(response => response || fetch(event.request))
   );
 });
 
