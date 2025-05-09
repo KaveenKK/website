@@ -145,6 +145,8 @@ export class PowerhouseChatUI extends LitElement {
     this.page = 1;
     this.limit = 30;
     this._scrolling = false;
+    this._lastSent = 0;
+    this._warning = '';
   }
 
   firstUpdated() {
@@ -211,10 +213,51 @@ export class PowerhouseChatUI extends LitElement {
     return text.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
   }
 
+  _showWarning(msg) {
+    this._warning = msg;
+    this.requestUpdate();
+    setTimeout(() => {
+      this._warning = '';
+      this.requestUpdate();
+    }, 2000);
+  }
+
   async _sendMessage(e) {
     e.preventDefault();
     const input = this.renderRoot.querySelector('input[type="text"]');
     const text = input.value.trim();
+    // 1. Character limit
+    const MAX_LENGTH = 500;
+    if (text.length > MAX_LENGTH) {
+      this._showWarning(`Message too long (max ${MAX_LENGTH} chars).`);
+      return;
+    }
+    // 2. Spammy link check
+    const spammyPatterns = [
+      /https?:\/\//i,
+      /www\./i,
+      /bit\.ly/i,
+      /free-money/i,
+      /\.ru\b/i,
+      /discord\.gg\//i,
+      /t\.me\//i,
+      /@everyone/i,
+      /join my/i,
+      /giveaway/i,
+      /crypto/i,
+      /airdrop/i
+    ];
+    if (spammyPatterns.some(re => re.test(text))) {
+      this._showWarning('Links or spammy content are not allowed.');
+      return;
+    }
+    // 3. Simple rate limit
+    const now = Date.now();
+    if (now - this._lastSent < 1000) {
+      this._showWarning('You are sending messages too quickly.');
+      return;
+    }
+    this._lastSent = now;
     if (!text) return;
     // Optimistically add the message
     const optimisticMsg = {
@@ -234,11 +277,9 @@ export class PowerhouseChatUI extends LitElement {
       // If failed, remove the optimistic message and reload
       this.messages = this.messages.filter(m => m !== optimisticMsg);
       await this._loadMessages(true);
-      alert('Failed to send message.');
+      this._showWarning('Failed to send message.');
       return;
     }
-    // Optionally, update the optimistic message with the real one from server
-    // (not strictly necessary if the server echoes via socket.io)
     this.socket.emit('houseMessage', {
       houseId: this.houseId,
       message: text,
@@ -273,9 +314,10 @@ export class PowerhouseChatUI extends LitElement {
         `)}
       </div>
       <form @submit="${this._sendMessage}">
-        <input type="text" autocomplete="off" placeholder="Type a message...">
+        <input type="text" autocomplete="off" placeholder="Type a message..." maxlength="500">
         <button type="submit">Send</button>
       </form>
+      ${this._warning ? html`<div style="color:#d32f2f;text-align:center;margin:0.5em 0;font-weight:600;">${this._warning}</div>` : ''}
     `;
   }
 }

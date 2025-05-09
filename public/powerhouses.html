@@ -211,10 +211,10 @@
     <span id="phUsername" class="ph-username"></span>
   </div>
   <div class="ph-tabs" style="display:flex;justify-content:center;gap:2em;margin-top:1.2em;">
-    <button id="phTabScan" class="ph-tab-btn ph-tab-active" style="background:none;border:none;font-size:1.1em;font-weight:600;color:#5a5ad6;cursor:pointer;padding:0.5em 1.2em;border-bottom:2.5px solid #5a5ad6;">Scan</button>
-    <button id="phTabMyHouses" class="ph-tab-btn" style="background:none;border:none;font-size:1.1em;font-weight:600;color:#888;cursor:pointer;padding:0.5em 1.2em;border-bottom:2.5px solid transparent;">My Houses</button>
+    <button id="phTabScan" class="ph-tab-btn" style="background:none;border:none;font-size:1.1em;font-weight:600;color:#5a5ad6;cursor:pointer;padding:0.5em 1.2em;border-bottom:2.5px solid transparent;">Scan</button>
+    <button id="phTabMyHouses" class="ph-tab-btn ph-tab-active" style="background:none;border:none;font-size:1.1em;font-weight:600;color:#5a5ad6;cursor:pointer;padding:0.5em 1.2em;border-bottom:2.5px solid #5a5ad6;">My Houses</button>
   </div>
-  <div id="phScanTab" style="display:block;">
+  <div id="phScanTab" style="display:none;">
     <div class="ph-scan-container">
       <div class="ph-scan-circle" id="phScanCircle">
         <button class="ph-scan-btn" id="phScanBtn">Scan</button>
@@ -229,7 +229,7 @@
       </label>
     </div>
   </div>
-  <div id="phMyHousesTab" style="display:none;padding:2em 0 4em 0;max-width:480px;margin:0 auto;">
+  <div id="phMyHousesTab" style="display:block;padding:2em 0 4em 0;max-width:480px;margin:0 auto;">
     <div id="phMyHousesList">Loading…</div>
   </div>
   <div id="phModal" style="display:none;"></div>
@@ -697,6 +697,12 @@
         setTimeout(() => { notif.style.display = 'none'; }, 300);
       }, 2200);
     }
+    // Set default tab to My Houses
+    document.getElementById('phTabScan').classList.remove('ph-tab-active');
+    document.getElementById('phTabMyHouses').classList.add('ph-tab-active');
+    document.getElementById('phScanTab').style.display = 'none';
+    document.getElementById('phMyHousesTab').style.display = 'block';
+    loadMyHouses();
   </script>
 </body>
 </html> 
