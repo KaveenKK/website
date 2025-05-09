@@ -2,8 +2,51 @@ import express from "express";
 import authMiddleware from "../middleware/authMiddleware.js";
 import DecisionLog from "../models/DecisionLog.js";
 import User from "../models/User.js";
+import axios from "axios";
 
 const router = express.Router();
+
+const OLLAMA_API_URL = process.env.OLLAMA_API_URL || "https://decision-maker-857028785244.europe-west1.run.app";
+const BRAVE_API_KEY = process.env.BRAVE_API_KEY;
+const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama2"; // You can change this if needed
+
+async function braveSearch(query) {
+  if (!BRAVE_API_KEY) return '';
+  try {
+    const res = await axios.get('https://api.search.brave.com/res/v1/web/search', {
+      params: { q: query, count: 3 },
+      headers: { 'Accept': 'application/json', 'X-Subscription-Token': BRAVE_API_KEY }
+    });
+    if (res.data && res.data.web && res.data.web.results) {
+      return res.data.web.results.map(r => `Title: ${r.title}\nURL: ${r.url}\nSnippet: ${r.description}`).join('\n---\n');
+    }
+    return '';
+  } catch (err) {
+    console.error('[Brave API] Error:', err.response?.data || err.message);
+    return '';
+  }
+}
+
+function buildPrompt(question, user, braveResults) {
+  return `User Question: ${question}\n\nUser Data:\n- Age: ${user.date_of_birth ? new Date().getFullYear() - new Date(user.date_of_birth).getFullYear() : 'N/A'}\n- Country: ${user.country || 'N/A'}\n- Gender: ${user.gender || 'N/A'}\n- Family: ${user.family || 'N/A'}\n- Income: ${user.additional || 'N/A'}\n- Physical: ${user.physical}\n- Mental: ${user.mental}\n- Social: ${user.social}\n- Love: ${user.love}\n- Career: ${user.career}\n- Creative: ${user.creative}\n- Travel: ${user.travel}\n- Style: ${user.style}\n- Spiritual: ${user.spiritual}\n\nRelevant Web Results:\n${braveResults || 'None'}\n\nBased on the above, give a personalized, thoughtful answer. If the decision is risky or unclear, ask follow-up questions to help the user reflect. If you need more info, ask for it. Always be empathetic and practical.`;
+}
+
+async function callOllama(prompt) {
+  try {
+    const res = await axios.post(
+      `${OLLAMA_API_URL}/api/generate`,
+      { model: OLLAMA_MODEL, prompt },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+    // Ollama returns a streaming response; if using a proxy, you may get .data.response
+    if (res.data && res.data.response) return res.data.response;
+    if (typeof res.data === 'string') return res.data;
+    return JSON.stringify(res.data);
+  } catch (err) {
+    console.error('[Ollama API] Error:', err.response?.data || err.message);
+    return 'Sorry, I could not process your request right now.';
+  }
+}
 
 // POST /api/decision-helper
 router.post("/", authMiddleware, async (req, res) => {
@@ -12,19 +55,29 @@ router.post("/", authMiddleware, async (req, res) => {
     const { question } = req.body;
     if (!question) return res.status(400).json({ error: "Missing question" });
 
-    // Fetch user data (for future AI context)
+    // Fetch user data
     const user = await User.findById(userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    // TODO: Integrate with Ollama and Brave API here
-    // For now, return a mock AI response and follow-up questions
-    const aiResponse = `This is a mock AI response to: "${question}"`;
-    const followUpQuestions = [
-      "Can you tell me more about your motivation?",
-      "How urgent is this decision for you?"
-    ];
+    // 1. Brave search
+    const braveResults = await braveSearch(question);
 
-    // Log the interaction
+    // 2. Build prompt
+    const prompt = buildPrompt(question, user, braveResults);
+
+    // 3. Call Ollama
+    const aiResponse = await callOllama(prompt);
+
+    // 4. Extract follow-up questions (simple heuristic: look for questions in the response)
+    const followUpQuestions = [];
+    const questionMatches = aiResponse.match(/[^.?!]*\?/g);
+    if (questionMatches) {
+      questionMatches.forEach(q => {
+        if (q.length > 10 && !followUpQuestions.includes(q.trim())) followUpQuestions.push(q.trim());
+      });
+    }
+
+    // 5. Log the interaction
     await DecisionLog.create({
       user: user._id,
       question,
