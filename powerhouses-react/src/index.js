@@ -24,10 +24,10 @@ function getPropsFromUrl() {
   return null;
 }
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById('reactGroupChatRoot') || document.getElementById('root'));
 
 const chatProps = getPropsFromUrl();
-if (chatProps) {
+if (chatProps && document.getElementById('reactGroupChatRoot')) {
   root.render(
     <React.StrictMode>
       <GroupChat {...chatProps} />
