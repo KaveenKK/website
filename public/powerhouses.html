@@ -247,6 +247,13 @@
     let userData = {};
     const socket = io();
     let currentHouseId = null;
+    // Disable all chat buttons initially
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[data-chat]').forEach(btn => {
+        btn.disabled = true;
+        btn.title = 'Loading user info...';
+      });
+    });
     // Load user info
     async function loadUser() {
       const headers = { Authorization: 'Bearer ' + userToken };
@@ -257,6 +264,11 @@
       document.getElementById('phUserAvatar').src = user.avatar ? `https://cdn.discordapp.com/avatars/${user.discord_id}/${user.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png';
       document.getElementById('phUsername').textContent = user.username || '';
       document.getElementById('phAllowInvitesToggle').checked = user.allowHouseInvites !== false;
+      // Enable all chat buttons now that userData is loaded
+      document.querySelectorAll('[data-chat]').forEach(btn => {
+        btn.disabled = false;
+        btn.title = '';
+      });
     }
     loadUser().then(() => {
       if (userData.energy >= 500) {
