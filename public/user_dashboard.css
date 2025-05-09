@@ -1,18 +1,18 @@
 /* Basic Reset */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); }
-header { background: var(--primary); color: #fff; padding: 1rem; text-align: center; }
-.container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; background: var(--card-bg); color: var(--text); border-radius: 12px; }
+body { font-family: 'Helvetica Neue', Arial, sans-serif; background: linear-gradient(135deg, var(--color-accent) 30%, var(--color-primary) 90%, var(--color-bg)); background-attachment: fixed; color: var(--color-text); }
+header { background: var(--color-primary) !important; color: var(--color-btn-text) !important; padding: 1rem; text-align: center; }
+.container { max-width: 1200px; margin: 2rem auto; padding: 0 1rem; background: var(--color-bg); color: var(--color-text); border-radius: 12px; }
 .hidden { display: none; }
-button { background: var(--primary); color: #fff; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; }
+button { background: var(--color-primary); color: var(--color-btn-text); border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 4px; }
 button:disabled { background: #aaa; cursor: not-allowed; }
-nav { display: flex; gap: 1rem; margin-bottom: 1rem; background: var(--card-bg); color: var(--text); }
+nav { display: flex; gap: 1rem; margin-bottom: 1rem; background: var(--color-bg); color: var(--color-text); }
 nav button { flex: 1; }
 section { display: none; }
 section.active { display: block; }
-h2 { margin-bottom: 1rem; }
+h2 { margin-bottom: 1rem; color: var(--color-primary); }
 ul { list-style: none; }
-li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+li { background: var(--color-bg); margin-bottom: 0.5rem; padding: 0.75rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
 /* Hide mobile nav on desktop by default */
 .mobile-bottom-nav { display: none; }
@@ -32,10 +32,10 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
 /* Leaderboard */
 #leaderboard li { display: flex; justify-content: space-between; }
 /* XP/Maples */
-.status-box { background: var(--card-bg); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.status-box { background: var(--color-bg); padding: 1rem; border-radius: 6px; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 /* Pricing Plans */
 .pricing-options { display: grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap: 1rem; }
-.pricing-option { background: var(--card-bg); padding: 1rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.pricing-option { background: var(--color-bg); padding: 1rem; border-radius: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 .recommended-label { background: gold; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; }
 
 @media (max-width: 768px) {
@@ -46,7 +46,7 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
     bottom: 0;
     left: 0;
     width: 100vw;
-    background: var(--card-bg);
+    background: var(--color-bg);
     border-top: 1px solid #eee;
     box-shadow: 0 -2px 12px rgba(0,0,0,0.07);
     z-index: 1000;
@@ -56,22 +56,22 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
   }
   .mobile-bottom-nav button {
     flex: 1;
-    background: none;
+    background: var(--color-secondary);
+    color: var(--color-text);
     border: none;
-    color: #008cba;
-    font-size: 1.1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 0.25rem 0 0.1rem 0;
-    border-radius: 0;
-    box-shadow: none;
-    transition: background 0.2s;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    margin: 0.2rem 0.2rem;
+    transition: background 0.2s, color 0.2s;
   }
-  .mobile-bottom-nav button:active, .mobile-bottom-nav button.active {
-    background: #e6f7ff;
-    color: #005f7a;
+  .mobile-bottom-nav button.active {
+    background: var(--color-primary);
+    color: var(--color-btn-text);
+  }
+  .mobile-bottom-nav button:hover {
+    background: var(--color-btn-hover);
+    color: var(--color-text);
   }
   .mobile-bottom-nav span {
     font-size: 1.5rem;
@@ -106,7 +106,7 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
   text-align: center;
 }
 .unlockables, .daily-stats, .affirmation {
-  background: var(--card-bg);
+  background: var(--color-bg);
   padding: 1rem;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
@@ -127,21 +127,21 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
 .progress-bar-bg {
   width: 100%;
   height: 18px;
-  background: var(--card-bg);
+  background: var(--color-bg);
   border-radius: 9px;
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0,0,0,0.07);
 }
 .progress-bar-xp {
   height: 100%;
-  background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+  background: var(--color-primary);
   border-radius: 9px 0 0 9px;
   transition: width 0.5s cubic-bezier(.4,2,.6,1);
   width: 0;
 }
 .progress-bar-maple {
   height: 100%;
-  background: linear-gradient(90deg, #ffb347 0%, #ff7f50 100%);
+  background: var(--color-primary);
   border-radius: 9px 0 0 9px;
   transition: width 0.5s cubic-bezier(.4,2,.6,1);
   width: 0;
@@ -326,13 +326,15 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
 }
 
 :root {
-  --bg: #f9f9f9;
-  --text: #222;
-  --primary: #008cba;
-  --card-bg: #fff;
-  --blue-bar: #008cba;
-  --popup-bg: #fff;
-  --popup-border: #ccc;
+  --color-primary: #f78270;
+  --color-secondary: #feb57c;
+  --color-accent: #fcdcac;
+  --color-bg: #ffff;
+  --color-text: #222;
+  --color-btn-text: #fff;
+  --color-btn-hover: #feb57c;
+  --color-highlight: #f78270;
+  --color-soothing: #51a582;
 }
 .dark-mode {
   --bg: #36393e;
@@ -344,12 +346,15 @@ li { background: var(--card-bg); margin-bottom: 0.5rem; padding: 0.75rem; border
   --popup-border: #36393e;
 }
 body {
-  background: var(--bg);
-  color: var(--text);
+  background: var(--color-bg);
+  color: var(--color-text);
+  background-repeat: no-repeat;
+  overflow-x: hidden;
+  width: 100%;
 }
 header {
-  background: var(--primary);
-  color: #fff;
+  background: var(--color-primary) !important;
+  color: var(--color-btn-text) !important;
   padding: 1rem;
   text-align: center;
 }
@@ -357,28 +362,28 @@ header {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1rem;
-  background: var(--card-bg);
-  color: var(--text);
+  background: var(--color-bg);
+  color: var(--color-text);
   border-radius: 12px;
 }
 section, .status-box, .pricing-option, .coach-item, .unlockables, .daily-stats, .affirmation, .progress-bar-bg, .mobile-bottom-nav, .blue-bar, .popup {
-  background: var(--card-bg) !important;
-  color: var(--text) !important;
+  background: var(--color-bg) !important;
+  color: var(--color-text) !important;
 }
 ul, li {
-  background: var(--card-bg) !important;
-  color: var(--text) !important;
+  background: var(--color-bg) !important;
+  color: var(--color-text) !important;
 }
 nav, .dashboard-nav, .mobile-bottom-nav {
-  background: var(--card-bg) !important;
-  color: var(--text) !important;
+  background: var(--color-bg) !important;
+  color: var(--color-text) !important;
 }
 button, .btn, .btn-primary {
-  background: var(--primary) !important;
-  color: #fff !important;
+  background: var(--color-primary) !important;
+  color: var(--color-btn-text) !important;
 }
 h1, h2, h3, h4, h5, h6, label, p, span, strong {
-  color: var(--text) !important;
+  color: var(--color-text) !important;
 }
 .dark-mode img, .dark-mode .icon-circle img, .dark-mode .character-img {
   filter: brightness(0.7) contrast(1.1) !important;
@@ -400,19 +405,20 @@ h1, h2, h3, h4, h5, h6, label, p, span, strong {
 .dark-mode li,
 .dark-mode nav,
 .dark-mode .dashboard-nav {
-  background: var(--card-bg) !important;
-  color: var(--text) !important;
+  background: var(--color-bg) !important;
+  color: var(--color-text) !important;
 }
 .dark-mode button, .dark-mode .btn, .dark-mode .btn-primary {
-  background: var(--primary) !important;
-  color: #fff !important;
+  background: var(--color-primary) !important;
+  color: var(--color-btn-text) !important;
 }
 .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6, .dark-mode label, .dark-mode p, .dark-mode span, .dark-mode strong {
-  color: var(--text) !important;
+  color: var(--color-text) !important;
 }
 .dark-mode #newUserReward {
-  background: var(--popup-bg) !important;
-  border: 2px solid var(--popup-border) !important;
+  background: var(--color-accent) !important;
+  border: 2px solid var(--color-primary) !important;
+  color: var(--color-text) !important;
 }
 .silver-glow .ring-bar {
   filter: drop-shadow(0 0 6px #C0C0C0) drop-shadow(0 0 12px #fff);
@@ -544,4 +550,31 @@ h1, h2, h3, h4, h5, h6, label, p, span, strong {
     max-width: 140px;
     font-size: 1em;
   }
+}
+
+/* Soothing accent for info boxes and secondary highlights */
+.info-box, .status-box, .affirmation {
+  border-left: 6px solid var(--color-soothing);
+  background: linear-gradient(90deg, var(--color-soothing) 0%, var(--color-bg) 100%);
+}
+
+/* Use soothing color for secondary buttons */
+button.secondary, .btn-secondary {
+  background: var(--color-soothing) !important;
+  color: var(--color-btn-text) !important;
+}
+button.secondary:hover, .btn-secondary:hover {
+  background: #3e7e65 !important;
+  color: var(--color-btn-text) !important;
+}
+
+/* Use soothing color for subtle borders */
+.pricing-option, .coach-item, .resource-card {
+  border: 1.5px solid var(--color-soothing);
+}
+
+/* Use soothing color for hover on nav buttons */
+.dashboard-nav button:hover, .mobile-bottom-nav button:hover {
+  background: var(--color-soothing);
+  color: var(--color-btn-text);
 }

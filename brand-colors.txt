@@ -1,0 +1,7 @@
+# Nevengi Brand Colors
+
+Primary: #f78270
+Secondary: #feb57c
+Accent: #fcdcac
+Background: #ffff
+Soothing: #51a582 

@@ -1064,6 +1064,45 @@
       document.getElementById('mobileDiscussionBtn')?.addEventListener('click', function() {
         window.location.href = 'discussion.html';
       });
+
+      // Google Analytics event tracking for all major buttons
+      function trackButtonClick(label) {
+        let userId = localStorage.getItem('discordId') || localStorage.getItem('userToken') || undefined;
+        gtag('event', 'button_click', {
+          'event_category': 'User Dashboard',
+          'event_label': label,
+          'user_id': userId,
+          'page_location': window.location.pathname
+        });
+      }
+      // Attach tracking to nav buttons
+      ['explore','rewards','leaderboard','status','plans','reports','home','settings','discussionBtn'].forEach(id => {
+        document.querySelectorAll(`[data-tab="${id}"]`).forEach(btn => {
+          btn.addEventListener('click',()=>trackButtonClick(id));
+        });
+        if(document.getElementById(id)){
+          document.getElementById(id).addEventListener('click',()=>trackButtonClick(id));
+        }
+      });
+      // Other key buttons
+      if(document.getElementById('claimNewUserXpBtn')){
+        document.getElementById('claimNewUserXpBtn').addEventListener('click',()=>trackButtonClick('claimNewUserXpBtn'));
+      }
+      if(document.getElementById('logoutBtn')){
+        document.getElementById('logoutBtn').addEventListener('click',()=>trackButtonClick('logoutBtn'));
+      }
+      if(document.getElementById('loginBtn')){
+        document.getElementById('loginBtn').addEventListener('click',()=>trackButtonClick('loginBtn'));
+      }
+      if(document.getElementById('installAppBtn')){
+        document.getElementById('installAppBtn').addEventListener('click',()=>trackButtonClick('installAppBtn'));
+      }
+      // PayPal buttons (if you want to track clicks on the containers)
+      ['paypal-button-container-1','paypal-button-container-2','paypal-button-container-3','paypal-button-container-maples'].forEach(id=>{
+        if(document.getElementById(id)){
+          document.getElementById(id).addEventListener('click',()=>trackButtonClick(id));
+        }
+      });
     });
   </script>
 

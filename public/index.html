@@ -817,6 +817,41 @@
       localStorage.removeItem('expectedPWA');
       window.location.href = '/';
     });
+
+    // Google Analytics event tracking for all major buttons
+    function trackButtonClick(label) {
+      let userId = localStorage.getItem('discordId') || localStorage.getItem('userToken') || undefined;
+      if (typeof gtag === 'function') {
+        gtag('event', 'button_click', {
+          'event_category': 'Home Page',
+          'event_label': label,
+          'user_id': userId,
+          'page_location': window.location.pathname
+        });
+      }
+    }
+    // Attach tracking to header/menu buttons
+    ['NRC','Join Discord','User Login','Coach Login'].forEach(label => {
+      document.querySelectorAll('button').forEach(btn => {
+        if(btn.textContent.includes(label)){
+          btn.addEventListener('click',()=>trackButtonClick(label));
+        }
+      });
+    });
+    // Questionnaire and dynamic buttons
+    if(questionnaire){
+      questionnaire.addEventListener('click',function(e){
+        if(e.target.tagName==='BUTTON'){
+          trackButtonClick(e.target.textContent.trim());
+        }
+      });
+    }
+    // Login and install buttons
+    ['login-link','install-btn','start-btn'].forEach(id=>{
+      if(document.getElementById(id)){
+        document.getElementById(id).addEventListener('click',()=>trackButtonClick(id));
+      }
+    });
   </script>
 
   <!-- Add this just before </body> -->
