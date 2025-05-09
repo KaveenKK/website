@@ -173,6 +173,36 @@ export class DecisionHelperUI extends LitElement {
     this.loading = false;
   }
 
+  async waitForModelReady(maxWait = 120000) {
+    const start = Date.now();
+    const delay = ms => new Promise(res => setTimeout(res, ms));
+    while (Date.now() - start < maxWait) {
+      try {
+        const res = await fetch("/ping");
+        if (res.ok) return true;
+      } catch (e) {
+        console.warn("Ollama not ready yet...");
+      }
+      await delay(2000);
+    }
+    throw new Error("Model failed to load within timeout.");
+  }
+
+  firstUpdated() {
+    // Disable input until model is ready
+    const input = this.renderRoot.querySelector('input[type="text"]');
+    if (input) input.disabled = true;
+    this.waitForModelReady()
+      .then(() => {
+        console.log("Model ready. Unlocking UI.");
+        if (input) input.disabled = false;
+      })
+      .catch(err => {
+        console.error(err.message);
+        alert("The AI model is still warming up. Please try again shortly.");
+      });
+  }
+
   render() {
     return html`
       <div class="decision-header">
