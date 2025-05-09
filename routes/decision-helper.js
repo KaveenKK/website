@@ -34,11 +34,11 @@ function buildPrompt(question, user, braveResults) {
 async function callOllama(prompt) {
   try {
     const res = await axios.post(
-      `${OLLAMA_API_URL}/api/generate`,
-      { model: OLLAMA_MODEL, prompt },
+      `${OLLAMA_API_URL}/api/chat`,
+      { message: prompt },
       { headers: { 'Content-Type': 'application/json' } }
     );
-    // Ollama returns a streaming response; if using a proxy, you may get .data.response
+    // Adjust this if the response format is different
     if (res.data && res.data.response) return res.data.response;
     if (typeof res.data === 'string') return res.data;
     return JSON.stringify(res.data);
