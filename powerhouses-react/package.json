@@ -1,0 +1,41 @@
+{
+  "name": "powerhouses-react",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "cra-template-pwa": "2.0.0",
+    "nevengi-coach-auth": "file:..",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-scripts": "^5.0.1",
+    "socket.io-client": "^4.8.1",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts start",
+    "build": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts build",
+    "test": "cross-env NODE_OPTIONS=--openssl-legacy-provider react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
