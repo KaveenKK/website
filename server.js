@@ -158,6 +158,14 @@ const publicPath = path.join(__dirname, 'public');
 // Serve static files (HTML, CSS, JS, images)
 app.use(express.static(publicPath));
 
+// Serve React build static files
+app.use('/powerhouses-react/build', express.static(path.join(__dirname, 'powerhouses-react', 'build')));
+
+// SPA fallback for React app
+app.get('/powerhouses-react/build/*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'powerhouses-react', 'build', 'index.html'));
+});
+
 // Catch-all for client-side routing (serve index.html for non-API GETs)
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) {
