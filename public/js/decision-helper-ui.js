@@ -219,7 +219,7 @@ export class DecisionHelperUI extends LitElement {
           <div class="msg">
             <div class="msg-content">
               <div class="msg-user">${msg.sender === 'user' ? 'You' : 'AI'}</div>
-              <div>${this._escapeHtml(msg.text)}</div>
+              <div>${msg.text}</div>
             </div>
           </div>
         `)}
