@@ -33,10 +33,19 @@ function buildPrompt(question, user, braveResults) {
 
 async function callOllama(prompt) {
   try {
+    console.log('[Ollama API] Sending request:', {
+      url: `${OLLAMA_API_URL}/api/chat`,
+      body: { message: prompt },
+      headers: { 'Content-Type': 'application/json' }
+    });
     const res = await axios.post(
       `${OLLAMA_API_URL}/api/chat`,
       { message: prompt },
-      { headers: { 'Content-Type': 'application/json' } }
+      {
+        headers: { 'Content-Type': 'application/json' },
+        timeout: 180000, // 3 minutes for cold start
+        validateStatus: status => status >= 200 && status < 500
+      }
     );
     console.log('[Ollama API] Raw response:', res.data);
     if (res.data && res.data.response) return res.data.response;
