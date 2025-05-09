@@ -69,6 +69,7 @@ export default function GroupChat({ houseId, user, houseName }) {
               src={msg.user?.avatar ? `https://cdn.discordapp.com/avatars/${msg.user.discord_id || msg.user._id || ''}/${msg.user.avatar}.png` : "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"}
               alt="avatar"
               className="w-10 h-10 rounded-full border-2 border-[--color-accent] bg-white"
+              onError={e => { e.target.onerror = null; e.target.src = "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"; }}
             />
             <div className="flex-1">
               <div className="font-semibold text-[--color-primary]">{msg.user?.username || "User"} <span className="text-xs text-gray-400 font-normal">{new Date(msg.createdAt).toLocaleString()}</span></div>
