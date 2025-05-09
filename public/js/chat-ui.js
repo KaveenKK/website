@@ -216,26 +216,39 @@ export class PowerhouseChatUI extends LitElement {
     const input = this.renderRoot.querySelector('input[type="text"]');
     const text = input.value.trim();
     if (!text) return;
+    // Optimistically add the message
+    const optimisticMsg = {
+      message: text,
+      user: this.userData,
+      createdAt: new Date().toISOString(),
+      houseId: this.houseId
+    };
+    this.messages = [...this.messages, optimisticMsg];
+    this._scrollToBottom();
+    input.value = '';
     const headers = { Authorization: 'Bearer ' + this.userToken, 'Content-Type': 'application/json' };
     const res = await fetch(`${this.apiBase}/api/houses/${this.houseId}/chat`, {
       method: 'POST', headers, body: JSON.stringify({ message: text })
     });
-    if (res.ok) {
-      input.value = '';
-      this.page = 1; this.done = false; this.messages = [];
+    if (!res.ok) {
+      // If failed, remove the optimistic message and reload
+      this.messages = this.messages.filter(m => m !== optimisticMsg);
       await this._loadMessages(true);
-      this._scrollToBottom();
-      this.socket.emit('houseMessage', {
-        houseId: this.houseId,
-        message: text,
-        user: {
-          username: this.userData.username,
-          avatar: this.userData.avatar,
-          discord_id: this.userData.discord_id,
-          _id: this.userData._id
-        }
-      });
+      alert('Failed to send message.');
+      return;
     }
+    // Optionally, update the optimistic message with the real one from server
+    // (not strictly necessary if the server echoes via socket.io)
+    this.socket.emit('houseMessage', {
+      houseId: this.houseId,
+      message: text,
+      user: {
+        username: this.userData.username,
+        avatar: this.userData.avatar,
+        discord_id: this.userData.discord_id,
+        _id: this.userData._id
+      }
+    });
   }
 
   _close() {
