@@ -327,6 +327,20 @@
         document.getElementById('dashboard').classList.remove('hidden');
       }
 
+      // After login, check if user needs onboarding
+      async function checkOnboarding() {
+        if (!token) return;
+        const headers = { Authorization: 'Bearer ' + token };
+        const res = await fetch('/api/user-profile', { headers });
+        if (!res.ok) return;
+        const user = await res.json();
+        if (user.identity_completed === false || user.identity_completed === undefined) {
+          // Redirect to onboarding
+          window.location.href = `/user_questions.html?discord_id=${encodeURIComponent(user.discord_id)}`;
+        }
+      }
+      if (token) checkOnboarding();
+
       // Tab navigation handler for both navs
       function handleTabClick(tab) {
         document.querySelectorAll('section').forEach(s => s.classList.remove('active'));

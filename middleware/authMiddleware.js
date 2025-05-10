@@ -46,15 +46,17 @@ export default async function authMiddleware(req, res, next) {
     }
 
     // For regular users, enforce identity completion
-    if (decoded.role === "user" && !profile.identity_completed) {
-      return res.status(401).json({
-        error:
-          "Please complete your registration via our Discord server before accessing this resource.",
-      });
-    }
+    // (Relaxed: allow login even if not completed, but attach flag)
+    // if (decoded.role === "user" && !profile.identity_completed) {
+    //   return res.status(401).json({
+    //     error:
+    //       "Please complete your registration via our Discord server before accessing this resource.",
+    //   });
+    // }
 
     req.user = profile;
     req.user.role = decoded.role;
+    req.user.identity_completed = profile.identity_completed; // always attach
     next();
   } catch (dbErr) {
     console.error("Auth middleware DB error:", dbErr);
