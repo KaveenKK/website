@@ -861,6 +861,46 @@
         document.getElementById(id).addEventListener('click',()=>trackButtonClick(id));
       }
     });
+
+    // Device/environment detection
+    function isPWA() {
+      return window.matchMedia('(display-mode: standalone)').matches ||
+             window.navigator.standalone ||
+             document.referrer.includes('android-app://');
+    }
+    function isMobileWeb() {
+      // True if on mobile device and NOT in PWA
+      const ua = navigator.userAgent;
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+      return isMobile && !isPWA();
+    }
+    document.addEventListener('DOMContentLoaded', function() {
+      // Hamburger menu and NRC/login buttons
+      const hamburgerMenu = document.getElementById('hamburger-menu');
+      const menu = document.getElementById('menu');
+      // Get Started and Install App buttons
+      const startBtn = document.getElementById('start-btn');
+      const installBtn = document.getElementById('install-btn');
+      // Hide hamburger and menu on mobile web only
+      if (isMobileWeb()) {
+        if (hamburgerMenu) hamburgerMenu.style.display = 'none';
+        if (menu) menu.style.display = 'none';
+        if (startBtn) startBtn.style.display = 'none';
+        if (installBtn) installBtn.style.display = '';
+      } else if (isPWA()) {
+        // In PWA: show hamburger/menu, show Get Started, hide Install App
+        if (hamburgerMenu) hamburgerMenu.style.display = '';
+        if (menu) menu.style.display = '';
+        if (startBtn) startBtn.style.display = '';
+        if (installBtn) installBtn.style.display = 'none';
+      } else {
+        // Desktop web: show all as normal
+        if (hamburgerMenu) hamburgerMenu.style.display = '';
+        if (menu) menu.style.display = '';
+        if (startBtn) startBtn.style.display = '';
+        if (installBtn) installBtn.style.display = '';
+      }
+    });
   </script>
 
   <!-- Add this just before </body> -->
