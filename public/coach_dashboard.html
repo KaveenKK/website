@@ -7,41 +7,6 @@
 </head>
 <body>
 <script>
-// Token validation
-async function validateToken() {
-  const token = localStorage.getItem('coachToken');
-  if (!token) {
-    window.location.href = '/';
-    return;
-  }
-
-  try {
-    const res = await fetch('/auth/validate-coach', {
-      method: 'GET',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-    
-    if (!res.ok) {
-      localStorage.removeItem('coachToken');
-      window.location.href = '/';
-      return;
-    }
-    
-    const data = await res.json();
-    if (!data.valid) {
-      localStorage.removeItem('coachToken');
-      window.location.href = '/';
-    }
-  } catch (error) {
-    console.error('Token validation failed:', error);
-    localStorage.removeItem('coachToken');
-    window.location.href = '/';
-  }
-}
-
-// Run validation immediately
-validateToken();
-
 function isPWA() {
   return window.matchMedia('(display-mode: standalone)').matches ||
          window.navigator.standalone ||
