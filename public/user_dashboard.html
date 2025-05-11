@@ -634,19 +634,33 @@
       let deferredPrompt;
       const installBtn = document.getElementById('installAppBtn');
       if (installBtn) {
+        // Always hide by default
         installBtn.style.display = 'none';
-        window.addEventListener('beforeinstallprompt', (e) => {
-          e.preventDefault();
-          deferredPrompt = e;
-          installBtn.style.display = 'inline-block';
-        });
+        // Only show install button if in browser (not in PWA)
+        const mode = getPWADisplayMode();
+        const isPWA = ['standalone','minimal-ui','fullscreen','window-controls-overlay'].includes(mode);
+        if (!isPWA) {
+          window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'inline-block';
+          });
+        }
         installBtn.addEventListener('click', async () => {
-          if (deferredPrompt) {
+          if (typeof deferredPrompt !== 'undefined' && deferredPrompt) {
             deferredPrompt.prompt();
             const { outcome } = await deferredPrompt.userChoice;
             deferredPrompt = null;
             installBtn.style.display = 'none';
           }
+        });
+        // Hide install button if app is installed (PWA mode)
+        if (isPWA) {
+          installBtn.style.display = 'none';
+        }
+        // Also hide on appinstalled event
+        window.addEventListener('appinstalled', () => {
+          installBtn.style.display = 'none';
         });
       }
 
