@@ -896,31 +896,29 @@
       setTimeout(function() {
         const mode = getPWADisplayMode();
         const isMobile = isMobileDevice();
-        const hamburgerMenu = document.getElementById('hamburger-menu');
-        const menu = document.getElementById('menu');
-        const startBtn = document.getElementById('start-btn');
-        const installBtn = document.getElementById('install-btn');
+        console.log('PWA/Mobile Detection:', { mode, isMobile });
+        let css = '';
         // PWA: show hamburger & get started, hide install
-        if (['standalone','minimal-ui','fullscreen','window-controls-overlay'].includes(mode)) {
-          if (hamburgerMenu) hamburgerMenu.style.setProperty('display', '', 'important');
-          if (menu) menu.style.setProperty('display', '', 'important');
-          if (startBtn) startBtn.style.setProperty('display', '', 'important');
-          if (installBtn) installBtn.style.setProperty('display', 'none', 'important');
+        if ([
+          'standalone','minimal-ui','fullscreen','window-controls-overlay'
+        ].includes(mode)) {
+          css = `#hamburger-menu, #menu, #start-btn { display: block !important; }\n#install-btn { display: none !important; }`;
         }
         // Mobile web: hide hamburger & get started, show install
         else if (isMobile && mode === 'browser') {
-          if (hamburgerMenu) hamburgerMenu.style.setProperty('display', 'none', 'important');
-          if (menu) menu.style.setProperty('display', 'none', 'important');
-          if (startBtn) startBtn.style.setProperty('display', 'none', 'important');
-          if (installBtn) installBtn.style.setProperty('display', '', 'important');
+          css = `#hamburger-menu, #menu, #start-btn { display: none !important; }\n#install-btn { display: block !important; }`;
         }
         // Desktop: show all
         else {
-          if (hamburgerMenu) hamburgerMenu.style.setProperty('display', '', 'important');
-          if (menu) menu.style.setProperty('display', '', 'important');
-          if (startBtn) startBtn.style.setProperty('display', '', 'important');
-          if (installBtn) installBtn.style.setProperty('display', '', 'important');
+          css = `#hamburger-menu, #menu, #start-btn, #install-btn { display: block !important; }`;
         }
+        let styleTag = document.getElementById('dynamic-override');
+        if (!styleTag) {
+          styleTag = document.createElement('style');
+          styleTag.id = 'dynamic-override';
+          document.body.appendChild(styleTag);
+        }
+        styleTag.textContent = css;
       }, 0);
     });
   </script>
