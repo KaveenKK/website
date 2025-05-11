@@ -2,10 +2,12 @@ import { LitElement, html, css } from 'https://cdn.jsdelivr.net/npm/lit@3.1.2/+e
 
 export class DecisionHelperUI extends LitElement {
   static properties = {
-    messages: { type: Array },
+    options: { type: Array },
+    newOption: { type: String },
+    background: { type: String },
+    aiSuggestion: { type: String },
     loading: { type: Boolean },
     warning: { type: String },
-    useWebSearch: { type: Boolean },
   };
 
   static styles = css`
@@ -13,65 +15,64 @@ export class DecisionHelperUI extends LitElement {
       display: flex;
       flex-direction: column;
       width: 100vw;
-      height: 100vh;
-      background: #fff;
-      border-radius: 0px;
+      max-width: 420px;
+      margin: 0 auto;
+      background: #fafbfc;
+      border-radius: 18px;
       box-shadow: 0 4px 24px rgba(90,90,214,0.13);
-      position: relative;
       font-family: 'Segoe UI', sans-serif;
+      padding: 0.5em 0 2em 0;
     }
     .decision-header {
-      font-size: 1.2em;
+      font-size: 1.3em;
       font-weight: 700;
       color: #2e7d32;
       text-align: center;
-      padding: 1em 0 0.5em 0;
+      padding: 1.2em 0 0.7em 0;
       border-bottom: 1.5px solid #e9eafc;
-      position: relative;
-    }
-    .messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 1em 0.7em 0.7em 0.7em;
+      letter-spacing: 0.01em;
       display: flex;
-      flex-direction: column;
-      min-height: 0;
-      max-height: calc(100vh - 120px);
-      scroll-behavior: smooth;
-      background: #fafbfc;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5em;
     }
-    .msg {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.7em;
-      margin-bottom: 0.7em;
-      animation: fadeIn 0.3s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .msg-content {
-      flex: 1;
-      background: #e8f5e9;
-      border-radius: 8px;
-      padding: 0.7em 1em;
-      color: #222;
-      font-size: 1.07em;
-      word-break: break-word;
-    }
-    .msg-user {
+    .section-label {
       font-weight: 600;
-      color: #388e3c;
-      font-size: 1em;
-      margin-bottom: 0.2em;
+      font-size: 1.08em;
+      margin: 1.2em 0 0.5em 0.2em;
+      color: #222;
     }
-    form {
+    .option-list {
+      background: #f4f7f6;
+      border-radius: 14px;
+      padding: 0.7em 0.8em 0.5em 0.8em;
+      margin-bottom: 0.5em;
+      box-shadow: 0 1px 4px #0001;
+    }
+    .option-row {
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-radius: 8px;
+      margin-bottom: 0.5em;
+      padding: 0.5em 0.7em;
+      box-shadow: 0 1px 2px #0001;
+      font-size: 1.08em;
+      justify-content: space-between;
+    }
+    .option-row:last-child { margin-bottom: 0; }
+    .remove-btn {
+      background: none;
+      border: none;
+      color: #d32f2f;
+      font-size: 1.2em;
+      cursor: pointer;
+      margin-left: 0.5em;
+    }
+    .add-option-row {
       display: flex;
       gap: 0.5em;
-      padding: 0.7em;
-      border-top: 1.5px solid #e9eafc;
-      background: #fafbfc;
+      margin-bottom: 0.5em;
     }
     input[type="text"] {
       flex: 1;
@@ -81,55 +82,128 @@ export class DecisionHelperUI extends LitElement {
       border: 1.5px solid #e0e0e0;
       outline: none;
       transition: border 0.2s;
+      background: #fff;
     }
     input[type="text"]:focus {
       border: 1.5px solid #2e7d32;
     }
-    button[type="submit"] {
+    .add-btn {
       background: #2e7d32;
       color: #fff;
       border: none;
       border-radius: 8px;
       padding: 0.7em 1.2em;
-      font-size: 1.1em;
+      font-size: 1.08em;
       font-weight: 600;
       cursor: pointer;
       transition: background 0.2s;
     }
-    button[type="submit"]:active {
-      background: #1b5e20;
+    .add-btn:active { background: #1b5e20; }
+    .option-hint {
+      color: #888;
+      font-size: 0.98em;
+      margin-bottom: 0.3em;
+      text-align: center;
+    }
+    textarea {
+      width: 100%;
+      min-height: 70px;
+      border-radius: 10px;
+      border: 1.5px solid #e0e0e0;
+      padding: 0.8em 1em;
+      font-size: 1em;
+      margin-bottom: 0.5em;
+      background: #fff;
+      resize: vertical;
+      transition: border 0.2s;
+    }
+    textarea:focus {
+      border: 1.5px solid #2e7d32;
+    }
+    .suggest-btn {
+      background: #2e7d32;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8em 1.5em;
+      font-size: 1.13em;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 1em 0 0.5em 0;
+      transition: background 0.2s;
+      width: 100%;
+      box-shadow: 0 2px 8px #0001;
+    }
+    .suggest-btn:disabled {
+      background: #bdbdbd;
+      cursor: not-allowed;
+    }
+    .ai-suggestion {
+      background: #ff8a4c;
+      color: #fff;
+      border-radius: 14px;
+      padding: 1.1em 1.2em;
+      margin: 1em 0 0.5em 0;
+      font-size: 1.13em;
+      font-weight: 500;
+      box-shadow: 0 2px 8px #0002;
+      text-align: left;
+      word-break: break-word;
+    }
+    .warning {
+      color: #d32f2f;
+      text-align: center;
+      margin: 0.5em 0;
+      font-weight: 600;
+    }
+    @media (max-width: 600px) {
+      :host { width: 100vw; max-width: 100vw; border-radius: 0; }
     }
   `;
 
   constructor() {
     super();
-    this.messages = [];
+    this.options = [];
+    this.newOption = '';
+    this.background = '';
+    this.aiSuggestion = '';
     this.loading = false;
     this.warning = '';
-    this.useWebSearch = true;
   }
 
-  _showWarning(msg) {
-    this.warning = msg;
-    this.requestUpdate();
-    setTimeout(() => {
-      this.warning = '';
-      this.requestUpdate();
-    }, 2000);
-  }
-
-  _escapeHtml(text) {
-    return text.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));
-  }
-
-  async _sendMessage(e) {
+  _addOption(e) {
     e.preventDefault();
-    const input = this.renderRoot.querySelector('input[type="text"]');
-    const text = input.value.trim();
-    if (!text) return;
-    this.messages = [...this.messages, { sender: 'user', text }];
-    input.value = '';
+    const val = this.newOption.trim();
+    if (!val) return;
+    if (this.options.length >= 10) {
+      this.warning = 'You can add up to 10 options.';
+      return;
+    }
+    if (this.options.includes(val)) {
+      this.warning = 'Option already added.';
+      return;
+    }
+    this.options = [...this.options, val];
+    this.newOption = '';
+    this.warning = '';
+  }
+
+  _removeOption(idx) {
+    this.options = this.options.filter((_, i) => i !== idx);
+  }
+
+  _onBackgroundInput(e) {
+    this.background = e.target.value;
+  }
+
+  async _getSuggestion() {
+    if (this.options.length < 2) {
+      this.warning = 'Add at least 2 options.';
+      return;
+    }
     this.loading = true;
+    this.warning = '';
+    this.aiSuggestion = '';
     try {
       const token = localStorage.getItem('userToken');
       const res = await fetch('/api/decision-helper', {
@@ -138,97 +212,52 @@ export class DecisionHelperUI extends LitElement {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ' + token
         },
-        body: JSON.stringify({ question: text, useWebSearch: this.useWebSearch })
+        body: JSON.stringify({
+          question: `Options: ${this.options.join(', ')}\nBackground: ${this.background}`,
+          useWebSearch: true
+        })
       });
       if (!res.ok) {
-        this._showWarning('Failed to get AI response.');
+        this.warning = 'Failed to get AI suggestion.';
         this.loading = false;
         return;
       }
       const data = await res.json();
-      console.log('AI response data:', data);
       let aiText = data.response;
-      if (typeof aiText !== 'string') {
-        aiText = JSON.stringify(aiText);
-      }
-      if (aiText && aiText.trim()) {
-        this.messages = [
-          ...this.messages,
-          { sender: 'ai', text: aiText }
-        ];
-      } else {
-        this._showWarning('No response from AI.');
-      }
-      if (data.followUpQuestions && Array.isArray(data.followUpQuestions)) {
-        data.followUpQuestions.forEach(q => {
-          this.messages = [
-            ...this.messages,
-            { sender: 'ai', text: q }
-          ];
-        });
-      }
+      if (typeof aiText !== 'string') aiText = JSON.stringify(aiText);
+      this.aiSuggestion = aiText;
     } catch (err) {
-      this._showWarning('Error contacting server.');
+      this.warning = 'Error contacting server.';
     }
     this.loading = false;
-  }
-
-  async waitForModelReady(maxWait = 120000) {
-    const start = Date.now();
-    const delay = ms => new Promise(res => setTimeout(res, ms));
-    while (Date.now() - start < maxWait) {
-      try {
-        const res = await fetch("/ping");
-        if (res.ok) return true;
-      } catch (e) {
-        console.warn("Ollama not ready yet...");
-      }
-      await delay(2000);
-    }
-    throw new Error("Model failed to load within timeout.");
-  }
-
-  firstUpdated() {
-    // Disable input until model is ready
-    const input = this.renderRoot.querySelector('input[type="text"]');
-    if (input) input.disabled = true;
-    this.waitForModelReady()
-      .then(() => {
-        console.log("Model ready. Unlocking UI.");
-        if (input) input.disabled = false;
-      })
-      .catch(err => {
-        console.error(err.message);
-        alert("The AI model is still warming up. Please try again shortly.");
-      });
-  }
-
-  _toggleWebSearch() {
-    this.useWebSearch = !this.useWebSearch;
-    this.requestUpdate();
   }
 
   render() {
     return html`
       <div class="decision-header">
-        Decision Helper
-        <button @click="${this._toggleWebSearch}" style="float:right;margin-right:1em;background:${this.useWebSearch ? '#2e7d32' : '#888'};color:#fff;border:none;border-radius:8px;padding:0.4em 1em;font-size:0.95em;cursor:pointer;">${this.useWebSearch ? 'Web Search: ON' : 'Web Search: OFF'}</button>
+        <span style="font-size:1.4em;">🤖</span> Personal Decider
       </div>
-      <div class="messages">
-        ${this.messages.map(msg => html`
-          <div class="msg">
-            <div class="msg-content">
-              <div class="msg-user">${msg.sender === 'user' ? 'You' : 'AI'}</div>
-              <div>${msg.text}</div>
-            </div>
+      <div class="section-label">Add Your</div>
+      <form class="add-option-row" @submit="${this._addOption}">
+        <input type="text" .value="${this.newOption}" @input="${e => this.newOption = e.target.value}" placeholder="Type your option" maxlength="60" ?disabled="${this.options.length >= 10}">
+        <button class="add-btn" type="submit" ?disabled="${this.options.length >= 10}">Add Option</button>
+      </form>
+      <div class="option-hint">You can add up to 10 options.</div>
+      <div class="option-list">
+        ${this.options.map((opt, idx) => html`
+          <div class="option-row">
+            <span>${opt}</span>
+            <button class="remove-btn" @click="${() => this._removeOption(idx)}" title="Remove">&times;</button>
           </div>
         `)}
       </div>
-      <form @submit="${this._sendMessage}">
-        <input type="text" autocomplete="off" placeholder="Ask your question..." maxlength="500">
-        <button type="submit">Ask</button>
-      </form>
-      ${this.warning ? html`<div style="color:#d32f2f;text-align:center;margin:0.5em 0;font-weight:600;">${this.warning}</div>` : ''}
+      <div class="section-label">Background</div>
+      <textarea placeholder="Add any background information here..." .value="${this.background}" @input="${this._onBackgroundInput}"></textarea>
+      <button class="suggest-btn" @click="${this._getSuggestion}" ?disabled="${this.loading || this.options.length < 2}">
+        ${this.loading ? 'Thinking...' : 'Get AI Suggestion'}
+      </button>
+      ${this.aiSuggestion ? html`<div class="section-label" style="margin-top:1.2em;">AI Suggestion</div><div class="ai-suggestion">${this.aiSuggestion}</div>` : ''}
+      ${this.warning ? html`<div class="warning">${this.warning}</div>` : ''}
     `;
   }
 }
