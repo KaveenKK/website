@@ -28,14 +28,21 @@
   </script>
   <script>
   // Robust PWA/mobile/desktop detection for context check
-  function getPWADisplayMode() {
-    if (document.referrer.startsWith('android-app://')) return 'twa';
-    if (window.matchMedia('(display-mode: standalone)').matches) return 'standalone';
-    if (window.matchMedia('(display-mode: minimal-ui)').matches) return 'minimal-ui';
-    if (window.matchMedia('(display-mode: fullscreen)').matches) return 'fullscreen';
-    if (window.matchMedia('(display-mode: window-controls-overlay)').matches) return 'window-controls-overlay';
-    if (window.matchMedia('(display-mode: browser)').matches) return 'browser';
-    return 'unknown';
+  function isRunningStandalonePWA() {
+    // 1. Standard display-mode check
+    if (window.matchMedia('(display-mode: standalone)').matches) return true;
+    if (window.matchMedia('(display-mode: minimal-ui)').matches) return true;
+    if (window.matchMedia('(display-mode: fullscreen)').matches) return true;
+    if (window.matchMedia('(display-mode: window-controls-overlay)').matches) return true;
+    // 2. iOS Safari PWA
+    if (typeof window.navigator.standalone !== 'undefined') {
+      if (window.navigator.standalone) return true;
+    }
+    // 3. Android Trusted Web Activity
+    if (document.referrer && document.referrer.startsWith('android-app://')) return true;
+    // 4. Fallback: check user agent for some known PWA quirks (not reliable, but last resort)
+    // (Optional: can add more heuristics here if needed)
+    return false;
   }
   const expectedPWA = localStorage.getItem('expectedPWA');
   if (expectedPWA !== null) {
@@ -634,11 +641,8 @@
       let deferredPrompt;
       const installBtn = document.getElementById('installAppBtn');
       if (installBtn) {
-        // Always hide by default
         installBtn.style.display = 'none';
-        // Only show install button if in browser (not in PWA)
-        const mode = getPWADisplayMode();
-        const isPWA = ['standalone','minimal-ui','fullscreen','window-controls-overlay'].includes(mode);
+        const isPWA = isRunningStandalonePWA();
         if (!isPWA) {
           window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
@@ -658,7 +662,6 @@
         if (isPWA) {
           installBtn.style.display = 'none';
         }
-        // Also hide on appinstalled event
         window.addEventListener('appinstalled', () => {
           installBtn.style.display = 'none';
         });
