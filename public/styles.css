@@ -143,6 +143,21 @@ nav a:hover {
   margin-right: 15px;
 }
 
+@media screen and (max-width: 768px) {
+  .hamburger-menu {
+    display: none !important;
+  }
+  #menu {
+    display: none !important;
+  }
+  #start-btn {
+    display: none !important;
+  }
+  nav {
+    display: none !important;
+  }
+}
+
 .menu {
   display: flex;
   gap: 10px;

@@ -906,7 +906,15 @@
         }
         // Mobile web: hide hamburger & get started, show install
         else if (isMobile && mode === 'browser') {
-          css = `#hamburger-menu, #menu, #start-btn { display: none !important; }\n#install-btn { display: block !important; }`;
+          css = `
+            #hamburger-menu { display: none !important; }
+            #menu { display: none !important; }
+            #start-btn { display: none !important; }
+            #install-btn { display: block !important; }
+            @media screen and (max-width: 768px) {
+              nav { display: none !important; }
+            }
+          `;
         }
         // Desktop: show all
         else {
