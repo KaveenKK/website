@@ -7,14 +7,20 @@
 </head>
 <body>
 <script>
-function isPWA() {
-  return window.matchMedia('(display-mode: standalone)').matches ||
-         window.navigator.standalone ||
-         document.referrer.includes('android-app://');
+// Robust PWA/mobile/desktop detection for context check
+function getPWADisplayMode() {
+  if (document.referrer.startsWith('android-app://')) return 'twa';
+  if (window.matchMedia('(display-mode: standalone)').matches) return 'standalone';
+  if (window.matchMedia('(display-mode: minimal-ui)').matches) return 'minimal-ui';
+  if (window.matchMedia('(display-mode: fullscreen)').matches) return 'fullscreen';
+  if (window.matchMedia('(display-mode: window-controls-overlay)').matches) return 'window-controls-overlay';
+  if (window.matchMedia('(display-mode: browser)').matches) return 'browser';
+  return 'unknown';
 }
 const expectedPWA = localStorage.getItem('expectedPWA');
 if (expectedPWA !== null) {
-  const inPWA = isPWA();
+  const mode = getPWADisplayMode();
+  const inPWA = ['standalone','minimal-ui','fullscreen','window-controls-overlay'].includes(mode);
   if ((expectedPWA === 'true' && !inPWA) || (expectedPWA === 'false' && inPWA)) {
     document.body.innerHTML = `
       <div style=\"position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);color:#fff;display:flex;align-items:center;justify-content:center;z-index:9999;\">
