@@ -28,20 +28,24 @@
   </script>
   <script>
   // Robust PWA/mobile/desktop detection for context check
-  function isRunningStandalonePWA() {
-    // 1. Standard display-mode check
-    if (window.matchMedia('(display-mode: standalone)').matches) return true;
-    if (window.matchMedia('(display-mode: minimal-ui)').matches) return true;
-    if (window.matchMedia('(display-mode: fullscreen)').matches) return true;
-    if (window.matchMedia('(display-mode: window-controls-overlay)').matches) return true;
-    // 2. iOS Safari PWA
-    if (typeof window.navigator.standalone !== 'undefined') {
-      if (window.navigator.standalone) return true;
-    }
-    // 3. Android Trusted Web Activity
+  function isReallyPWA() {
+    // 1. Display mode checks
+    if (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: minimal-ui)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      window.matchMedia('(display-mode: window-controls-overlay)').matches
+    ) return true;
+    // 2. iOS Safari
+    if (typeof window.navigator.standalone !== 'undefined' && window.navigator.standalone) return true;
+    // 3. Android TWA
     if (document.referrer && document.referrer.startsWith('android-app://')) return true;
-    // 4. Fallback: check user agent for some known PWA quirks (not reliable, but last resort)
-    // (Optional: can add more heuristics here if needed)
+    // 4. Service worker control
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) return true;
+    // 5. LaunchQueue API (experimental)
+    if (typeof window.launchQueue !== 'undefined') return true;
+    // 6. Chromium userAgentData
+    if (navigator.userAgentData && navigator.userAgentData.mobile && window.matchMedia('(display-mode: standalone)').matches) return true;
     return false;
   }
   const expectedPWA = localStorage.getItem('expectedPWA');
@@ -642,7 +646,7 @@
       const installBtn = document.getElementById('installAppBtn');
       if (installBtn) {
         installBtn.style.display = 'none';
-        const isPWA = isRunningStandalonePWA();
+        const isPWA = isReallyPWA();
         if (!isPWA) {
           window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
