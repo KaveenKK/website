@@ -52,7 +52,7 @@ function buildPrompt(question, user, braveResults, useWebSearch) {
     prompt += `\nRelevant Web Results:\n${braveResults}\n`;
   }
 
-  prompt += `\nPlease answer in a friendly, warm, and encouraging tone, as if you are a supportive friend. Be positive, approachable, and practical. If the decision is risky or unclear, ask follow-up questions to help the user reflect. If you need more info, ask for it. Always be empathetic and supportive. Limit your answer to 5 sentences or less.`;
+  prompt += `\nPlease answer in a friendly, warm, and encouraging tone, as if you are a supportive friend. Be positive, approachable, and practical. If the decision is risky or unclear, ask follow-up questions to help the user reflect. If you need more info, ask for it. Always be empathetic and supportive. Limit your answer to 5 sentences or less. IMPORTANT: No matter what, you must always give a final decision by choosing one exact option from the user's list. Clearly state your chosen option at the end of your answer.`;
 
   return prompt;
 }
@@ -118,6 +118,22 @@ router.post("/", authMiddleware, async (req, res) => {
       });
     }
 
+    // 4.5. Calculate confidence level
+    const profileFields = [
+      'date_of_birth', 'country', 'gender', 'family', 'additional',
+      'physical', 'mental', 'social', 'love', 'career', 'creative', 'travel', 'style', 'spiritual'
+    ];
+    let filled = 0;
+    profileFields.forEach(f => { if (user[f] && user[f] !== 0 && user[f] !== '' && user[f] !== null) filled++; });
+    // Check for background info in question
+    let hasBackground = false;
+    if (typeof question === 'string' && question.toLowerCase().includes('background:')) {
+      const bg = question.split('background:')[1];
+      if (bg && bg.trim().length > 10) hasBackground = true;
+    }
+    const total = profileFields.length + 1; // +1 for background
+    const confidence = Math.round(((filled + (hasBackground ? 1 : 0)) / total) * 100);
+
     // 5. Log the interaction
     await DecisionLog.create({
       user: user._id,
@@ -127,10 +143,10 @@ router.post("/", authMiddleware, async (req, res) => {
     });
 
     // Extra logging for outgoing response
-    console.log('[Decision Helper] Sending response:', { response: aiResponse, followUpQuestions });
+    console.log('[Decision Helper] Sending response:', { response: aiResponse, followUpQuestions, confidence });
 
     // Always send a valid response field
-    res.json({ response: aiResponse || 'Sorry, no response from AI.', followUpQuestions });
+    res.json({ response: aiResponse || 'Sorry, no response from AI.', followUpQuestions, confidence });
   } catch (err) {
     console.error("[Decision Helper] Error:", err);
     res.status(500).json({ error: "Failed to process decision helper request", response: "Sorry, an error occurred." });

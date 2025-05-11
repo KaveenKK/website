@@ -8,6 +8,7 @@ export class DecisionHelperUI extends LitElement {
     aiSuggestion: { type: String },
     loading: { type: Boolean },
     warning: { type: String },
+    confidence: { type: Number },
   };
 
   static styles = css`
@@ -169,6 +170,7 @@ export class DecisionHelperUI extends LitElement {
     this.aiSuggestion = '';
     this.loading = false;
     this.warning = '';
+    this.confidence = null;
   }
 
   _addOption(e) {
@@ -204,6 +206,7 @@ export class DecisionHelperUI extends LitElement {
     this.loading = true;
     this.warning = '';
     this.aiSuggestion = '';
+    this.confidence = null;
     try {
       const token = localStorage.getItem('userToken');
       const res = await fetch('/api/decision-helper', {
@@ -226,6 +229,7 @@ export class DecisionHelperUI extends LitElement {
       let aiText = data.response;
       if (typeof aiText !== 'string') aiText = JSON.stringify(aiText);
       this.aiSuggestion = aiText;
+      this.confidence = typeof data.confidence === 'number' ? data.confidence : null;
     } catch (err) {
       this.warning = 'Error contacting server.';
     }
@@ -280,7 +284,7 @@ export class DecisionHelperUI extends LitElement {
           100% { transform: rotate(0deg); }
         }
       </style>
-      ${this.aiSuggestion ? html`<div class="section-label" style="margin-top:1.2em;">AI Suggestion</div><div class="ai-suggestion">${this.aiSuggestion}</div>` : ''}
+      ${this.aiSuggestion ? html`<div class="section-label" style="margin-top:1.2em;">AI Suggestion</div><div class="ai-suggestion">${this.aiSuggestion}</div>${this.confidence !== null ? html`<div style="text-align:right;font-size:0.98em;color:#2e7d32;margin:0.2em 0.2em 0.7em 0;"><b>Confidence:</b> ${this.confidence}%</div>` : ''}` : ''}
       ${this.warning ? html`<div class="warning">${this.warning}</div>` : ''}
     `;
   }
