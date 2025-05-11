@@ -232,10 +232,22 @@ export class DecisionHelperUI extends LitElement {
     this.loading = false;
   }
 
+  _clearAll() {
+    this.options = [];
+    this.newOption = '';
+    this.background = '';
+    this.aiSuggestion = '';
+    this.warning = '';
+    this.loading = false;
+  }
+
   render() {
     return html`
       <div class="decision-header">
         <span style="font-size:1.4em;">🤖</span> Personal Decider
+      </div>
+      <div style="display:flex;justify-content:flex-end;margin:0.5em 1em 0 0;">
+        <button @click="${this._clearAll}" style="background:#e0f2f1;color:#2e7d32;border:none;border-radius:7px;padding:0.4em 1.1em;font-weight:600;cursor:pointer;font-size:0.98em;box-shadow:0 1px 4px #0001;">Clear</button>
       </div>
       <div class="section-label">Add Your</div>
       <form class="add-option-row" @submit="${this._addOption}">
@@ -254,8 +266,20 @@ export class DecisionHelperUI extends LitElement {
       <div class="section-label">Background</div>
       <textarea placeholder="Add any background information here..." .value="${this.background}" @input="${this._onBackgroundInput}"></textarea>
       <button class="suggest-btn" @click="${this._getSuggestion}" ?disabled="${this.loading || this.options.length < 2}">
-        ${this.loading ? 'Thinking...' : 'Get AI Suggestion'}
+        ${this.loading ? html`<span style="display:inline-flex;align-items:center;gap:0.5em;"><span class="wave" style="font-size:1.2em;animation:waving 1.2s infinite;">👋</span> Personal Decider is thinking...</span>` : 'Get AI Suggestion'}
       </button>
+      <style>
+        @keyframes waving {
+          0% { transform: rotate(0deg); }
+          10% { transform: rotate(14deg); }
+          20% { transform: rotate(-8deg); }
+          30% { transform: rotate(14deg); }
+          40% { transform: rotate(-4deg); }
+          50% { transform: rotate(10deg); }
+          60% { transform: rotate(0deg); }
+          100% { transform: rotate(0deg); }
+        }
+      </style>
       ${this.aiSuggestion ? html`<div class="section-label" style="margin-top:1.2em;">AI Suggestion</div><div class="ai-suggestion">${this.aiSuggestion}</div>` : ''}
       ${this.warning ? html`<div class="warning">${this.warning}</div>` : ''}
     `;

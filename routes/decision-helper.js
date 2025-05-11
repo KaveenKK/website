@@ -52,7 +52,7 @@ function buildPrompt(question, user, braveResults, useWebSearch) {
     prompt += `\nRelevant Web Results:\n${braveResults}\n`;
   }
 
-  prompt += `\nBased on the above, give a personalized, thoughtful answer. If the decision is risky or unclear, ask follow-up questions to help the user reflect. If you need more info, ask for it. Always be empathetic and practical. Limit your answer to 5 sentences or less.`;
+  prompt += `\nPlease answer in a friendly, warm, and encouraging tone, as if you are a supportive friend. Be positive, approachable, and practical. If the decision is risky or unclear, ask follow-up questions to help the user reflect. If you need more info, ask for it. Always be empathetic and supportive. Limit your answer to 5 sentences or less.`;
 
   return prompt;
 }
