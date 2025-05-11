@@ -597,6 +597,11 @@
       // show questionnaire
       questionnaire.style.display = 'block';
 
+      // MOBILE: Activate full-screen onboarding
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('mobile-onboarding-active');
+      }
+
       const q = questions[index];
       questionnaire.innerHTML = `
         <button class="back-btn" onclick="goBack()">← Back</button>
@@ -666,6 +671,10 @@
         heroText.classList.remove('hidden');
         heroImg.classList.remove('hidden');
         currentIndex = null;
+        // MOBILE: Remove full-screen onboarding
+        if (window.innerWidth <= 768) {
+          document.body.classList.remove('mobile-onboarding-active');
+        }
       } else if (currentIndex > 0) {
         showQuestion(currentIndex - 1);
       }

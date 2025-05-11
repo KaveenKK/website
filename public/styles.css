@@ -471,6 +471,35 @@ footer {
     margin: 0.5rem;
     padding: 1rem;
   }
+
+  body.mobile-onboarding-active header,
+  body.mobile-onboarding-active .scroll-container,
+  body.mobile-onboarding-active .hero-img,
+  body.mobile-onboarding-active #faq,
+  body.mobile-onboarding-active footer {
+    display: none !important;
+  }
+  body.mobile-onboarding-active #questionnaire {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    background: #f8fafc;
+    z-index: 9999;
+    overflow-y: auto;
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 2.5vh 0 0 0;
+  }
+  body.mobile-onboarding-active #questionnaire .glass {
+    background: transparent;
+    box-shadow: none;
+  }
 }
 
 @media (max-width: 480px) {
