@@ -49,6 +49,9 @@ const coachSchema = new mongoose.Schema({
     default: 0  // auto‑calculated
   },
   
+  // Add the niche field for coach expertise
+  niche: { type: String, default: "" },
+  
   // Subscribers: users who have subscribed to this coach
   subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   

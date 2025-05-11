@@ -9,6 +9,7 @@ export class DecisionHelperUI extends LitElement {
     loading: { type: Boolean },
     warning: { type: String },
     confidence: { type: Number },
+    suggestedCoaches: { type: Array },
   };
 
   static styles = css`
@@ -171,6 +172,7 @@ export class DecisionHelperUI extends LitElement {
     this.loading = false;
     this.warning = '';
     this.confidence = null;
+    this.suggestedCoaches = [];
   }
 
   _addOption(e) {
@@ -207,6 +209,7 @@ export class DecisionHelperUI extends LitElement {
     this.warning = '';
     this.aiSuggestion = '';
     this.confidence = null;
+    this.suggestedCoaches = [];
     try {
       const token = localStorage.getItem('userToken');
       const res = await fetch('/api/decision-helper', {
@@ -230,6 +233,7 @@ export class DecisionHelperUI extends LitElement {
       if (typeof aiText !== 'string') aiText = JSON.stringify(aiText);
       this.aiSuggestion = aiText;
       this.confidence = typeof data.confidence === 'number' ? data.confidence : null;
+      this.suggestedCoaches = Array.isArray(data.suggestedCoaches) ? data.suggestedCoaches : [];
     } catch (err) {
       this.warning = 'Error contacting server.';
     }
@@ -284,7 +288,7 @@ export class DecisionHelperUI extends LitElement {
           100% { transform: rotate(0deg); }
         }
       </style>
-      ${this.aiSuggestion ? html`<div class="section-label" style="margin-top:1.2em;">AI Suggestion</div><div class="ai-suggestion">${this.aiSuggestion}</div>${this.confidence !== null ? html`<div style="text-align:right;font-size:0.98em;color:#2e7d32;margin:0.2em 0.2em 0.7em 0;"><b>Confidence:</b> ${this.confidence}%</div>` : ''}` : ''}
+      ${this.aiSuggestion ? html`<div class="section-label" style="margin-top:1.2em;">AI Suggestion</div><div class="ai-suggestion">${this.aiSuggestion}</div>${this.confidence !== null ? html`<div style="text-align:right;font-size:0.98em;color:#2e7d32;margin:0.2em 0.2em 0.7em 0;"><b>Confidence:</b> ${this.confidence}%</div>` : ''}${this.suggestedCoaches.length ? html`<div class="section-label" style="margin-top:1.2em;">Suggested Coaches for Further Advice</div><div style="overflow-x:auto;display:flex;gap:1em;padding-bottom:0.5em;">${this.suggestedCoaches.map(coach => html`<div style="min-width:210px;max-width:210px;background:#e8f5e9;border-radius:14px;box-shadow:0 2px 8px #0001;padding:1em 1em 0.7em 1em;display:flex;flex-direction:column;align-items:center;"><img src="${coach.profile_picture || '/images/default-avatar.png'}" alt="Profile" style="width:64px;height:64px;border-radius:50%;object-fit:cover;margin-bottom:0.7em;"><div style="font-weight:700;color:#2e7d32;font-size:1.08em;margin-bottom:0.2em;">${coach.name}</div><div style="font-size:0.98em;color:#555;margin-bottom:0.3em;text-align:center;">${coach.bio || coach.experience || ''}</div><div style="font-size:0.95em;color:#388e3c;margin-bottom:0.2em;"><b>Niche:</b> ${coach.niche || 'General'}</div>${coach.average_rating ? html`<div style="font-size:0.93em;color:#ff9800;">⭐ ${coach.average_rating.toFixed(1)}</div>` : ''}</div>`)} </div>` : ''}` : ''}
       ${this.warning ? html`<div class="warning">${this.warning}</div>` : ''}
     `;
   }
