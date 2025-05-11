@@ -862,44 +862,40 @@
       }
     });
 
-    // Device/environment detection
+    // Device/environment detection (run last, override all)
     function isPWA() {
       return window.matchMedia('(display-mode: standalone)').matches ||
              window.navigator.standalone ||
              document.referrer.includes('android-app://');
     }
     function isMobileWeb() {
-      // True if on mobile device and NOT in PWA
       const ua = navigator.userAgent;
       const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
       return isMobile && !isPWA();
     }
-    document.addEventListener('DOMContentLoaded', function() {
-      // Hamburger menu and NRC/login buttons
-      const hamburgerMenu = document.getElementById('hamburger-menu');
-      const menu = document.getElementById('menu');
-      // Get Started and Install App buttons
-      const startBtn = document.getElementById('start-btn');
-      const installBtn = document.getElementById('install-btn');
-      // Hide hamburger and menu on mobile web only
-      if (isMobileWeb()) {
-        if (hamburgerMenu) hamburgerMenu.style.display = 'none';
-        if (menu) menu.style.display = 'none';
-        if (startBtn) startBtn.style.display = 'none';
-        if (installBtn) installBtn.style.display = '';
-      } else if (isPWA()) {
-        // In PWA: show hamburger/menu, show Get Started, hide Install App
-        if (hamburgerMenu) hamburgerMenu.style.display = '';
-        if (menu) menu.style.display = '';
-        if (startBtn) startBtn.style.display = '';
-        if (installBtn) installBtn.style.display = 'none';
-      } else {
-        // Desktop web: show all as normal
-        if (hamburgerMenu) hamburgerMenu.style.display = '';
-        if (menu) menu.style.display = '';
-        if (startBtn) startBtn.style.display = '';
-        if (installBtn) installBtn.style.display = '';
-      }
+    window.addEventListener('DOMContentLoaded', function() {
+      setTimeout(function() { // ensure this runs after all other scripts
+        const hamburgerMenu = document.getElementById('hamburger-menu');
+        const menu = document.getElementById('menu');
+        const startBtn = document.getElementById('start-btn');
+        const installBtn = document.getElementById('install-btn');
+        if (isMobileWeb()) {
+          if (hamburgerMenu) hamburgerMenu.style.setProperty('display', 'none', 'important');
+          if (menu) menu.style.setProperty('display', 'none', 'important');
+          if (startBtn) startBtn.style.setProperty('display', 'none', 'important');
+          if (installBtn) installBtn.style.setProperty('display', '', 'important');
+        } else if (isPWA()) {
+          if (hamburgerMenu) hamburgerMenu.style.setProperty('display', '', 'important');
+          if (menu) menu.style.setProperty('display', '', 'important');
+          if (startBtn) startBtn.style.setProperty('display', '', 'important');
+          if (installBtn) installBtn.style.setProperty('display', 'none', 'important');
+        } else {
+          if (hamburgerMenu) hamburgerMenu.style.setProperty('display', '', 'important');
+          if (menu) menu.style.setProperty('display', '', 'important');
+          if (startBtn) startBtn.style.setProperty('display', '', 'important');
+          if (installBtn) installBtn.style.setProperty('display', '', 'important');
+        }
+      }, 0);
     });
   </script>
 
