@@ -17,15 +17,72 @@
 </head>
 <body>
   <script>
-    // Token persistence logic
-    const params = new URLSearchParams(window.location.search);
-    let token = params.get('token');
-    if (token) {
-      localStorage.setItem('userToken', token);
-      // Remove token from URL for security
-      history.replaceState({}, '', window.location.pathname);
+    // Token validation and persistence logic
+    async function validateAndPersistToken() {
+      const params = new URLSearchParams(window.location.search);
+      let token = params.get('token');
+      
+      if (token) {
+        localStorage.setItem('userToken', token);
+        // Remove token from URL for security
+        history.replaceState({}, '', window.location.pathname);
+      }
+      
+      token = token || localStorage.getItem('userToken');
+      
+      if (!token) {
+        document.getElementById('loginScreen').style.display = 'block';
+        document.getElementById('dashboard').classList.add('hidden');
+        return;
+      }
+      
+      try {
+        // First validate the token
+        const validationRes = await fetch('/auth/validate-user', {
+          method: 'GET',
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!validationRes.ok) {
+          throw new Error('Invalid token');
+        }
+        
+        const validationData = await validationRes.json();
+        if (!validationData.valid) {
+          throw new Error('Invalid token');
+        }
+        
+        // Then check if user needs onboarding
+        const profileRes = await fetch('/api/user-profile', { 
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (!profileRes.ok) {
+          throw new Error('Could not fetch user profile');
+        }
+        
+        const profile = await profileRes.json();
+        
+        // If onboarding is not completed, redirect to questions
+        if (profile.identity_completed === false || profile.identity_completed === undefined) {
+          window.location.href = `/user_questions.html?discord_id=${encodeURIComponent(profile.discord_id)}`;
+          return;
+        }
+        
+        // User is validated and completed onboarding, show dashboard
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboard').classList.remove('hidden');
+        
+      } catch (error) {
+        console.error('Token validation failed:', error);
+        localStorage.removeItem('userToken');
+        document.getElementById('loginScreen').style.display = 'block';
+        document.getElementById('dashboard').classList.add('hidden');
+      }
     }
-    token = token || localStorage.getItem('userToken');
+    
+    // Run validation immediately
+    validateAndPersistToken();
 
     function showPopup(element, number, name) {
       const popup = element.querySelector('.popup');

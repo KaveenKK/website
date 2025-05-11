@@ -482,24 +482,42 @@
 
   <script>
    document.getElementById("multiStepForm").addEventListener("submit", async function (e) {
-    e.preventDefault(); // Stop the default ugly page reload
+    e.preventDefault();
 
     const formData = new FormData(this);
     const payload = Object.fromEntries(formData.entries());
+    const token = localStorage.getItem('userToken');
+
+    if (!token) {
+      alert("Please log in first");
+      window.location.href = "/";
+      return;
+    }
 
     try {
-      const res = await fetch("/api/submit", {
+      const res = await fetch("/api/submit-profile", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify(payload)
       });
 
       const data = await res.json();
       if (res.ok) {
-        alert("✅ Profile submitted successfully! Please log in with Discord to access your dashboard.");
-        window.location.href = "/auth/discord/user";
+        // Update the user's identity_completed status
+        await fetch('/api/update-profile', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ identity_completed: true })
+        });
+
+        alert("✅ Profile completed successfully!");
+        window.location.href = "/user_dashboard.html";
       } else {
         alert("❌ Submission error: " + (data.error || "Unknown issue"));
       }
