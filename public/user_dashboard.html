@@ -1159,5 +1159,10 @@
   <script type="module" src="js/main.js"></script>
   <!-- Import Decision Helper UI -->
   <script type="module" src="js/decision-helper-ui.js"></script>
+  <script>
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js');
+  }
+  </script>
 </body>
 </html>
