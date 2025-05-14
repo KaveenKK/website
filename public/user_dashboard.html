@@ -99,6 +99,7 @@
     <div style="margin-top:1.5rem;">
       <p style="margin-bottom:0.5rem;color:#008cba;font-weight:500;">For the best experience, use our mobile app!</p>
       <button id="installAppBtn" style="background:#005f7a;">Install Nevengi App</button>
+      <button id="getStartedBtn" style="background:#008cba;color:#fff;margin-top:1rem;display:none;">Get Started</button>
     </div>
   </div>
 
@@ -1050,6 +1051,20 @@
           document.getElementById(id).addEventListener('click',()=>trackButtonClick(id));
         }
       });
+
+      // Show Get Started button only in PWA or desktop (not mobile web)
+      function shouldShowGetStarted() {
+        const isPWA = isReallyPWA();
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        return isPWA || !isMobile;
+      }
+      const getStartedBtn = document.getElementById('getStartedBtn');
+      if (getStartedBtn && shouldShowGetStarted()) {
+        getStartedBtn.style.display = 'inline-block';
+        getStartedBtn.addEventListener('click', function() {
+          document.getElementById('loginBtn').click();
+        });
+      }
     });
   </script>
 
