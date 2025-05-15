@@ -468,7 +468,6 @@
         <p><b> Already have a follow base ?</b> Join Nevengi as an<b> Content Creator</b> & Earn While you help people</p>
         Unlock the All-Rounder.</p>
       <button class="btn-primary" id="start-btn">Get Started</button>
-      <button class="btn-primary" id="install-btn" style="margin-top: 10px;">Install App</button>
     </div>
     <div class="hero-img" id="hero-img">
       <img src="images/mascot.webp" alt="Nevengi Character" />
@@ -700,37 +699,27 @@
       startBtn.addEventListener('click', () => showQuestion(0));
     }
 
-    // Install button logic
+    // Install App Banner
     let deferredPrompt;
-    const installBtn = document.getElementById('install-btn');
-    if (installBtn) {
-      window.addEventListener('beforeinstallprompt', (e) => {
-        e.preventDefault();
-        deferredPrompt = e;
-        installBtn.style.display = 'block';
-      });
-
-      installBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) {
-          alert('App is already installed or not available for installation');
-          return;
-        }
+    const installBanner = document.getElementById('install-banner');
+    const installBannerBtn = document.getElementById('install-banner-btn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBanner.style.display = 'flex';
+    });
+    if (installBannerBtn) {
+      installBannerBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
-        if (outcome === 'accepted') {
-          console.log('User accepted the install prompt');
-        } else {
-          console.log('User dismissed the install prompt');
-        }
         deferredPrompt = null;
-        installBtn.style.display = 'none';
-      });
-
-      window.addEventListener('appinstalled', () => {
-        console.log('App was installed');
-        installBtn.style.display = 'none';
+        installBanner.style.display = 'none';
       });
     }
+    window.addEventListener('appinstalled', () => {
+      installBanner.style.display = 'none';
+    });
 
     // Add event listener for beforeunload to ensure tokens are preserved
     window.addEventListener('beforeunload', () => {
@@ -856,7 +845,7 @@
       });
     }
     // Login and install buttons
-    ['login-link','install-btn','start-btn'].forEach(id=>{
+    ['login-link','start-btn'].forEach(id=>{
       if(document.getElementById(id)){
         document.getElementById(id).addEventListener('click',()=>trackButtonClick(id));
       }
@@ -892,43 +881,6 @@
       const isSmallScreen = Math.min(window.innerWidth, window.innerHeight) < 800;
       return (isMobileUA || hasTouch) && isSmallScreen;
     }
-    window.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function() {
-        const mode = getPWADisplayMode();
-        const isMobile = isMobileDevice();
-        console.log('PWA/Mobile Detection:', { mode, isMobile });
-        let css = '';
-        // PWA: show hamburger & get started, hide install
-        if ([
-          'standalone','minimal-ui','fullscreen','window-controls-overlay'
-        ].includes(mode)) {
-          css = `#hamburger-menu, #menu, #start-btn { display: block !important; }\n#install-btn { display: none !important; }`;
-        }
-        // Mobile web: hide hamburger & get started, show install
-        else if (isMobile && mode === 'browser') {
-          css = `
-            #hamburger-menu { display: none !important; }
-            #menu { display: none !important; }
-            #start-btn { display: none !important; }
-            #install-btn { display: block !important; }
-            @media screen and (max-width: 768px) {
-              nav { display: none !important; }
-            }
-          `;
-        }
-        // Desktop: show all
-        else {
-          css = `#hamburger-menu, #menu, #start-btn, #install-btn { display: block !important; }`;
-        }
-        let styleTag = document.getElementById('dynamic-override');
-        if (!styleTag) {
-          styleTag = document.createElement('style');
-          styleTag.id = 'dynamic-override';
-          document.body.appendChild(styleTag);
-        }
-        styleTag.textContent = css;
-      }, 0);
-    });
   </script>
 
   <!-- Add this just before </body> -->
@@ -938,6 +890,12 @@
       <p style="font-size:1.1rem;margin-bottom:1.5rem;">Your login session expired or was invalid.<br>Please try logging in again from the login page.<br>If the problem persists, clear your browser cache or try a different browser.</p>
       <button id="oauthErrorCloseBtn" style="background:#008cba;color:#fff;padding:0.7rem 2.2rem;border:none;border-radius:8px;font-size:1.1rem;">OK</button>
     </div>
+  </div>
+
+  <!-- Install App Banner -->
+  <div id="install-banner" style="display:none;position:fixed;top:0;left:0;width:100vw;z-index:2000;background:#008cba;color:#fff;padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <span>Install the Nevengi App for the best experience!</span>
+    <button id="install-banner-btn" style="background:#fff;color:#008cba;font-weight:600;border-radius:6px;padding:0.4em 1.2em;border:none;cursor:pointer;">Install App</button>
   </div>
 </body>
 </html>

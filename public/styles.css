@@ -144,9 +144,6 @@ nav a:hover {
 }
 
 @media screen and (max-width: 768px) {
-  .hamburger-menu {
-    display: none !important;
-  }
   #menu {
     display: none !important;
   }
