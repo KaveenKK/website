@@ -16,6 +16,7 @@
     "jsonwebtoken": "^9.0.0",
     "lit": "^3.0.0",
     "mongoose": "^7.6.1",
-    "socket.io": "^4.7.5"
+    "socket.io": "^4.7.5",
+    "google-auth-library": "^9.0.0"
   }
 }

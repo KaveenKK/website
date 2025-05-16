@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  discord_id: { type: String, required: true, unique: true },
+  discord_id: { type: String, index: true, sparse: true },
+  google_id: { type: String, index: true, sparse: true },
   username: { type: String },
-  email: { type: String },
+  email: { type: String, required: true, unique: true },
+  provider: { type: String, enum: ['discord', 'google', 'both'], default: 'discord' },
   verified: { type: Boolean, default: false },
   verification_code: { type: String, default: null },
   code_expiry: { type: Date, default: null },

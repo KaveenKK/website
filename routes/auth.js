@@ -4,9 +4,15 @@ import jwt from "jsonwebtoken";
 import Coach from "../models/Coach.js";
 import User from "../models/User.js";
 import authMiddleware from "../middleware/authMiddleware.js"; // if needed for logout, etc.
+import { OAuth2Client } from 'google-auth-library';
 
 const router = express.Router();
 const DISCORD_API = "https://discord.com/api";
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+const GOOGLE_REDIRECT_URI = process.env.GOOGLE_USER_REDIRECT_URI;
+const googleOAuth2Client = new OAuth2Client(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REDIRECT_URI);
 
 // STEP 1 – Redirect to Discord OAuth2
 // USER Discord Login
@@ -345,6 +351,89 @@ router.get("/validate-coach", authMiddleware, (req, res) => {
     return res.status(403).json({ error: "Invalid token type" });
   }
   res.json({ valid: true });
+});
+
+// STEP 1 – Redirect to Google OAuth2
+router.get('/google/user', (req, res) => {
+  const params = new URLSearchParams({
+    client_id: GOOGLE_CLIENT_ID,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    response_type: 'code',
+    scope: 'openid email profile',
+    access_type: 'offline',
+    prompt: 'consent',
+  });
+  res.redirect(`https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+});
+
+// STEP 2 – Google OAuth2 callback
+router.get('/google/user/callback', async (req, res) => {
+  const code = req.query.code;
+  if (!code) return res.redirect('/login');
+  try {
+    // Exchange code for tokens
+    const { tokens } = await googleOAuth2Client.getToken(code);
+    googleOAuth2Client.setCredentials(tokens);
+    // Get user info
+    const ticket = await googleOAuth2Client.verifyIdToken({
+      idToken: tokens.id_token,
+      audience: GOOGLE_CLIENT_ID,
+    });
+    const payload = ticket.getPayload();
+    const googleId = payload.sub;
+    const email = payload.email;
+    const username = payload.name;
+    const avatar = payload.picture;
+    // Find user by google_id or email
+    let user = await User.findOne({ $or: [ { google_id: googleId }, { email } ] });
+    if (user) {
+      // If user exists but not linked, link Google
+      if (!user.google_id) {
+        user.google_id = googleId;
+        user.provider = user.provider === 'discord' ? 'both' : 'google';
+        if (!user.avatar && avatar) user.avatar = avatar;
+        await user.save();
+      }
+    } else {
+      // Create new user
+      user = await User.create({
+        google_id: googleId,
+        email,
+        username,
+        avatar,
+        provider: 'google',
+        identity_completed: false,
+        xp: 0,
+        maples: 0,
+        role: 'user',
+      });
+    }
+    // Only issue a JWT once they've completed identity check
+    if (!user.identity_completed) {
+      const token = jwt.sign(
+        { id: user._id, role: user.role, identity_completed: false },
+        process.env.JWT_SECRET,
+        { expiresIn: '7d' }
+      );
+      return res.json({ token, google_id: googleId, identity_completed: false });
+    }
+    const token = jwt.sign(
+      { id: user._id, role: user.role, identity_completed: true },
+      process.env.JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    // PWA support: return JSON if pwa=true
+    if (req.query.pwa === 'true') {
+      return res.json({ token, google_id: googleId });
+    }
+    // Redirect to user dashboard with token & google_id
+    return res.redirect(
+      `/user_dashboard.html?token=${token}&google_id=${encodeURIComponent(googleId)}`
+    );
+  } catch (err) {
+    console.error('Google OAuth Error:', err.response?.data || err.message);
+    return res.status(500).send('Google OAuth failed');
+  }
 });
 
 export default router;

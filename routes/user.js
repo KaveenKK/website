@@ -14,6 +14,7 @@ const router = express.Router();
 router.post("/submit", async (req, res) => {
   const {
     discord_id,
+    google_id,
     physical,
     mental,
     social,
@@ -31,8 +32,8 @@ router.post("/submit", async (req, res) => {
     ...rest
   } = req.body;
 
-  if (!discord_id) return res.status(400).json({ error: "Missing discord_id" });
-  const stringDiscordId = String(discord_id);
+  if (!discord_id && !google_id) return res.status(400).json({ error: "Missing discord_id or google_id" });
+  const query = discord_id ? { discord_id: String(discord_id) } : { google_id: String(google_id) };
   console.log("🧪 Incoming form data:", req.body);
 
   // Validate age
@@ -52,7 +53,7 @@ router.post("/submit", async (req, res) => {
   try {
     console.log("🧪🧪🧪 Upserting user profile");
     const user = await User.findOneAndUpdate(
-      { discord_id: stringDiscordId },
+      query,
       {
         $set: {
           physical,
