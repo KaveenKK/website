@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YR1B2Z51N0"></script>
+  <script>
+     window.dataLayer = window.dataLayer || [];
+     function gtag(){dataLayer.push(arguments);}
+     gtag('js', new Date());
+
+     gtag('config', 'G-YR1B2Z51N0');
+  </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#000000" />
+  <meta name="description" content="Unlock the All-Rounder - Your personal development platform" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="apple-touch-icon" href="images/glowinglogonowback.webp" />
+  <title>Nevengi</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <script>
+    (function() {
+      // Check if we're in a PWA context
+      const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+                   window.navigator.standalone || 
+                   document.referrer.includes('android-app://');
+
+      // OAuth state management
+      const oauthState = {
+        processing: false,
+        processedCodes: new Set(),
+        lastAttempt: 0,
+        retryCount: 0
+      };
+
+      // Register service worker
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful');
+              
+              // Check for updates
+              registration.addEventListener('updatefound', () => {
+                const newWorker = registration.installing;
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                    // New content is available, refresh the page
+                    window.location.reload();
+                  }
+                });
+              });
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+
+      // Add this to ensure auth endpoints are not cached
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('message', event => {
+          if (event.data && event.data.type === 'SKIP_WAITING') {
+            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      }
+
+      // Check for existing tokens and redirect if logged in
+      console.log('Checking authentication status...');
+      
+      // Check URL parameters first
+      const params = new URLSearchParams(window.location.search);
+      const urlUserToken = params.get('token');
+      const urlDiscordId = params.get('discord_id');
+      const urlCoachToken = params.get('coachToken');
+      const oauthCode = params.get('code');
+      const oauthStateParam = params.get('state');
+      const isPwaAuth = params.get('pwa') === 'true';
+      
+      // If we have an OAuth code, handle it directly
+      if (oauthCode && oauthStateParam && !oauthState.processing) {
+        // Check if we've already processed this code
+        if (oauthState.processedCodes.has(oauthCode)) {
+          console.log('OAuth code already processed, ignoring...');
+          return;
+        }
+
+        // Check rate limiting
+        const now = Date.now();
+        const timeSinceLastAttempt = now - oauthState.lastAttempt;
+        if (timeSinceLastAttempt < 5000) { // 5 second cooldown
+          console.log('Rate limit cooldown, please wait...');
+          setTimeout(() => {
+            window.location.reload();
+          }, 5000 - timeSinceLastAttempt);
+          return;
+        }
+
+        console.log('OAuth flow detected, processing...');
+        oauthState.processing = true;
+        oauthState.lastAttempt = now;
+        oauthState.processedCodes.add(oauthCode);
+        
+        // Clear any existing tokens
+        localStorage.removeItem('userToken');
+        localStorage.removeItem('coachToken');
+        localStorage.removeItem('discordId');
+        
+        // Get the original auth URL from state
+        const authType = oauthStateParam.split('_')[0]; // 'user' or 'coach'
+        let authUrl = `/auth/discord/${authType}`;
+        let callbackUrl = null;
+        if (isPWA || isPwaAuth) {
+          if (authType === 'user') {
+            // Use the new PWA callback for user
+            callbackUrl = '/auth/discord/user/pwa-callback';
+          } else {
+            callbackUrl = `/auth/discord/${authType}/callback`;
+          }
+        } else {
+          callbackUrl = `/auth/discord/${authType}/callback`;
+        }
+        
+        // For PWA, we need to handle the OAuth flow differently
+        if (isPWA || isPwaAuth) {
+          console.log('PWA context detected, using alternative OAuth flow');
+          
+          // If this is a PWA auth attempt, wait a bit before proceeding
+          if (isPwaAuth) {
+            // Unregister service worker during OAuth
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+                // Make the token request directly after unregistering
+                console.log('[PWA OAuth] Fetching token with:', {
+                  code: oauthCode,
+                  state: oauthStateParam,
+                  url: `${callbackUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`
+                });
+                fetch(`${callbackUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
+                  method: 'GET',
+                  headers: {
+                    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+                    'Pragma': 'no-cache',
+                    'Expires': '0'
+                  }
+                })
+                .then(response => {
+                  if (!response.ok) {
+                    throw new Error('Auth request failed');
+                  }
+                  return response.json();
+                })
+                .then(data => {
+                  if (data.token) {
+                    // Store the token and redirect
+                    if (authType === 'user') {
+                      localStorage.setItem('userToken', data.token);
+                      if (data.discord_id) {
+                        localStorage.setItem('discordId', data.discord_id);
+                      }
+                      window.location.href = '/user_dashboard.html';
+                    } else {
+                      localStorage.setItem('coachToken', data.token);
+                      window.location.href = '/coach_dashboard.html';
+                    }
+                  } else {
+                    throw new Error('No token received');
+                  }
+                })
+                .catch(error => {
+                  console.error('Auth error:', error);
+                  // Clear any partial state
+                  localStorage.removeItem('userToken');
+                  localStorage.removeItem('coachToken');
+                  localStorage.removeItem('discordId');
+                  // Show modal
+                  var modal = document.getElementById('oauthErrorModal');
+                  if (modal) {
+                    modal.style.display = 'flex';
+                    document.body.style.overflow = 'hidden';
+                    document.getElementById('oauthErrorCloseBtn').onclick = function() {
+                      modal.style.display = 'none';
+                      document.body.style.overflow = '';
+                      window.location.href = '/';
+                    };
+                  } else {
+                    window.location.href = '/';
+                  }
+                })
+                .finally(() => {
+                  oauthState.processing = false;
+                });
+              });
+            }
+            return;
+          } else {
+            // Initial PWA redirect
+            window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
+          }
+          return;
+        }
+        
+        // Regular web flow
+        fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}`, {
+          method: 'GET',
+          headers: {
+            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+          }
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Auth request failed');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.token) {
+            // Store the token and redirect
+            if (authType === 'user') {
+              localStorage.setItem('userToken', data.token);
+              if (data.discord_id) {
+                localStorage.setItem('discordId', data.discord_id);
+              }
+              window.location.href = '/user_dashboard.html';
+            } else {
+              localStorage.setItem('coachToken', data.token);
+              window.location.href = '/coach_dashboard.html';
+            }
+          } else {
+            throw new Error('No token received');
+          }
+        })
+        .catch(error => {
+          console.error('Auth error:', error);
+          // Clear any partial state
+          localStorage.removeItem('userToken');
+          localStorage.removeItem('coachToken');
+          localStorage.removeItem('discordId');
+          // Show modal
+          var modal = document.getElementById('oauthErrorModal');
+          if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            document.getElementById('oauthErrorCloseBtn').onclick = function() {
+              modal.style.display = 'none';
+              document.body.style.overflow = '';
+              window.location.href = '/';
+            };
+          } else {
+            window.location.href = '/';
+          }
+        })
+        .finally(() => {
+          oauthState.processing = false;
+        });
+        return;
+      }
+      
+      // Check localStorage
+      const storedUserToken = localStorage.getItem('userToken');
+      const storedCoachToken = localStorage.getItem('coachToken');
+      
+      console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
+      console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
+      console.log('URL Coach Token:', urlCoachToken ? 'exists' : 'not found');
+      console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
+      console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
+      
+      // Function to validate token
+      async function validateToken(token, type) {
+        console.log(`Validating ${type} token:`, token);
+        if (!token) {
+          console.log('No token provided for validation');
+          return false;
+        }
+        
+        try {
+          const response = await fetch(`/auth/validate-${type}`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+              'Pragma': 'no-cache',
+              'Expires': '0',
+              'X-Requested-With': 'XMLHttpRequest' // Prevent caching
+            },
+            credentials: 'include' // Include cookies if any
+          });
+          
+          console.log(`Validation response for ${type}:`, response.status);
+          if (!response.ok) {
+            console.log(`Token validation failed for ${type}:`, response.status);
+            // Clear invalid token
+            if (type === 'user') {
+              localStorage.removeItem('userToken');
+            } else {
+              localStorage.removeItem('coachToken');
+            }
+            return false;
+          }
+          
+          const data = await response.json();
+          console.log(`Validation data for ${type}:`, data);
+          return data.valid === true;
+        } catch (error) {
+          console.error(`Error validating ${type} token:`, error);
+          // Clear token on error
+          if (type === 'user') {
+            localStorage.removeItem('userToken');
+          } else {
+            localStorage.removeItem('coachToken');
+          }
+          return false;
+        }
+      }
+    })();
+  </script>
+</head>
+<body>
+<script>
+(async function() {
+  async function validateToken(token, type) {
+    if (!token) return false;
+    try {
+      const res = await fetch(`/auth/validate-${type}`, {
+        method: 'GET',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      return data.valid === true;
+    } catch {
+      return false;
+    }
+  }
+
+  const userToken = localStorage.getItem('userToken');
+  const coachToken = localStorage.getItem('coachToken');
+
+  console.log('userToken:', userToken);
+  console.log('coachToken:', coachToken);
+
+  if (coachToken) {
+    if (await validateToken(coachToken, 'coach')) {
+      console.log('Valid coach token, redirecting...');
+      window.location.href = '/coach_dashboard.html';
+      return;
+    } else {
+      console.log('Invalid coach token');
+      localStorage.removeItem('coachToken');
+    }
+  }
+  if (userToken) {
+    if (await validateToken(userToken, 'user')) {
+      console.log('Valid user token, redirecting...');
+      window.location.href = '/user_dashboard.html';
+      return;
+    } else {
+      console.log('Invalid user token');
+      localStorage.removeItem('userToken');
+    }
+  }
+})();
+</script>
+
+  <header>
+    <div class="glass">
+      <div class="logo">
+        <a href="/" class="logo-link">
+          <img src="images/glowinglogonowback.webp" alt="Nevengi" class="logo-img" />
+          <span class="logo-text">Nevengi™</span>
+        </a>
+      </div>
+      <nav>
+        <div class="hamburger-menu" id="hamburger-menu">
+          <button>☰</button>
+        </div>
+        <div class="menu" id="menu">
+          <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer">
+            <button>NRC</button>
+          </a>
+          <a href="https://discord.gg/SYtbqPMqju" target="_blank" rel="noopener noreferrer">
+            <button>
+              <img src="images/discord-icon.png" alt="Discord Icon" style="width: 20px; height: 20px; margin-right: 8px;">
+              Join Discord
+            </button>
+          </a>
+          <a href="/auth/discord/user">
+            <button>
+              <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; margin-right: 8px;">
+              User Login
+            </button>
+          </a>
+          <a href="/auth/discord">
+            <button>
+              <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; margin-right: 8px;">
+              Coach Login
+            </button>
+          </a>
+          <a href="tile_journey.html">
+            <button>
+              <img src="images/quest.png" alt="Tile Journey Icon" style="width: 20px; height: 20px; margin-right: 8px;">
+              Tile Journey
+            </button>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <script>
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const menu = document.getElementById('menu');
+
+    hamburgerMenu.addEventListener('click', () => {
+      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        menu.style.display = 'block';
+      } else {
+        menu.style.display = 'none';
+      }
+    });
+  </script>
+
+    <!-- Scrollable Feature Cards -->
+  <section class="scroll-container">
+    <div class="card-scroll">
+      <img src="images/coach tranforamtion.png" alt="feature 1" />
+      <p>Become a coach for your own followers</p>
+    </div>
+
+    <div class="card-scroll">
+      <img src="images/18plus.webp" alt="feature 1" />
+      <p>Are You 18 or Older ?</p>
+    </div>
+    <div class="card-scroll">
+      <img src="images/followers.webp" alt="Feature 2" />
+      <p>Do You have more than 5k followers in any of your social media accounts ?</p>
+    </div>
+    <div class="card-scroll">
+      <img src="images/niche.webp" alt="Feature 3" />
+      <p>Do you make content for a specific niche ?</p>
+    </div>
+    <div class="card-scroll">
+      <img src="images/accountability.webp" alt="Feature 4" />
+      <p>Being Accountable</p>
+    </div>
+    <div class="card-scroll">
+      <img src="images/advice.webp" alt="Feature 5" />
+      <p>Giving Advice</p>
+    </div>
+    <div class="card-scroll">
+      <img src="images/socialmediacontent.webp" alt="Feature 6" />
+      <p>Create content to get your followers to Nevengi</p>
+    </div>
+  </section>
+
+  <section class="hero glass" id="hero">
+    <!-- Hero Intro -->
+    <div class="hero-text" id="hero-text">
+      <h1>Unlock the<br> All-Rounder.</h1><br>
+      <p>Tired of saving quotes and watching motivational videos?<br>
+        It's time to stop dreaming and get practical.<br>
+        <br>
+        <p><b> Already have a follow base ?</b> Join Nevengi as an<b> Content Creator</b> & Earn While you help people</p>
+        Unlock the All-Rounder.</p>
+      <button class="btn-primary" id="start-btn">Get Started</button>
+    </div>
+    <div class="hero-img" id="hero-img">
+      <img src="images/mascot.webp" alt="Nevengi Character" />
+    </div>
+
+    <!-- Embedded Questionnaire -->
+    <div id="questionnaire" class="glass"></div>
+  </section>
+
+  <!-- =========  FAQ  ===================================================== -->
+<section id="faq" class="faq glass">
+  <h2 class="faq-heading">Frequently Asked Questions</h2>
+
+  <!-- ── Coaches ──────────────────────────────────────────────────────── -->
+  <div class="faq-category">
+    <h3 class="faq-subheading">For Coaches</h3>
+
+    <details>
+      <summary>How do I earn money with Nevengi?</summary>
+      <p>You set your own monthly subscription price for followers.  
+         Each time a user subscribes, funds are split automatically—80 % goes to you, the rest covers platform and payment-processing fees.</p>
+    </details>
+
+    <details>
+      <summary>How long does it take to start earning?</summary>
+      <p>As soon as your coaching profile is approved (typically within 24-48 hours) and you list a paid program, subscribers can start joining—so earnings can begin right away.</p>
+    </details>
+
+    <details>
+      <summary>When will I get paid?</summary>
+      <p>Payouts are processed every Friday. You'll receive funds in your connected account 5-7 business days after each payout run.</p>
+    </details>
+  </div>
+
+  <!-- ── Users ─────────────────────────────────────────────────────────── -->
+  <div class="faq-category">
+    <h3 class="faq-subheading">For Users</h3>
+
+    <details>
+      <summary>How many coaches can I subscribe to at once?</summary>
+      <p>You can keep up to <strong>five</strong> active coach subscriptions simultaneously. You're free to cancel or swap any of them each month.</p>
+    </details>
+
+    <details>
+      <summary>What does my subscription include?</summary>
+      <p>Access to your coach's daily challenges, direct messaging, progress tracking and exclusive Discord channels. Some coaches add bonus perks like live Q&amp;A calls or downloadable resources.</p>
+    </details>
+  </div>
+</section>
+
+
+  <!-- footer start -->
+  <footer class="footer glass">
+    <div class="footer-container">
+      <!-- 1. Brand & copyright -->
+      <div class="footer-col footer-brand">
+        <p>© 2025 Nevengi. All Rights Reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const discordLink = 'https://discord.gg/SYtbqPMqju';
+    const startBtn = document.getElementById('start-btn');
+    const questionnaire = document.getElementById('questionnaire');
+    const heroText = document.getElementById('hero-text');
+    const heroImg = document.getElementById('hero-img');
+
+    const questions = [
+      {
+        text: 'Who are you?',
+        options: [
+          { label: 'I am a user', 
+            img: 'images/usernobk.png',
+            action: () => showUserMessage()
+          },  
+          { 
+            label: 'I am an influencer',
+            img: 'images/coachnobk.png',
+            next: 1 
+          },
+          { 
+            label: 'Startup/ Company',
+            img: 'images/coachnobk.png',
+            action: () => showCompanyMessage()
+          },
+        ]
+      },
+      {
+        text: 'Do you have 5000+ followers on any platform?',
+        options: [
+          { label: 'Yes, I do',
+            img: 'images/happymascot.webp',
+            action: () => window.location.href = '/introduction_coaching.html' 
+          },
+          {
+            label: 'No, not yet',
+            img: 'images/sadmascot2d.png',
+            action: () => showFinalUserMessage() 
+          }
+        ]
+      }
+    ];
+
+    
+
+
+    let currentIndex = null;
+
+    function showUserMessage() {
+      questionnaire.innerHTML = `
+       <button class="back-btn" onclick="goBack()">← Back</button><br>
+       <img class="question-img" src="images/manthink.jpg" alt="Welcome" />
+       <h2>You were told to be strong, work hard, stay confident, and never give up.🤦‍♂️</h2>
+       <p> But did any of those surface-level tips actually help you take action? Everyone knows these things🤷‍♂️. what we need is a practical system. That's exactly why we built Nevengi.</p>
+       <button class="btn-primary" onclick="showFinalUserMessage()">Yeah, makes sense</button>
+     `;
+   }
+
+
+    function showQuestion(index) {
+      currentIndex = index;
+      // instantly hide hero intro
+      heroText.classList.add('hidden');
+      heroImg.classList.add('hidden');
+      // show questionnaire
+      questionnaire.style.display = 'block';
+
+      // MOBILE: Activate full-screen onboarding
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('mobile-onboarding-active');
+      }
+
+      const q = questions[index];
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button>
+        <h2>${q.text}</h2>
+        <div class="options-row">
+          ${q.options.map((opt, i) => `
+            <button class="option glass" onclick="handleOptionClick(${index}, ${i})">
+              <img class="option-img" src="${opt.img}" alt="" />
+              <span>${opt.label}</span>
+            </button>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function handleOptionClick(qIndex, oIndex) {
+      const opt = questions[qIndex].options[oIndex];
+      if (opt.hasOwnProperty('next')) {
+        const next = opt.next;
+        if (next < questions.length) {
+          showQuestion(next);
+        } else {
+          showFinalUserMessage();
+        }
+      } else if (opt.action) {
+        opt.action();
+      }
+    }
+
+    function showFinalUserMessage() {
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button><br>
+        <img class="question-img" src="images/mylogo_nevengi_circle.webp" alt="Welcome" />
+        <h2>Welcome to Nevengi!</h2>
+        <div style="padding: 1.5rem 0 2.5rem 0;">
+          <p style="margin-bottom: 2.5rem; font-size: 1.1rem;">Now let's get you a personalized channel in our Discord and access to your dashboard.</p>
+          <a href="user_questions.html" class="btn-primary" style="display: block; margin: 0 auto; margin-bottom: 1.5rem; margin-top: 1.5rem; padding: 1.2rem 2.5rem; font-size: 1.15rem; max-width: 320px;">Get My Roles</a>
+        </div>
+      `;
+    }
+
+    function showCompanyMessage() {
+      questionnaire.innerHTML = `
+        <button class="back-btn" onclick="goBack()">← Back</button><br>
+        <h2 style="text-align: center;">Support your employees' growth 🚀</h2>
+        <img class="question-img" src="images/companyoffer.png" alt="Company Offer" style="width: 250px; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
+        <br>
+        <div style="text-align: left; padding: 0 20px;">
+        <p>⚡Offer your employees free access to Nevengi's self-improvement system and watch them grow stronger, smarter, and more productive.</p>
+        <p><strong>Minimum:</strong> 6 months per employee</p><br>
+        <p>To get started, email us at <a href="mailto:nevengiteam@gmail.com">team@nevengi.com</a> with:</p>
+        <p><strong>Number of employees</p>
+        <p><strong>📌 Time period:</strong> How long will they have access? (Minimum 6 months)</p><br>
+        <p>We'll get back to you within 24 hours with a quote</p><br>
+        <div style="text-align: center;">
+         <a href="mailto:nevengiteam@gmail.com" class="btn-primary">Contact Us Now</a>
+        </div>
+
+     `;
+    }
+
+
+    function goBack() {
+      if (currentIndex === 0) {
+        // back to welcome
+        questionnaire.style.display = 'none';
+        heroText.classList.remove('hidden');
+        heroImg.classList.remove('hidden');
+        currentIndex = null;
+        // MOBILE: Remove full-screen onboarding
+        if (window.innerWidth <= 768) {
+          document.body.classList.remove('mobile-onboarding-active');
+        }
+      } else if (currentIndex > 0) {
+        showQuestion(currentIndex - 1);
+      }
+    }
+
+    // Login menu toggle
+    const loginLink = document.getElementById('login-link');
+    const loginMenu = document.getElementById('login-menu');
+    if (loginLink && loginMenu) {
+      loginLink.addEventListener('click', e => {
+        e.preventDefault();
+        loginMenu.style.display = loginMenu.style.display === 'block' ? 'none' : 'block';
+      });
+      document.addEventListener('click', e => {
+        if (!loginMenu.contains(e.target) && e.target.id !== 'login-link') {
+          loginMenu.style.display = 'none';
+        }
+      });
+    }
+
+    // Start questionnaire
+    if (startBtn) {
+      startBtn.addEventListener('click', () => showQuestion(0));
+    }
+
+    // Install App Banner
+    let deferredPrompt;
+    const installBanner = document.getElementById('install-banner');
+    const installBannerBtn = document.getElementById('install-banner-btn');
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      installBanner.style.display = 'flex';
+    });
+    if (installBannerBtn) {
+      installBannerBtn.addEventListener('click', async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBanner.style.display = 'none';
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      installBanner.style.display = 'none';
+    });
+
+    // Add event listener for beforeunload to ensure tokens are preserved
+    window.addEventListener('beforeunload', () => {
+      // Force a sync write to localStorage
+      localStorage.setItem('lastVisit', Date.now().toString());
+    });
+
+    const userLoginLink = document.getElementById('user-login-link');
+    if (userLoginLink) {
+      userLoginLink.addEventListener('click', function(e) {
+        if (!isPWA && isPWAInstalled()) {
+          e.preventDefault();
+          showPWAModal();
+        } else {
+          // Store expected context
+          localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
+        }
+      });
+    }
+    const coachLoginLink = document.getElementById('coach-login-link');
+    if (coachLoginLink) {
+      coachLoginLink.addEventListener('click', function(e) {
+        if (!isPWA && isPWAInstalled()) {
+          e.preventDefault();
+          showPWAModal();
+        } else {
+          // Store expected context
+          localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
+        }
+      });
+    }
+
+    // Update User Login button for PWA
+    document.addEventListener('DOMContentLoaded', function() {
+      const userLoginBtn = document.querySelector('a[href="/auth/discord/user"]');
+      if (userLoginBtn) {
+        userLoginBtn.addEventListener('click', function(e) {
+          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone ||
+                        document.referrer.includes('android-app://');
+          if (isPWA) {
+            e.preventDefault();
+            // Build the Discord OAuth2 URL with correct redirect_uri for PWA
+            const clientId = '1362382273369997462';
+            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing.html';
+            const scope = 'identify email';
+            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+            // Unregister all service workers before redirecting
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+                window.location.href = discordOAuthUrl;
+              });
+            } else {
+              window.location.href = discordOAuthUrl;
+            }
+          }
+        });
+      }
+      // Coach PWA login logic
+      const coachLoginBtn = document.querySelector('a[href="/auth/discord"]');
+      if (coachLoginBtn) {
+        coachLoginBtn.addEventListener('click', function(e) {
+          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone ||
+                        document.referrer.includes('android-app://');
+          if (isPWA) {
+            e.preventDefault();
+            // Build the Discord OAuth2 URL with correct redirect_uri for PWA (coach)
+            const clientId = '1362382273369997462';
+            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing-coach.html';
+            const scope = 'identify email';
+            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+            // Unregister all service workers before redirecting
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+                window.location.href = discordOAuthUrl;
+              });
+            } else {
+              window.location.href = discordOAuthUrl;
+            }
+          }
+        });
+      }
+    });
+
+    document.getElementById('logoutBtn').addEventListener('click', function() {
+      if (!confirm('Are you sure you want to log out?')) return;
+      localStorage.removeItem('userToken');
+      localStorage.removeItem('coachToken');
+      localStorage.removeItem('discordId');
+      localStorage.removeItem('expectedPWA');
+      window.location.href = '/';
+    });
+
+    // Google Analytics event tracking for all major buttons
+    function trackButtonClick(label) {
+      let userId = localStorage.getItem('discordId') || localStorage.getItem('userToken') || undefined;
+      if (typeof gtag === 'function') {
+        gtag('event', 'button_click', {
+          'event_category': 'Home Page',
+          'event_label': label,
+          'user_id': userId,
+          'page_location': window.location.pathname
+        });
+      }
+    }
+    // Attach tracking to header/menu buttons
+    ['NRC','Join Discord','User Login','Coach Login'].forEach(label => {
+      document.querySelectorAll('button').forEach(btn => {
+        if(btn.textContent.includes(label)){
+          btn.addEventListener('click',()=>trackButtonClick(label));
+        }
+      });
+    });
+    // Questionnaire and dynamic buttons
+    if(questionnaire){
+      questionnaire.addEventListener('click',function(e){
+        if(e.target.tagName==='BUTTON'){
+          trackButtonClick(e.target.textContent.trim());
+        }
+      });
+    }
+    // Login and install buttons
+    ['login-link','start-btn'].forEach(id=>{
+      if(document.getElementById(id)){
+        document.getElementById(id).addEventListener('click',()=>trackButtonClick(id));
+      }
+    });
+
+    // Device/environment detection (run last, override all)
+    function isPWA() {
+      return window.matchMedia('(display-mode: standalone)').matches ||
+             window.navigator.standalone ||
+             document.referrer.includes('android-app://');
+    }
+    function isMobileWeb() {
+      const ua = navigator.userAgent;
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+      return isMobile && !isPWA();
+    }
+    function getPWADisplayMode() {
+      if (document.referrer.startsWith('android-app://')) return 'twa';
+      if (window.matchMedia('(display-mode: standalone)').matches) return 'standalone';
+      if (window.matchMedia('(display-mode: minimal-ui)').matches) return 'minimal-ui';
+      if (window.matchMedia('(display-mode: fullscreen)').matches) return 'fullscreen';
+      if (window.matchMedia('(display-mode: window-controls-overlay)').matches) return 'window-controls-overlay';
+      if (window.matchMedia('(display-mode: browser)').matches) return 'browser';
+      return 'unknown';
+    }
+    function isMobileDevice() {
+      if (navigator.userAgentData) {
+        return navigator.userAgentData.mobile;
+      }
+      const ua = navigator.userAgent || '';
+      const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      const isSmallScreen = Math.min(window.innerWidth, window.innerHeight) < 800;
+      return (isMobileUA || hasTouch) && isSmallScreen;
+    }
+  </script>
+
+  <!-- Add this just before </body> -->
+  <div id="oauthErrorModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;">
+    <div style="background:#fff;color:#222;padding:2.5rem 2rem;border-radius:18px;max-width:90vw;text-align:center;box-shadow:0 4px 32px #0008;">
+      <h2 style="margin-bottom:1rem;">Login Failed</h2>
+      <p style="font-size:1.1rem;margin-bottom:1.5rem;">Your login session expired or was invalid.<br>Please try logging in again from the login page.<br>If the problem persists, clear your browser cache or try a different browser.</p>
+      <button id="oauthErrorCloseBtn" style="background:#008cba;color:#fff;padding:0.7rem 2.2rem;border:none;border-radius:8px;font-size:1.1rem;">OK</button>
+    </div>
+  </div>
+
+  <!-- Install App Banner -->
+  <div id="install-banner" style="display:none;position:fixed;top:0;left:0;width:100vw;z-index:2000;background:#008cba;color:#fff;padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <span>Install the Nevengi App for the best experience!</span>
+    <button id="install-banner-btn" style="background:#fff;color:#008cba;font-weight:600;border-radius:6px;padding:0.4em 1.2em;border:none;cursor:pointer;">Install App</button>
+  </div>
+</body>
+</html>

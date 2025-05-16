@@ -7,47 +7,210 @@
      window.dataLayer = window.dataLayer || [];
      function gtag(){dataLayer.push(arguments);}
      gtag('js', new Date());
-
      gtag('config', 'G-YR1B2Z51N0');
   </script>
-
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nevengi - Connect with Expert Coaches</title>
+  <meta name="description" content="Join Nevengi to connect with expert coaches or share your expertise as an influencer." />
+  <meta name="author" content="Nevengi" />
+  <meta property="og:title" content="Nevengi - Connect with Expert Coaches" />
+  <meta property="og:description" content="Join Nevengi to connect with expert coaches or share your expertise as an influencer." />
+  <meta property="og:type" content="website" />
+  <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@lovable_dev" />
+  <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- Tailwind-inspired CSS (flattened for standalone use) --- */
+    :root {
+      --background: #f6faff;
+      --foreground: #232a36;
+      --brand-purple: #3A86FF;
+      --brand-teal: #4CC9F0;
+      --brand-light: #F0F7FF;
+      --brand-dark: #1A1F2C;
+      --muted-foreground: #6b7280;
+      --radius: 0.75rem;
+    }
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+      background: var(--background);
+      color: var(--foreground);
+      min-height: 100vh;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: bold;
+      letter-spacing: -0.01em;
+    }
+    .illustrated-bg {
+      background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23EBF5FF'/%3E%3Cstop offset='100%25' stop-color='%23E3F1FF'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23a)'/%3E%3C/svg%3E");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      position: relative;
+    }
+    .illustrated-bg::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='smallGrid' width='20' height='20' patternUnits='userSpaceOnUse'%3E%3Cpath d='M 20 0 L 0 0 0 20' fill='none' stroke='%233A86FF' stroke-opacity='0.05' stroke-width='0.5'/%3E%3C/pattern%3E%3Cpattern id='grid' width='100' height='100' patternUnits='userSpaceOnUse'%3E%3Crect width='100' height='100' fill='url(%23smallGrid)'/%3E%3Cpath d='M 100 0 L 0 0 0 100' fill='none' stroke='%233A86FF' stroke-opacity='0.1' stroke-width='1'/%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23grid)' /%3E%3C/svg%3E");
+      opacity: 0.3;
+      z-index: -1;
+    }
+    .main-card {
+      position: relative;
+      padding: 2rem;
+      border-radius: 2rem;
+      border: 1px solid rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+      transition: box-shadow 0.3s, transform 0.3s;
+      margin-bottom: 2rem;
+    }
+    .button-primary {
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      background: linear-gradient(to right, var(--brand-purple), var(--brand-teal));
+      color: #fff;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+      transition: box-shadow 0.3s, transform 0.2s;
+      margin: 0.25rem;
+    }
+    .button-primary:hover {
+      box-shadow: 0 4px 16px 0 rgba(58,134,255,0.15);
+      transform: scale(1.05);
+    }
+    .button-secondary {
+      padding: 0.75rem 1.5rem;
+      border-radius: 9999px;
+      background: rgba(255,255,255,0.8);
+      color: var(--brand-purple);
+      border: 1px solid #3A86FF33;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0.25rem;
+      transition: box-shadow 0.3s, background 0.3s, transform 0.2s;
+    }
+    .button-secondary:hover {
+      background: var(--brand-light);
+      box-shadow: 0 2px 8px 0 rgba(58,134,255,0.08);
+      transform: scale(1.05);
+    }
+    .menu-item {
+      padding: 0.5rem 1.25rem;
+      border-radius: 0.5rem;
+      transition: background 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: inherit;
+      text-decoration: none;
+    }
+    .menu-item:hover {
+      background: #f3f4f6;
+    }
+    .text-center { text-align: center; }
+    .text-muted-foreground { color: var(--muted-foreground); }
+    .font-bold { font-weight: bold; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mb-6 { margin-bottom: 1.5rem; }
+    .mb-8 { margin-bottom: 2rem; }
+    .mb-12 { margin-bottom: 3rem; }
+    .mt-10 { margin-top: 2.5rem; }
+    .w-full { width: 100%; }
+    .max-w-4xl { max-width: 64rem; }
+    .max-w-2xl { max-width: 42rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .px-4 { padding-left: 1rem; padding-right: 1rem; }
+    .pt-24 { padding-top: 6rem; }
+    .pb-16 { padding-bottom: 4rem; }
+    .py-6 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
+    .gap-4 { gap: 1rem; }
+    .gap-6 { gap: 1.5rem; }
+    .gap-8 { gap: 2rem; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .flex-row { flex-direction: row; }
+    .items-center { align-items: center; }
+    .justify-center { justify-content: center; }
+    .rounded-full { border-radius: 9999px; }
+    .rounded-2xl { border-radius: 2rem; }
+    .shadow-lg { box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1); }
+    .shadow-xl { box-shadow: 0 12px 48px 0 rgba(31, 38, 135, 0.12); }
+    .min-h-screen { min-height: 100vh; }
+    .relative { position: relative; }
+    .absolute { position: absolute; }
+    .inset-0 { top: 0; right: 0; bottom: 0; left: 0; }
+    .z-neg1 { z-index: -1; }
+    .z-40 { z-index: 40; }
+    .z-50 { z-index: 50; }
+    .fixed { position: fixed; }
+    .top-0 { top: 0; }
+    .left-0 { left: 0; }
+    .right-0 { right: 0; }
+    .w-32 { width: 8rem; }
+    .h-32 { height: 8rem; }
+    .mx-auto { margin-left: auto; margin-right: auto; }
+    .animation-fade-in { animation: fade-in 0.5s ease-out; }
+    .animate-float { animation: float 3s ease-in-out infinite; }
+    .animate-slide-in { animation: slide-in 0.5s ease-out; }
+    .animate-pulse-soft { animation: pulse-soft 3s ease-in-out infinite; }
+    @keyframes fade-in {
+      0% { opacity: 0; transform: translateY(10px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slide-in {
+      0% { transform: translateX(100%); opacity: 0; }
+      100% { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes pulse-soft {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.8; }
+    }
+    /* Hamburger styles */
+    .hamburger { background: none; border: none; cursor: pointer; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 2.5rem; width: 2.5rem; }
+    .hamburger div { height: 0.25rem; width: 1.5rem; background: var(--foreground); border-radius: 9999px; margin-bottom: 0.25rem; transition: all 0.3s; }
+    .hamburger.active div:nth-child(1) { transform: translateY(0.375rem) rotate(45deg); }
+    .hamburger.active div:nth-child(2) { opacity: 0; }
+    .hamburger.active div:nth-child(3) { transform: translateY(-0.375rem) rotate(-45deg); }
+    .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 30; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+    .menu-overlay.active { opacity: 1; pointer-events: auto; }
+    /* Responsive */
+    @media (max-width: 768px) {
+      .main-card { padding: 1rem; }
+      .pt-24 { padding-top: 4rem; }
+    }
+  </style>
   <meta name="theme-color" content="#000000" />
-  <meta name="description" content="Unlock the All-Rounder - Your personal development platform" />
   <link rel="manifest" href="/manifest.json" />
   <link rel="apple-touch-icon" href="images/glowinglogonowback.webp" />
-  <title>Nevengi</title>
-  <link rel="stylesheet" href="styles.css">
-
   <script>
     (function() {
-      // Check if we're in a PWA context
-      const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                   window.navigator.standalone || 
-                   document.referrer.includes('android-app://');
-
-      // OAuth state management
-      const oauthState = {
-        processing: false,
-        processedCodes: new Set(),
-        lastAttempt: 0,
-        retryCount: 0
-      };
-
       // Register service worker
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('/sw.js')
             .then(registration => {
               console.log('ServiceWorker registration successful');
-              
-              // Check for updates
               registration.addEventListener('updatefound', () => {
                 const newWorker = registration.installing;
                 newWorker.addEventListener('statechange', () => {
                   if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    // New content is available, refresh the page
                     window.location.reload();
                   }
                 });
@@ -58,7 +221,6 @@
             });
         });
       }
-
       // Add this to ensure auth endpoints are not cached
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.addEventListener('message', event => {
@@ -67,841 +229,279 @@
           }
         });
       }
-
-      // Check for existing tokens and redirect if logged in
-      console.log('Checking authentication status...');
-      
-      // Check URL parameters first
-      const params = new URLSearchParams(window.location.search);
-      const urlUserToken = params.get('token');
-      const urlDiscordId = params.get('discord_id');
-      const urlCoachToken = params.get('coachToken');
-      const oauthCode = params.get('code');
-      const oauthStateParam = params.get('state');
-      const isPwaAuth = params.get('pwa') === 'true';
-      
-      // If we have an OAuth code, handle it directly
-      if (oauthCode && oauthStateParam && !oauthState.processing) {
-        // Check if we've already processed this code
-        if (oauthState.processedCodes.has(oauthCode)) {
-          console.log('OAuth code already processed, ignoring...');
-          return;
-        }
-
-        // Check rate limiting
-        const now = Date.now();
-        const timeSinceLastAttempt = now - oauthState.lastAttempt;
-        if (timeSinceLastAttempt < 5000) { // 5 second cooldown
-          console.log('Rate limit cooldown, please wait...');
-          setTimeout(() => {
-            window.location.reload();
-          }, 5000 - timeSinceLastAttempt);
-          return;
-        }
-
-        console.log('OAuth flow detected, processing...');
-        oauthState.processing = true;
-        oauthState.lastAttempt = now;
-        oauthState.processedCodes.add(oauthCode);
-        
-        // Clear any existing tokens
-        localStorage.removeItem('userToken');
-        localStorage.removeItem('coachToken');
-        localStorage.removeItem('discordId');
-        
-        // Get the original auth URL from state
-        const authType = oauthStateParam.split('_')[0]; // 'user' or 'coach'
-        let authUrl = `/auth/discord/${authType}`;
-        let callbackUrl = null;
-        if (isPWA || isPwaAuth) {
-          if (authType === 'user') {
-            // Use the new PWA callback for user
-            callbackUrl = '/auth/discord/user/pwa-callback';
-          } else {
-            callbackUrl = `/auth/discord/${authType}/callback`;
-          }
-        } else {
-          callbackUrl = `/auth/discord/${authType}/callback`;
-        }
-        
-        // For PWA, we need to handle the OAuth flow differently
-        if (isPWA || isPwaAuth) {
-          console.log('PWA context detected, using alternative OAuth flow');
-          
-          // If this is a PWA auth attempt, wait a bit before proceeding
-          if (isPwaAuth) {
-            // Unregister service worker during OAuth
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.getRegistrations().then(registrations => {
-                registrations.forEach(registration => registration.unregister());
-                // Make the token request directly after unregistering
-                console.log('[PWA OAuth] Fetching token with:', {
-                  code: oauthCode,
-                  state: oauthStateParam,
-                  url: `${callbackUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`
-                });
-                fetch(`${callbackUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}&pwa=true`, {
-                  method: 'GET',
-                  headers: {
-                    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-                    'Pragma': 'no-cache',
-                    'Expires': '0'
-                  }
-                })
-                .then(response => {
-                  if (!response.ok) {
-                    throw new Error('Auth request failed');
-                  }
-                  return response.json();
-                })
-                .then(data => {
-                  if (data.token) {
-                    // Store the token and redirect
-                    if (authType === 'user') {
-                      localStorage.setItem('userToken', data.token);
-                      if (data.discord_id) {
-                        localStorage.setItem('discordId', data.discord_id);
-                      }
-                      window.location.href = '/user_dashboard.html';
-                    } else {
-                      localStorage.setItem('coachToken', data.token);
-                      window.location.href = '/coach_dashboard.html';
-                    }
-                  } else {
-                    throw new Error('No token received');
-                  }
-                })
-                .catch(error => {
-                  console.error('Auth error:', error);
-                  // Clear any partial state
-                  localStorage.removeItem('userToken');
-                  localStorage.removeItem('coachToken');
-                  localStorage.removeItem('discordId');
-                  // Show modal
-                  var modal = document.getElementById('oauthErrorModal');
-                  if (modal) {
-                    modal.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
-                    document.getElementById('oauthErrorCloseBtn').onclick = function() {
-                      modal.style.display = 'none';
-                      document.body.style.overflow = '';
-                      window.location.href = '/';
-                    };
-                  } else {
-                    window.location.href = '/';
-                  }
-                })
-                .finally(() => {
-                  oauthState.processing = false;
-                });
-              });
-            }
-            return;
-          } else {
-            // Initial PWA redirect
-            window.location.href = `${authUrl}?code=${oauthCode}&state=${oauthStateParam}&pwa=true&timestamp=${now}`;
-          }
-          return;
-        }
-        
-        // Regular web flow
-        fetch(`${authUrl}?code=${oauthCode}&state=${oauthStateParam}&timestamp=${now}`, {
-          method: 'GET',
-          headers: {
-            'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-          }
-        })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Auth request failed');
-          }
-          return response.json();
-        })
-        .then(data => {
-          if (data.token) {
-            // Store the token and redirect
-            if (authType === 'user') {
-              localStorage.setItem('userToken', data.token);
-              if (data.discord_id) {
-                localStorage.setItem('discordId', data.discord_id);
-              }
-              window.location.href = '/user_dashboard.html';
-            } else {
-              localStorage.setItem('coachToken', data.token);
-              window.location.href = '/coach_dashboard.html';
-            }
-          } else {
-            throw new Error('No token received');
-          }
-        })
-        .catch(error => {
-          console.error('Auth error:', error);
-          // Clear any partial state
-          localStorage.removeItem('userToken');
-          localStorage.removeItem('coachToken');
-          localStorage.removeItem('discordId');
-          // Show modal
-          var modal = document.getElementById('oauthErrorModal');
-          if (modal) {
-            modal.style.display = 'flex';
-            document.body.style.overflow = 'hidden';
-            document.getElementById('oauthErrorCloseBtn').onclick = function() {
-              modal.style.display = 'none';
-              document.body.style.overflow = '';
-              window.location.href = '/';
-            };
-          } else {
-            window.location.href = '/';
-          }
-        })
-        .finally(() => {
-          oauthState.processing = false;
-        });
-        return;
-      }
-      
-      // Check localStorage
-      const storedUserToken = localStorage.getItem('userToken');
-      const storedCoachToken = localStorage.getItem('coachToken');
-      
-      console.log('URL User Token:', urlUserToken ? 'exists' : 'not found');
-      console.log('URL Discord ID:', urlDiscordId ? 'exists' : 'not found');
-      console.log('URL Coach Token:', urlCoachToken ? 'exists' : 'not found');
-      console.log('Stored User Token:', storedUserToken ? 'exists' : 'not found');
-      console.log('Stored Coach Token:', storedCoachToken ? 'exists' : 'not found');
-      
-      // Function to validate token
+      // Token validation and auto-redirect
       async function validateToken(token, type) {
-        console.log(`Validating ${type} token:`, token);
-        if (!token) {
-          console.log('No token provided for validation');
+        if (!token) return false;
+        try {
+          const res = await fetch(`/auth/validate-${type}`, {
+            method: 'GET',
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (!res.ok) return false;
+          const data = await res.json();
+          return data.valid === true;
+        } catch {
           return false;
         }
-        
-        try {
-          const response = await fetch(`/auth/validate-${type}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-              'Pragma': 'no-cache',
-              'Expires': '0',
-              'X-Requested-With': 'XMLHttpRequest' // Prevent caching
-            },
-            credentials: 'include' // Include cookies if any
-          });
-          
-          console.log(`Validation response for ${type}:`, response.status);
-          if (!response.ok) {
-            console.log(`Token validation failed for ${type}:`, response.status);
-            // Clear invalid token
-            if (type === 'user') {
-              localStorage.removeItem('userToken');
-            } else {
-              localStorage.removeItem('coachToken');
-            }
-            return false;
-          }
-          
-          const data = await response.json();
-          console.log(`Validation data for ${type}:`, data);
-          return data.valid === true;
-        } catch (error) {
-          console.error(`Error validating ${type} token:`, error);
-          // Clear token on error
-          if (type === 'user') {
-            localStorage.removeItem('userToken');
+      }
+      (async function() {
+        const userToken = localStorage.getItem('userToken');
+        const coachToken = localStorage.getItem('coachToken');
+        if (coachToken) {
+          if (await validateToken(coachToken, 'coach')) {
+            window.location.href = '/coach_dashboard.html';
+            return;
           } else {
             localStorage.removeItem('coachToken');
           }
-          return false;
         }
-      }
+        if (userToken) {
+          if (await validateToken(userToken, 'user')) {
+            window.location.href = '/user_dashboard.html';
+            return;
+          } else {
+            localStorage.removeItem('userToken');
+          }
+        }
+      })();
     })();
   </script>
 </head>
 <body>
-<script>
-(async function() {
-  async function validateToken(token, type) {
-    if (!token) return false;
-    try {
-      const res = await fetch(`/auth/validate-${type}`, {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (!res.ok) return false;
-      const data = await res.json();
-      return data.valid === true;
-    } catch {
-      return false;
-    }
-  }
-
-  const userToken = localStorage.getItem('userToken');
-  const coachToken = localStorage.getItem('coachToken');
-
-  console.log('userToken:', userToken);
-  console.log('coachToken:', coachToken);
-
-  if (coachToken) {
-    if (await validateToken(coachToken, 'coach')) {
-      console.log('Valid coach token, redirecting...');
-      window.location.href = '/coach_dashboard.html';
-      return;
-    } else {
-      console.log('Invalid coach token');
-      localStorage.removeItem('coachToken');
-    }
-  }
-  if (userToken) {
-    if (await validateToken(userToken, 'user')) {
-      console.log('Valid user token, redirecting...');
-      window.location.href = '/user_dashboard.html';
-      return;
-    } else {
-      console.log('Invalid user token');
-      localStorage.removeItem('userToken');
-    }
-  }
-})();
-</script>
-
-  <header>
-    <div class="glass">
-      <div class="logo">
-        <a href="/" class="logo-link">
-          <img src="images/glowinglogonowback.webp" alt="Nevengi" class="logo-img" />
-          <span class="logo-text">Nevengi™</span>
-        </a>
+  <div class="illustrated-bg">
+    <nav class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-4 bg-white" style="background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);">
+      <div class="flex items-center">
+        <h1 class="text-xl font-bold" style="background:linear-gradient(to right, var(--brand-purple), var(--brand-teal));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Nevengi</h1>
       </div>
-      <nav>
-        <div class="hamburger-menu" id="hamburger-menu">
-          <button>☰</button>
-        </div>
-        <div class="menu" id="menu">
-          <a href="https://nevengi-research-center.super.site/" target="_blank" rel="noopener noreferrer">
-            <button>NRC</button>
-          </a>
-          <a href="https://discord.gg/SYtbqPMqju" target="_blank" rel="noopener noreferrer">
-            <button>
-              <img src="images/discord-icon.png" alt="Discord Icon" style="width: 20px; height: 20px; margin-right: 8px;">
-              Join Discord
-            </button>
-          </a>
-          <a href="/auth/discord/user">
-            <button>
-              <img src="images/colombian.gif" alt="User Icon" style="width: 20px; height: 20px; margin-right: 8px;">
-              User Login
-            </button>
-          </a>
-          <a href="/auth/discord">
-            <button>
-              <img src="images/mentorship.gif" alt="Coach Icon" style="width: 20px; height: 20px; margin-right: 8px;">
-              Coach Login
-            </button>
-          </a>
-          <a href="tile_journey.html">
-            <button>
-              <img src="images/quest.png" alt="Tile Journey Icon" style="width: 20px; height: 20px; margin-right: 8px;">
-              Tile Journey
-            </button>
-          </a>
-        </div>
-      </nav>
-    </div>
-  </header>
-
-  <script>
-    const hamburgerMenu = document.getElementById('hamburger-menu');
-    const menu = document.getElementById('menu');
-
-    hamburgerMenu.addEventListener('click', () => {
-      menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
-    });
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 768) {
-        menu.style.display = 'block';
-      } else {
-        menu.style.display = 'none';
-      }
-    });
-  </script>
-
-    <!-- Scrollable Feature Cards -->
-  <section class="scroll-container">
-    <div class="card-scroll">
-      <img src="images/coach tranforamtion.png" alt="feature 1" />
-      <p>Become a coach for your own followers</p>
-    </div>
-
-    <div class="card-scroll">
-      <img src="images/18plus.webp" alt="feature 1" />
-      <p>Are You 18 or Older ?</p>
-    </div>
-    <div class="card-scroll">
-      <img src="images/followers.webp" alt="Feature 2" />
-      <p>Do You have more than 5k followers in any of your social media accounts ?</p>
-    </div>
-    <div class="card-scroll">
-      <img src="images/niche.webp" alt="Feature 3" />
-      <p>Do you make content for a specific niche ?</p>
-    </div>
-    <div class="card-scroll">
-      <img src="images/accountability.webp" alt="Feature 4" />
-      <p>Being Accountable</p>
-    </div>
-    <div class="card-scroll">
-      <img src="images/advice.webp" alt="Feature 5" />
-      <p>Giving Advice</p>
-    </div>
-    <div class="card-scroll">
-      <img src="images/socialmediacontent.webp" alt="Feature 6" />
-      <p>Create content to get your followers to Nevengi</p>
-    </div>
-  </section>
-
-  <section class="hero glass" id="hero">
-    <!-- Hero Intro -->
-    <div class="hero-text" id="hero-text">
-      <h1>Unlock the<br> All-Rounder.</h1><br>
-      <p>Tired of saving quotes and watching motivational videos?<br>
-        It's time to stop dreaming and get practical.<br>
-        <br>
-        <p><b> Already have a follow base ?</b> Join Nevengi as an<b> Content Creator</b> & Earn While you help people</p>
-        Unlock the All-Rounder.</p>
-      <button class="btn-primary" id="start-btn">Get Started</button>
-    </div>
-    <div class="hero-img" id="hero-img">
-      <img src="images/mascot.webp" alt="Nevengi Character" />
-    </div>
-
-    <!-- Embedded Questionnaire -->
-    <div id="questionnaire" class="glass"></div>
-  </section>
-
-  <!-- =========  FAQ  ===================================================== -->
-<section id="faq" class="faq glass">
-  <h2 class="faq-heading">Frequently Asked Questions</h2>
-
-  <!-- ── Coaches ──────────────────────────────────────────────────────── -->
-  <div class="faq-category">
-    <h3 class="faq-subheading">For Coaches</h3>
-
-    <details>
-      <summary>How do I earn money with Nevengi?</summary>
-      <p>You set your own monthly subscription price for followers.  
-         Each time a user subscribes, funds are split automatically—80 % goes to you, the rest covers platform and payment-processing fees.</p>
-    </details>
-
-    <details>
-      <summary>How long does it take to start earning?</summary>
-      <p>As soon as your coaching profile is approved (typically within 24-48 hours) and you list a paid program, subscribers can start joining—so earnings can begin right away.</p>
-    </details>
-
-    <details>
-      <summary>When will I get paid?</summary>
-      <p>Payouts are processed every Friday. You'll receive funds in your connected account 5-7 business days after each payout run.</p>
-    </details>
-  </div>
-
-  <!-- ── Users ─────────────────────────────────────────────────────────── -->
-  <div class="faq-category">
-    <h3 class="faq-subheading">For Users</h3>
-
-    <details>
-      <summary>How many coaches can I subscribe to at once?</summary>
-      <p>You can keep up to <strong>five</strong> active coach subscriptions simultaneously. You're free to cancel or swap any of them each month.</p>
-    </details>
-
-    <details>
-      <summary>What does my subscription include?</summary>
-      <p>Access to your coach's daily challenges, direct messaging, progress tracking and exclusive Discord channels. Some coaches add bonus perks like live Q&amp;A calls or downloadable resources.</p>
-    </details>
-  </div>
-</section>
-
-
-  <!-- footer start -->
-  <footer class="footer glass">
-    <div class="footer-container">
-      <!-- 1. Brand & copyright -->
-      <div class="footer-col footer-brand">
-        <p>© 2025 Nevengi. All Rights Reserved.</p>
+      <button class="hamburger z-50 p-2" id="menuBtn" aria-label="Menu">
+        <div></div><div></div><div></div>
+      </button>
+    </nav>
+    <div class="menu-overlay" id="menuOverlay"></div>
+    <div id="sideMenu" style="position:fixed;top:0;right:0;z-index:40;height:100%;width:16rem;background:#fff;box-shadow:0 0 24px 0 rgba(0,0,0,0.08);transform:translateX(100%);transition:transform 0.3s; padding-top:5rem;padding-left:1rem;padding-right:1rem;">
+      <div class="flex flex-col gap-6">
+        <a href="/auth/discord/user" class="button-primary" style="text-align:center; text-decoration:none;">User Login</a>
+        <a href="/auth/discord" class="button-secondary" style="text-align:center; text-decoration:none;">Coach Login</a>
+      </div>
+      <div class="mt-10 flex flex-col gap-2">
+        <a href="#" class="menu-item">About Us</a>
+        <a href="#" class="menu-item">Success Stories</a>
+        <a href="#" class="menu-item">FAQ</a>
+        <a href="#" class="menu-item">Contact</a>
       </div>
     </div>
-  </footer>
-
+    <main class="pt-24 pb-16 min-h-screen flex items-center" style="flex-direction:column;justify-content:center;">
+      <div id="stepContainer" class="w-full"></div>
+    </main>
+    <footer class="py-6 text-center text-sm text-muted-foreground">
+      <p>© 2025 Nevengi. All rights reserved.</p>
+    </footer>
+  </div>
+  <div class="absolute inset-0 z-neg1"></div>
   <script>
-    const discordLink = 'https://discord.gg/SYtbqPMqju';
-    const startBtn = document.getElementById('start-btn');
-    const questionnaire = document.getElementById('questionnaire');
-    const heroText = document.getElementById('hero-text');
-    const heroImg = document.getElementById('hero-img');
-
-    const questions = [
-      {
-        text: 'Who are you?',
-        options: [
-          { label: 'I am a user', 
-            img: 'images/usernobk.png',
-            action: () => showUserMessage()
-          },  
-          { 
-            label: 'I am an influencer',
-            img: 'images/coachnobk.png',
-            next: 1 
-          },
-          { 
-            label: 'Startup/ Company',
-            img: 'images/coachnobk.png',
-            action: () => showCompanyMessage()
-          },
-        ]
-      },
-      {
-        text: 'Do you have 5000+ followers on any platform?',
-        options: [
-          { label: 'Yes, I do',
-            img: 'images/happymascot.webp',
-            action: () => window.location.href = '/introduction_coaching.html' 
-          },
-          {
-            label: 'No, not yet',
-            img: 'images/sadmascot2d.png',
-            action: () => showFinalUserMessage() 
-          }
-        ]
-      }
-    ];
-
-    
-
-
-    let currentIndex = null;
-
-    function showUserMessage() {
-      questionnaire.innerHTML = `
-       <button class="back-btn" onclick="goBack()">← Back</button><br>
-       <img class="question-img" src="images/manthink.jpg" alt="Welcome" />
-       <h2>You were told to be strong, work hard, stay confident, and never give up.🤦‍♂️</h2>
-       <p> But did any of those surface-level tips actually help you take action? Everyone knows these things🤷‍♂️. what we need is a practical system. That's exactly why we built Nevengi.</p>
-       <button class="btn-primary" onclick="showFinalUserMessage()">Yeah, makes sense</button>
-     `;
-   }
-
-
-    function showQuestion(index) {
-      currentIndex = index;
-      // instantly hide hero intro
-      heroText.classList.add('hidden');
-      heroImg.classList.add('hidden');
-      // show questionnaire
-      questionnaire.style.display = 'block';
-
-      // MOBILE: Activate full-screen onboarding
-      if (window.innerWidth <= 768) {
-        document.body.classList.add('mobile-onboarding-active');
-      }
-
-      const q = questions[index];
-      questionnaire.innerHTML = `
-        <button class="back-btn" onclick="goBack()">← Back</button>
-        <h2>${q.text}</h2>
-        <div class="options-row">
-          ${q.options.map((opt, i) => `
-            <button class="option glass" onclick="handleOptionClick(${index}, ${i})">
-              <img class="option-img" src="${opt.img}" alt="" />
-              <span>${opt.label}</span>
+    // Hamburger menu logic
+    const menuBtn = document.getElementById('menuBtn');
+    const menuOverlay = document.getElementById('menuOverlay');
+    const sideMenu = document.getElementById('sideMenu');
+    let menuOpen = false;
+    menuBtn.addEventListener('click', () => {
+      menuOpen = !menuOpen;
+      menuBtn.classList.toggle('active', menuOpen);
+      menuOverlay.classList.toggle('active', menuOpen);
+      sideMenu.style.transform = menuOpen ? 'translateX(0)' : 'translateX(100%)';
+    });
+    menuOverlay.addEventListener('click', () => {
+      menuOpen = false;
+      menuBtn.classList.remove('active');
+      menuOverlay.classList.remove('active');
+      sideMenu.style.transform = 'translateX(100%)';
+    });
+    // Step logic
+    const stepContainer = document.getElementById('stepContainer');
+    let currentStep = 'select-type';
+    let userType = null;
+    let hasEnoughFollowers = null;
+    function renderStep() {
+      if (currentStep === 'select-type') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-4xl mx-auto px-4 animation-fade-in">
+            <h2 class="text-2xl font-bold text-center mb-12">
+              Find Your <span style="background:linear-gradient(to right, var(--brand-purple), var(--brand-teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Perfect Path</span>
+            </h2>
+            <div class="flex gap-8" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
+              <div class="main-card cursor-pointer" id="userCard">
+                <div class="flex flex-col items-center">
+                  <div class="w-32 h-32 mb-6 animate-float">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxjaXJjbGUgY3g9IjEyIiBjeT0iOSIgcj0iMyIgc3Ryb2tlPSIjM0E4NkZGIiBzdHJva2Utd2lkdGg9IjEuNSIvPjxwYXRoIGQ9Ik0xNy43OTcgMTcuNzk3QzE2LjUzMiAxNi41MzIgMTQuMzIyIDE2IDEyIDE2QzkuNjc4IDE2IDcuNDY3IDE2LjUzMiA2LjIwMyAxNy43OTciIHN0cm9rZT0iIzNBODZGRiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIiBzdHJva2U9IiMzQTg2RkYiIHN0cm9rZS13aWR0aD0iMS41Ii8+PC9zdmc+" alt="User Icon" class="w-full h-full" />
+                  </div>
+                  <h3 class="text-xl font-bold text-center mb-4">I'm Looking for Guidance</h3>
+                  <p class="text-center text-muted-foreground mb-6">Get personalized coaching, discover new routines, and track your progress on your self-improvement journey.</p>
+                  <button class="button-primary w-full">Select</button>
+                </div>
+              </div>
+              <div class="main-card cursor-pointer" id="influencerCard">
+                <div class="flex flex-col items-center">
+                  <div class="w-32 h-32 mb-6 animate-float">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik04IDEzVjE3TTEyIDEwVjE3TTE2IDdWMTciIHN0cm9rZT0iIzRDQzlGMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxjaXJjbGUgY3g9IjgiIGN5PSI3IiByPSIyIiBzdHJva2U9IiM0Q0M5RjAiIHN0cm9rZS13aWR0aD0iMS41Ii8+PGNpcmNsZSBjeD0iMTYiIGN5PSIzIiByPSIyIiBzdHJva2U9IiM0Q0M5RjAiIHN0cm9rZS13aWR0aD0iMS41Ii8+PGNpcmNsZSBjeD0iMTIiIGN5PSI2IiByPSIyIiBzdHJva2U9IiM0Q0M5RjAiIHN0cm9rZS13aWR0aD0iMS41Ii8+PHBhdGggZD0iTTIwIDE5QzIwIDIwLjEwNDYgMTkuMTA0NiAyMSAxMyAyMUM2Ljg5NTQzIDIxIDYgMjAuMTA0NiA2IDE5QzYgMTcuODk1NCA2Ljg5NTQzIDE3IDEzIDE3QzE5LjEwNDYgMTcgMjAgMTcuODk1NCAyMCAxOVoiIHN0cm9rZT0iIzRDQzlGMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz48L3N2Zz4K" alt="Coach Icon" class="w-full h-full" />
+                  </div>
+                  <h3 class="text-xl font-bold text-center mb-4">I'm an Influencer/Coach</h3>
+                  <p class="text-center text-muted-foreground mb-6">Share your expertise, build your client base, and grow your online presence with our coaching platform.</p>
+                  <button class="button-primary w-full">Select</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('userCard').onclick = () => {
+          userType = 'user';
+          currentStep = 'user-message';
+          renderStep();
+        };
+        document.getElementById('influencerCard').onclick = () => {
+          userType = 'influencer';
+          currentStep = 'influencer-question';
+          renderStep();
+        };
+      } else if (currentStep === 'influencer-question') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              <span>Back</span>
             </button>
-          `).join('')}
-        </div>
-      `;
-    }
-
-    function handleOptionClick(qIndex, oIndex) {
-      const opt = questions[qIndex].options[oIndex];
-      if (opt.hasOwnProperty('next')) {
-        const next = opt.next;
-        if (next < questions.length) {
-          showQuestion(next);
-        } else {
-          showFinalUserMessage();
-        }
-      } else if (opt.action) {
-        opt.action();
-      }
-    }
-
-    function showFinalUserMessage() {
-      questionnaire.innerHTML = `
-        <button class="back-btn" onclick="goBack()">← Back</button><br>
-        <img class="question-img" src="images/mylogo_nevengi_circle.webp" alt="Welcome" />
-        <h2>Welcome to Nevengi!</h2>
-        <div style="padding: 1.5rem 0 2.5rem 0;">
-          <p style="margin-bottom: 2.5rem; font-size: 1.1rem;">Now let's get you a personalized channel in our Discord and access to your dashboard.</p>
-          <a href="user_questions.html" class="btn-primary" style="display: block; margin: 0 auto; margin-bottom: 1.5rem; margin-top: 1.5rem; padding: 1.2rem 2.5rem; font-size: 1.15rem; max-width: 320px;">Get My Roles</a>
-        </div>
-      `;
-    }
-
-    function showCompanyMessage() {
-      questionnaire.innerHTML = `
-        <button class="back-btn" onclick="goBack()">← Back</button><br>
-        <h2 style="text-align: center;">Support your employees' growth 🚀</h2>
-        <img class="question-img" src="images/companyoffer.png" alt="Company Offer" style="width: 250px; max-width: 100%; height: auto; display: block; margin: 0 auto;" />
-        <br>
-        <div style="text-align: left; padding: 0 20px;">
-        <p>⚡Offer your employees free access to Nevengi's self-improvement system and watch them grow stronger, smarter, and more productive.</p>
-        <p><strong>Minimum:</strong> 6 months per employee</p><br>
-        <p>To get started, email us at <a href="mailto:nevengiteam@gmail.com">team@nevengi.com</a> with:</p>
-        <p><strong>Number of employees</p>
-        <p><strong>📌 Time period:</strong> How long will they have access? (Minimum 6 months)</p><br>
-        <p>We'll get back to you within 24 hours with a quote</p><br>
-        <div style="text-align: center;">
-         <a href="mailto:nevengiteam@gmail.com" class="btn-primary">Contact Us Now</a>
-        </div>
-
-     `;
-    }
-
-
-    function goBack() {
-      if (currentIndex === 0) {
-        // back to welcome
-        questionnaire.style.display = 'none';
-        heroText.classList.remove('hidden');
-        heroImg.classList.remove('hidden');
-        currentIndex = null;
-        // MOBILE: Remove full-screen onboarding
-        if (window.innerWidth <= 768) {
-          document.body.classList.remove('mobile-onboarding-active');
-        }
-      } else if (currentIndex > 0) {
-        showQuestion(currentIndex - 1);
-      }
-    }
-
-    // Login menu toggle
-    const loginLink = document.getElementById('login-link');
-    const loginMenu = document.getElementById('login-menu');
-    if (loginLink && loginMenu) {
-      loginLink.addEventListener('click', e => {
-        e.preventDefault();
-        loginMenu.style.display = loginMenu.style.display === 'block' ? 'none' : 'block';
-      });
-      document.addEventListener('click', e => {
-        if (!loginMenu.contains(e.target) && e.target.id !== 'login-link') {
-          loginMenu.style.display = 'none';
-        }
-      });
-    }
-
-    // Start questionnaire
-    if (startBtn) {
-      startBtn.addEventListener('click', () => showQuestion(0));
-    }
-
-    // Install App Banner
-    let deferredPrompt;
-    const installBanner = document.getElementById('install-banner');
-    const installBannerBtn = document.getElementById('install-banner-btn');
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPrompt = e;
-      installBanner.style.display = 'flex';
-    });
-    if (installBannerBtn) {
-      installBannerBtn.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        deferredPrompt.prompt();
-        const { outcome } = await deferredPrompt.userChoice;
-        deferredPrompt = null;
-        installBanner.style.display = 'none';
-      });
-    }
-    window.addEventListener('appinstalled', () => {
-      installBanner.style.display = 'none';
-    });
-
-    // Add event listener for beforeunload to ensure tokens are preserved
-    window.addEventListener('beforeunload', () => {
-      // Force a sync write to localStorage
-      localStorage.setItem('lastVisit', Date.now().toString());
-    });
-
-    const userLoginLink = document.getElementById('user-login-link');
-    if (userLoginLink) {
-      userLoginLink.addEventListener('click', function(e) {
-        if (!isPWA && isPWAInstalled()) {
-          e.preventDefault();
-          showPWAModal();
-        } else {
-          // Store expected context
-          localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
-        }
-      });
-    }
-    const coachLoginLink = document.getElementById('coach-login-link');
-    if (coachLoginLink) {
-      coachLoginLink.addEventListener('click', function(e) {
-        if (!isPWA && isPWAInstalled()) {
-          e.preventDefault();
-          showPWAModal();
-        } else {
-          // Store expected context
-          localStorage.setItem('expectedPWA', isPWA ? 'true' : 'false');
-        }
-      });
-    }
-
-    // Update User Login button for PWA
-    document.addEventListener('DOMContentLoaded', function() {
-      const userLoginBtn = document.querySelector('a[href="/auth/discord/user"]');
-      if (userLoginBtn) {
-        userLoginBtn.addEventListener('click', function(e) {
-          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                        window.navigator.standalone ||
-                        document.referrer.includes('android-app://');
-          if (isPWA) {
-            e.preventDefault();
-            // Build the Discord OAuth2 URL with correct redirect_uri for PWA
-            const clientId = '1362382273369997462';
-            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing.html';
-            const scope = 'identify email';
-            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
-            // Unregister all service workers before redirecting
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.getRegistrations().then(registrations => {
-                registrations.forEach(registration => registration.unregister());
-                window.location.href = discordOAuthUrl;
-              });
-            } else {
-              window.location.href = discordOAuthUrl;
-            }
+            <div class="main-card">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Do you have more than 5,000 followers on any social media platform?</h2>
+              <div class="w-32 h-32 mx-auto mb-8 animate-float">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xNyA5TDEwIDE2TDcgMTMiIHN0cm9rZT0iIzNBODZGRiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xMiAyMkM2LjQ3NzE1IDIyIDIgMTcuNTIyOCAyIDEyQzIgNi40NzcxNSA2LjQ3NzE1IDIgMTIgMkMxNy41MjI4IDIgMjIgNi40NzcxNSAyMiAxMkMyMiAxNy41MjI4IDE3LjUyMjggMjIgMTIgMjJaIiBzdHJva2U9IiMzQTg2RkYiIHN0cm9rZS13aWR0aD0iMS41Ii8+PC9zdmc+Cg==" alt="Followers Count" class="w-full h-full" />
+              </div>
+              <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button class="button-primary" id="yesFollowers">Yes, I have 5,000+ followers</button>
+                <button class="button-secondary" id="noFollowers">Not yet</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('backBtn').onclick = () => {
+          currentStep = 'select-type';
+          userType = null;
+          renderStep();
+        };
+        document.getElementById('yesFollowers').onclick = () => {
+          hasEnoughFollowers = true;
+          currentStep = 'user-message';
+          renderStep();
+        };
+        document.getElementById('noFollowers').onclick = () => {
+          hasEnoughFollowers = false;
+          currentStep = 'user-message';
+          renderStep();
+        };
+      } else if (currentStep === 'user-message') {
+        if (userType === 'user') {
+          stepContainer.innerHTML = `
+            <div class="w-full max-w-2xl mx-auto px-4">
+              <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+                <span>Back</span>
+              </button>
+              <div class="main-card animate-slide-in">
+                <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Welcome to Your Self-Improvement Journey!</h2>
+                <div class="w-32 h-32 mx-auto mb-6 animate-float">
+                  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAyMlYxOE0xMiAxOEMxMC4zMTMxIDE4IDkgMTYuNjg2OSA5IDE1QzkgMTMuMzEzMSAxMC4zMTMxIDEyIDEyIDEyQzEzLjY4NjkgMTIgMTUgMTMuMzEzMSAxNSAxNUMxNSAxNi42ODY5IDEzLjY4NjkgMTggMTIgMThNMTIgOEMxMS40NDc3IDggMTEgNy41NTIyOCAxMSA3QzExIDYuNDQ3NzIgMTEuNDQ3NyA2IDEyIDZDMTIuNTUyMyA2IDEzIDYuNDQ3NzIgMTMgN0MxMyA3LjU1MjI4IDEyLjU1MjMgOCAxMiA4Wk0xMiA4VjEyIiBzdHJva2U9IiMzQTg2RkYiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgc3Ryb2tlPSIjM0E4NkZGIiBzdHJva2Utd2lkdGg9IjEuNSIvPjwvc3ZnPg==" alt="User Journey" class="w-full h-full" />
+                </div>
+                <p class="text-center text-muted-foreground mb-8">You're in the right place! Our self-improvement platform connects you with expert coaches to help you reach your personal and professional goals.</p>
+                <p class="text-center font-medium mb-8">For the best experience, install our app and sign up to get started.</p>
+                <div class="flex flex-col md:flex-row gap-4 justify-center">
+                  <button class="button-primary" id="installApp">Install App</button>
+                  <button class="button-secondary" id="alreadyInApp">I'm Already in the App</button>
+                </div>
+              </div>
+            </div>
+          `;
+          document.getElementById('backBtn').onclick = () => {
+            currentStep = 'select-type';
+            userType = null;
+            renderStep();
+          };
+          document.getElementById('installApp').onclick = () => {
+            alert('Install app clicked!');
+          };
+          document.getElementById('alreadyInApp').onclick = () => {
+            alert('Continue clicked!');
+          };
+        } else if (userType === 'influencer') {
+          if (hasEnoughFollowers) {
+            stepContainer.innerHTML = `
+              <div class="w-full max-w-2xl mx-auto px-4">
+                <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+                  <span>Back</span>
+                </button>
+                <div class="main-card animate-slide-in">
+                  <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Perfect! You're Ready to Join as a Coach</h2>
+                  <div class="w-32 h-32 mx-auto mb-6 animate-float">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0yMiAxM1YxNkgxNkMyMCAxNi4wMDAzIDIyIDE0IDIyIDEzWiIgc3Ryb2tlPSIjNENDOUYwIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIyIDhWMTEiIHN0cm9rZT0iIzRDQzlGMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xMiAyQzE2LjQxODMgMiAyMCA1LjU4MTcyIDIwIDEwQzIwIDE0LjQxODMgMTYuNDE4MyAxOCAxMiAxOEM3LjU4MTcyIDE4IDQgMTQuNDE4MyA0IDEwQzQgNS41ODE3MiA3LjU4MTcyIDIgMTIgMloiIHN0cm9rZT0iIzRDQzlGMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==" alt="Coach Success" class="w-full h-full" />
+                  </div>
+                  <p class="text-center text-muted-foreground mb-8">With your established audience, you're positioned to make a real impact on our platform. You'll be able to share your expertise, build your client base, and grow your coaching business.</p>
+                  <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button class="button-primary" id="continueCoach">Continue to Coach Dashboard</button>
+                    <button class="button-secondary" id="backBtn2">Go Back</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            document.getElementById('backBtn').onclick = () => {
+              currentStep = 'influencer-question';
+              hasEnoughFollowers = null;
+              renderStep();
+            };
+            document.getElementById('backBtn2').onclick = () => {
+              currentStep = 'influencer-question';
+              hasEnoughFollowers = null;
+              renderStep();
+            };
+            document.getElementById('continueCoach').onclick = () => {
+              alert('Continue to Coach Dashboard!');
+            };
+          } else {
+            stepContainer.innerHTML = `
+              <div class="w-full max-w-2xl mx-auto px-4">
+                <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+                  <span>Back</span>
+                </button>
+                <div class="main-card animate-slide-in">
+                  <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Keep Growing Your Audience!</h2>
+                  <div class="w-32 h-32 mx-auto mb-6 animate-pulse-soft">
+                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xNiAxNkwxMiAyMkw4IDE2IiBzdHJva2U9IiM0Q0M5RjAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTIgMlYxOCIgc3Ryb2tlPSIjNENDOUYwIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+Cg==" alt="Growth Icon" class="w-full h-full" />
+                  </div>
+                  <p class="text-center text-muted-foreground mb-8">We love your enthusiasm! Our coach platform is currently designed for influencers with established audiences of 5,000+ followers.</p>
+                  <p class="text-center font-medium mb-8">In the meantime, we encourage you to join as a user and experience the platform from the client side while you grow your following.</p>
+                  <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button class="button-primary" id="signupUser">Sign Up as User</button>
+                    <button class="button-secondary" id="backBtn2">Go Back</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            document.getElementById('backBtn').onclick = () => {
+              currentStep = 'influencer-question';
+              hasEnoughFollowers = null;
+              renderStep();
+            };
+            document.getElementById('backBtn2').onclick = () => {
+              currentStep = 'influencer-question';
+              hasEnoughFollowers = null;
+              renderStep();
+            };
+            document.getElementById('signupUser').onclick = () => {
+              alert('Sign Up as User!');
+            };
           }
-        });
-      }
-      // Coach PWA login logic
-      const coachLoginBtn = document.querySelector('a[href="/auth/discord"]');
-      if (coachLoginBtn) {
-        coachLoginBtn.addEventListener('click', function(e) {
-          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                        window.navigator.standalone ||
-                        document.referrer.includes('android-app://');
-          if (isPWA) {
-            e.preventDefault();
-            // Build the Discord OAuth2 URL with correct redirect_uri for PWA (coach)
-            const clientId = '1362382273369997462';
-            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing-coach.html';
-            const scope = 'identify email';
-            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
-            // Unregister all service workers before redirecting
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.getRegistrations().then(registrations => {
-                registrations.forEach(registration => registration.unregister());
-                window.location.href = discordOAuthUrl;
-              });
-            } else {
-              window.location.href = discordOAuthUrl;
-            }
-          }
-        });
-      }
-    });
-
-    document.getElementById('logoutBtn').addEventListener('click', function() {
-      if (!confirm('Are you sure you want to log out?')) return;
-      localStorage.removeItem('userToken');
-      localStorage.removeItem('coachToken');
-      localStorage.removeItem('discordId');
-      localStorage.removeItem('expectedPWA');
-      window.location.href = '/';
-    });
-
-    // Google Analytics event tracking for all major buttons
-    function trackButtonClick(label) {
-      let userId = localStorage.getItem('discordId') || localStorage.getItem('userToken') || undefined;
-      if (typeof gtag === 'function') {
-        gtag('event', 'button_click', {
-          'event_category': 'Home Page',
-          'event_label': label,
-          'user_id': userId,
-          'page_location': window.location.pathname
-        });
-      }
-    }
-    // Attach tracking to header/menu buttons
-    ['NRC','Join Discord','User Login','Coach Login'].forEach(label => {
-      document.querySelectorAll('button').forEach(btn => {
-        if(btn.textContent.includes(label)){
-          btn.addEventListener('click',()=>trackButtonClick(label));
         }
-      });
-    });
-    // Questionnaire and dynamic buttons
-    if(questionnaire){
-      questionnaire.addEventListener('click',function(e){
-        if(e.target.tagName==='BUTTON'){
-          trackButtonClick(e.target.textContent.trim());
-        }
-      });
-    }
-    // Login and install buttons
-    ['login-link','start-btn'].forEach(id=>{
-      if(document.getElementById(id)){
-        document.getElementById(id).addEventListener('click',()=>trackButtonClick(id));
       }
-    });
-
-    // Device/environment detection (run last, override all)
-    function isPWA() {
-      return window.matchMedia('(display-mode: standalone)').matches ||
-             window.navigator.standalone ||
-             document.referrer.includes('android-app://');
     }
-    function isMobileWeb() {
-      const ua = navigator.userAgent;
-      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-      return isMobile && !isPWA();
-    }
-    function getPWADisplayMode() {
-      if (document.referrer.startsWith('android-app://')) return 'twa';
-      if (window.matchMedia('(display-mode: standalone)').matches) return 'standalone';
-      if (window.matchMedia('(display-mode: minimal-ui)').matches) return 'minimal-ui';
-      if (window.matchMedia('(display-mode: fullscreen)').matches) return 'fullscreen';
-      if (window.matchMedia('(display-mode: window-controls-overlay)').matches) return 'window-controls-overlay';
-      if (window.matchMedia('(display-mode: browser)').matches) return 'browser';
-      return 'unknown';
-    }
-    function isMobileDevice() {
-      if (navigator.userAgentData) {
-        return navigator.userAgentData.mobile;
-      }
-      const ua = navigator.userAgent || '';
-      const isMobileUA = /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
-      const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-      const isSmallScreen = Math.min(window.innerWidth, window.innerHeight) < 800;
-      return (isMobileUA || hasTouch) && isSmallScreen;
-    }
+    renderStep();
   </script>
-
-  <!-- Add this just before </body> -->
-  <div id="oauthErrorModal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.7);z-index:9999;align-items:center;justify-content:center;">
-    <div style="background:#fff;color:#222;padding:2.5rem 2rem;border-radius:18px;max-width:90vw;text-align:center;box-shadow:0 4px 32px #0008;">
-      <h2 style="margin-bottom:1rem;">Login Failed</h2>
-      <p style="font-size:1.1rem;margin-bottom:1.5rem;">Your login session expired or was invalid.<br>Please try logging in again from the login page.<br>If the problem persists, clear your browser cache or try a different browser.</p>
-      <button id="oauthErrorCloseBtn" style="background:#008cba;color:#fff;padding:0.7rem 2.2rem;border:none;border-radius:8px;font-size:1.1rem;">OK</button>
-    </div>
-  </div>
-
-  <!-- Install App Banner -->
-  <div id="install-banner" style="display:none;position:fixed;top:0;left:0;width:100vw;z-index:2000;background:#008cba;color:#fff;padding:0.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;font-size:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-    <span>Install the Nevengi App for the best experience!</span>
-    <button id="install-banner-btn" style="background:#fff;color:#008cba;font-weight:600;border-radius:6px;padding:0.4em 1.2em;border:none;cursor:pointer;">Install App</button>
-  </div>
 </body>
-</html>
+</html> 
