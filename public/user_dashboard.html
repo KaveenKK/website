@@ -14,6 +14,152 @@
   <link rel="icon" href="images/mylogo_nevengi_circle.webp" type="image/jpg">
   <title>Nevengi User Dashboard</title>
   <link rel="stylesheet" href="user_dashboard.css">
+  <!-- Tile Journey CSS -->
+  <style>
+    :root {
+      --tile-size: 90px;
+      --tile-gap: 12px;
+      --primary-color: #4a90e2;
+      --accent-color: #f5a623;
+      --background-color: #f0f4f8;
+      --text-color: #333;
+      --character-color: #e94e77;
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      --notification-bg: #FFF8E1;
+      --notification-border: #f5a623;
+    }
+    .tile-grid {
+      display: grid;
+      grid-template-columns: repeat(5, var(--tile-size));
+      grid-template-rows: repeat(5, var(--tile-size));
+      gap: var(--tile-gap);
+      background: white;
+      padding: var(--tile-gap);
+      border-radius: 16px;
+      box-shadow:
+        0 10px 20px rgba(0,0,0,0.07),
+        inset 0 0 40px rgba(74,144,226,0.1);
+      user-select: none;
+    }
+    @media (max-width: 480px) {
+      .tile-grid {
+        --tile-size: 65px;
+        grid-template-columns: repeat(5, var(--tile-size));
+        grid-template-rows: repeat(5, var(--tile-size));
+      }
+    }
+    .tile {
+      background: linear-gradient(145deg, #dff1ff, #a5c7ff);
+      border-radius: 12px;
+      border: 2px solid transparent;
+      box-shadow:
+        0 4px 6px rgba(74,144,226,0.3),
+        inset 0 1px 0 rgba(255,255,255,0.8);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      cursor: default;
+      position: relative;
+      transition:
+        border-color 0.35s ease,
+        box-shadow 0.35s ease,
+        background 0.35s ease;
+    }
+    .tile:hover {
+      background: linear-gradient(145deg, #b3d0ff, #81a2fc);
+      box-shadow:
+        0 6px 12px rgba(74,144,226,0.5),
+        inset 0 0 10px rgba(255,255,255,0.9);
+    }
+    .tile.active {
+      border-color: var(--accent-color);
+      box-shadow:
+        0 0 18px var(--accent-color),
+        inset 0 0 18px var(--accent-color);
+      background: linear-gradient(145deg, #fff3cc, #ffdb6d);
+    }
+    .character {
+      position: absolute;
+      width: 40px;
+      height: 40px;
+      background: var(--character-color);
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow:
+        0 0 12px var(--character-color),
+        0 0 10px var(--character-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      color: white;
+      transition: top 0.55s ease, left 0.55s ease;
+      pointer-events: none;
+      z-index: 20;
+      user-select: none;
+    }
+    .message-panel {
+      margin-top: 1.8em;
+      background: white;
+      border-radius: 16px;
+      padding: 1.2em 1.6em;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 620px;
+      color: var(--text-color);
+      user-select: none;
+    }
+    .message-panel h2 {
+      margin-top: 0;
+      color: var(--primary-color);
+      font-weight: 700;
+      font-size: 1.45rem;
+      letter-spacing: 0.5px;
+      user-select: text;
+    }
+    .message-panel p {
+      margin-bottom: 0.6rem;
+      font-size: 1rem;
+      user-select: text;
+    }
+    .message-panel .perk-text {
+      color: var(--accent-color);
+      font-weight: 700;
+      font-size: 1.05rem;
+      user-select: text;
+    }
+    .popup-notification {
+      position: fixed;
+      top: 1em;
+      right: 1em;
+      max-width: 280px;
+      background: var(--notification-bg);
+      border: 2px solid var(--notification-border);
+      box-shadow: 0 6px 18px rgba(245,166,35,0.35);
+      border-radius: 14px;
+      padding: 1em 1.2em;
+      z-index: 50;
+      font-weight: 700;
+      color: #7a4c00;
+      font-size: 1rem;
+      user-select: none;
+      opacity: 0;
+      transform: translateX(120%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+      display: flex;
+      align-items: center;
+    }
+    .popup-notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    .popup-icon {
+      margin-right: 0.75em;
+      font-size: 1.4rem;
+    }
+  </style>
 </head>
 <body>
   <script>
@@ -267,13 +413,22 @@
 
       <!-- Home Tab -->
       <section id="home" class="active">
-        <div class="character-info" style="text-align:center; margin-bottom: 1.5rem;">
-          <h2>Level <span id="userLevel">1</span></h2>
-          <p><strong>XP:</strong> <span id="homeXp">0</span></p>
-          <p><strong>Maples:</strong> <span id="homeMaples">0</span></p>
+        <div class="character-info" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-end; gap: 2.5rem; margin-bottom: 2.5rem;">
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-size:1.1em; color:#888;">Level</span>
+            <span style="font-size:2.1em; font-weight:700; color:#008cba;" id="userLevel">1</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-size:1.1em; color:#888;">XP</span>
+            <span style="font-size:1.5em; font-weight:600; color:#43a047;" id="homeXp">0</span>
+          </div>
+          <div style="display: flex; flex-direction: column; align-items: center;">
+            <span style="font-size:1.1em; color:#888;">Maples</span>
+            <span style="font-size:1.5em; font-weight:600; color:#ff9800;" id="homeMaples">0</span>
+          </div>
         </div>
         <!-- Tile Journey Game Start -->
-        <div id="game-container" style="position: relative; display: flex; flex-direction: column; align-items: center;">
+        <div id="game-container" style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: 1.5rem; margin-bottom: 2.5rem;">
           <div class="tile-grid" id="tileGrid" aria-label="Game tile grid" role="grid" tabindex="0"></div>
           <div class="character" id="character" aria-label="Character" style="display:none;">&#x1F9D6;</div>
         </div>
