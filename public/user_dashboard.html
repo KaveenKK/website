@@ -64,6 +64,28 @@
     }
   }
   </script>
+  <script>
+  // PWA Install App logic (like index_old.html)
+  let deferredPrompt;
+  const installBtn = document.getElementById('installAppBtn');
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    if (installBtn) installBtn.style.display = 'inline-block';
+  });
+  if (installBtn) {
+    installBtn.addEventListener('click', async () => {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      installBtn.style.display = 'none';
+    });
+  }
+  window.addEventListener('appinstalled', () => {
+    if (installBtn) installBtn.style.display = 'none';
+  });
+  </script>
   <header style="display:flex;align-items:center;justify-content:space-between;background:#008cba;color:white;padding:1rem 2rem;position:relative;">
     <!-- Hamburger menu for mobile -->
     <button id="hamburgerMenuBtn" aria-label="Open menu" style="display:none;background:none;border:none;font-size:2rem;color:white;cursor:pointer;margin-right:1rem;z-index:1101;">
@@ -89,6 +111,7 @@
       <button id="mobileLeadersBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Leaders</button>
       <button id="mobileStatusBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Status</button>
       <button id="mobileLogoutBtn" style="background:none;color:#d32f2f;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Logout</button>
+      <a href="tile_journey.html" id="mobileTileJourneyBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;text-decoration:none;display:block;">Tile Journey</a>
     </div>
   </header>
 
@@ -643,35 +666,6 @@
         localStorage.removeItem('expectedPWA');
         window.location.href = '/';
       });
-
-      let deferredPrompt;
-      const installBtn = document.getElementById('installAppBtn');
-      if (installBtn) {
-        installBtn.style.display = 'none';
-        const isPWA = isReallyPWA();
-        if (!isPWA) {
-          window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'inline-block';
-          });
-        }
-        installBtn.addEventListener('click', async () => {
-          if (typeof deferredPrompt !== 'undefined' && deferredPrompt) {
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            installBtn.style.display = 'none';
-          }
-        });
-        // Hide install button if app is installed (PWA mode)
-        if (isPWA) {
-          installBtn.style.display = 'none';
-        }
-        window.addEventListener('appinstalled', () => {
-          installBtn.style.display = 'none';
-        });
-      }
 
       // Add handler for top-right Reports button
       document.getElementById('reportsTopBtn').addEventListener('click', function() {

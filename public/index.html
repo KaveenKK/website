@@ -10,7 +10,7 @@
      gtag('config', 'G-YR1B2Z51N0');
   </script>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Nevengi - Connect with Expert Coaches</title>
   <meta name="description" content="Join Nevengi to connect with expert coaches or share your expertise as an influencer." />
   <meta name="author" content="Nevengi" />
@@ -192,8 +192,13 @@
     .menu-overlay.active { opacity: 1; pointer-events: auto; }
     /* Responsive */
     @media (max-width: 768px) {
-      .main-card { padding: 1rem; }
-      .pt-24 { padding-top: 4rem; }
+      .main-card { padding: 0.75rem; margin-bottom: 1rem; }
+      .pt-24 { padding-top: 2.5rem; }
+      .pb-16 { padding-bottom: 2rem; }
+      .max-w-4xl, .max-w-2xl { max-width: 100vw; }
+      .w-32, .h-32 { width: 5.5rem; height: 5.5rem; }
+      .gap-8 { gap: 1rem; }
+      .animation-fade-in, .animate-slide-in { animation-duration: 0.3s; }
     }
   </style>
   <meta name="theme-color" content="#000000" />
@@ -282,6 +287,10 @@
       <div class="flex flex-col gap-6">
         <a href="/auth/discord/user" class="button-primary" style="text-align:center; text-decoration:none;">User Login</a>
         <a href="/auth/discord" class="button-secondary" style="text-align:center; text-decoration:none;">Coach Login</a>
+        <a href="https://nevengi-research-center.super.site/" class="button-secondary" target="_blank" rel="noopener noreferrer" style="text-align:center; text-decoration:none;">NRC</a>
+        <a href="https://discord.gg/SYtbqPMqju" class="button-secondary" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;text-align:center; text-decoration:none;">
+          <img src="images/discord-icon.png" alt="Discord Icon" style="width:20px;height:20px;margin-right:8px;">Join Discord
+        </a>
       </div>
       <div class="mt-10 flex flex-col gap-2">
         <a href="#" class="menu-item">About Us</a>
@@ -352,6 +361,12 @@
             </div>
           </div>
         `;
+        // Responsive grid for mobile
+        if (window.innerWidth <= 768) {
+          const grid = stepContainer.querySelector('div[style*="grid-template-columns"]');
+          if (grid) grid.style.gridTemplateColumns = '1fr';
+          if (grid) grid.style.gap = '1rem';
+        }
         document.getElementById('userCard').onclick = () => {
           userType = 'user';
           currentStep = 'user-message';
@@ -427,7 +442,43 @@
             alert('Install app clicked!');
           };
           document.getElementById('alreadyInApp').onclick = () => {
-            alert('Continue clicked!');
+            // Show a new block for Discord signup
+            stepContainer.innerHTML = `
+              <div class="w-full max-w-2xl mx-auto px-4">
+                <div class="main-card animate-slide-in">
+                  <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Sign Up to Continue</h2>
+                  <p class="text-center text-muted-foreground mb-8">To access your dashboard and features, please sign up with Discord.</p>
+                  <div class="flex flex-col md:flex-row gap-4 justify-center">
+                    <button class="button-primary" id="signupWithDiscord">Signup with Discord</button>
+                    <button class="button-secondary" id="backBtn3">Go Back</button>
+                  </div>
+                </div>
+              </div>
+            `;
+            document.getElementById('signupWithDiscord').onclick = () => {
+              const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                            window.navigator.standalone ||
+                            document.referrer.includes('android-app://');
+              if (isPWA) {
+                const clientId = '1362382273369997462';
+                const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing.html';
+                const scope = 'identify email';
+                const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => registration.unregister());
+                    window.location.href = discordOAuthUrl;
+                  });
+                } else {
+                  window.location.href = discordOAuthUrl;
+                }
+              } else {
+                window.location.href = '/auth/discord/user';
+              }
+            };
+            document.getElementById('backBtn3').onclick = () => {
+              renderStep();
+            };
           };
         } else if (userType === 'influencer') {
           if (hasEnoughFollowers) {
@@ -444,7 +495,7 @@
                   </div>
                   <p class="text-center text-muted-foreground mb-8">With your established audience, you're positioned to make a real impact on our platform. You'll be able to share your expertise, build your client base, and grow your coaching business.</p>
                   <div class="flex flex-col md:flex-row gap-4 justify-center">
-                    <button class="button-primary" id="continueCoach">Continue to Coach Dashboard</button>
+                    <button class="button-primary" id="signupCoach">Signup with Discord</button>
                     <button class="button-secondary" id="backBtn2">Go Back</button>
                   </div>
                 </div>
@@ -460,8 +511,28 @@
               hasEnoughFollowers = null;
               renderStep();
             };
-            document.getElementById('continueCoach').onclick = () => {
-              alert('Continue to Coach Dashboard!');
+            document.getElementById('signupCoach').onclick = () => {
+              // Backend logic for coach signup (like index_old.html)
+              const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                            window.navigator.standalone ||
+                            document.referrer.includes('android-app://');
+              if (isPWA) {
+                // Discord OAuth2 URL for coach PWA
+                const clientId = '1362382273369997462';
+                const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing-coach.html';
+                const scope = 'identify email';
+                const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => registration.unregister());
+                    window.location.href = discordOAuthUrl;
+                  });
+                } else {
+                  window.location.href = discordOAuthUrl;
+                }
+              } else {
+                window.location.href = '/auth/discord';
+              }
             };
           } else {
             stepContainer.innerHTML = `
@@ -478,7 +549,7 @@
                   <p class="text-center text-muted-foreground mb-8">We love your enthusiasm! Our coach platform is currently designed for influencers with established audiences of 5,000+ followers.</p>
                   <p class="text-center font-medium mb-8">In the meantime, we encourage you to join as a user and experience the platform from the client side while you grow your following.</p>
                   <div class="flex flex-col md:flex-row gap-4 justify-center">
-                    <button class="button-primary" id="signupUser">Sign Up as User</button>
+                    <button class="button-primary" id="signupUser">Signup as a user with Discord</button>
                     <button class="button-secondary" id="backBtn2">Go Back</button>
                   </div>
                 </div>
@@ -495,7 +566,27 @@
               renderStep();
             };
             document.getElementById('signupUser').onclick = () => {
-              alert('Sign Up as User!');
+              // Backend logic for user signup (like coach signup)
+              const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                            window.navigator.standalone ||
+                            document.referrer.includes('android-app://');
+              if (isPWA) {
+                // Discord OAuth2 URL for user PWA
+                const clientId = '1362382273369997462';
+                const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing.html';
+                const scope = 'identify email';
+                const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(registrations => {
+                    registrations.forEach(registration => registration.unregister());
+                    window.location.href = discordOAuthUrl;
+                  });
+                } else {
+                  window.location.href = discordOAuthUrl;
+                }
+              } else {
+                window.location.href = '/auth/discord/user';
+              }
             };
           }
         }
