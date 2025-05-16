@@ -14,152 +14,6 @@
   <link rel="icon" href="images/mylogo_nevengi_circle.webp" type="image/jpg">
   <title>Nevengi User Dashboard</title>
   <link rel="stylesheet" href="user_dashboard.css">
-  <!-- Tile Journey CSS -->
-  <style>
-    :root {
-      --tile-size: 90px;
-      --tile-gap: 12px;
-      --primary-color: #4a90e2;
-      --accent-color: #f5a623;
-      --background-color: #f0f4f8;
-      --text-color: #333;
-      --character-color: #e94e77;
-      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      --notification-bg: #FFF8E1;
-      --notification-border: #f5a623;
-    }
-    .tile-grid {
-      display: grid;
-      grid-template-columns: repeat(5, var(--tile-size));
-      grid-template-rows: repeat(5, var(--tile-size));
-      gap: var(--tile-gap);
-      background: white;
-      padding: var(--tile-gap);
-      border-radius: 16px;
-      box-shadow:
-        0 10px 20px rgba(0,0,0,0.07),
-        inset 0 0 40px rgba(74,144,226,0.1);
-      user-select: none;
-    }
-    @media (max-width: 480px) {
-      .tile-grid {
-        --tile-size: 65px;
-        grid-template-columns: repeat(5, var(--tile-size));
-        grid-template-rows: repeat(5, var(--tile-size));
-      }
-    }
-    .tile {
-      background: linear-gradient(145deg, #dff1ff, #a5c7ff);
-      border-radius: 12px;
-      border: 2px solid transparent;
-      box-shadow:
-        0 4px 6px rgba(74,144,226,0.3),
-        inset 0 1px 0 rgba(255,255,255,0.8);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      font-weight: 600;
-      cursor: default;
-      position: relative;
-      transition:
-        border-color 0.35s ease,
-        box-shadow 0.35s ease,
-        background 0.35s ease;
-    }
-    .tile:hover {
-      background: linear-gradient(145deg, #b3d0ff, #81a2fc);
-      box-shadow:
-        0 6px 12px rgba(74,144,226,0.5),
-        inset 0 0 10px rgba(255,255,255,0.9);
-    }
-    .tile.active {
-      border-color: var(--accent-color);
-      box-shadow:
-        0 0 18px var(--accent-color),
-        inset 0 0 18px var(--accent-color);
-      background: linear-gradient(145deg, #fff3cc, #ffdb6d);
-    }
-    .character {
-      position: absolute;
-      width: 40px;
-      height: 40px;
-      background: var(--character-color);
-      border-radius: 50%;
-      border: 3px solid white;
-      box-shadow:
-        0 0 12px var(--character-color),
-        0 0 10px var(--character-color);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.6rem;
-      color: white;
-      transition: top 0.55s ease, left 0.55s ease;
-      pointer-events: none;
-      z-index: 20;
-      user-select: none;
-    }
-    .message-panel {
-      margin-top: 1.8em;
-      background: white;
-      border-radius: 16px;
-      padding: 1.2em 1.6em;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 620px;
-      color: var(--text-color);
-      user-select: none;
-    }
-    .message-panel h2 {
-      margin-top: 0;
-      color: var(--primary-color);
-      font-weight: 700;
-      font-size: 1.45rem;
-      letter-spacing: 0.5px;
-      user-select: text;
-    }
-    .message-panel p {
-      margin-bottom: 0.6rem;
-      font-size: 1rem;
-      user-select: text;
-    }
-    .message-panel .perk-text {
-      color: var(--accent-color);
-      font-weight: 700;
-      font-size: 1.05rem;
-      user-select: text;
-    }
-    .popup-notification {
-      position: fixed;
-      top: 1em;
-      right: 1em;
-      max-width: 280px;
-      background: var(--notification-bg);
-      border: 2px solid var(--notification-border);
-      box-shadow: 0 6px 18px rgba(245,166,35,0.35);
-      border-radius: 14px;
-      padding: 1em 1.2em;
-      z-index: 50;
-      font-weight: 700;
-      color: #7a4c00;
-      font-size: 1rem;
-      user-select: none;
-      opacity: 0;
-      transform: translateX(120%);
-      transition: opacity 0.4s ease, transform 0.4s ease;
-      display: flex;
-      align-items: center;
-    }
-    .popup-notification.show {
-      opacity: 1;
-      transform: translateX(0);
-    }
-    .popup-icon {
-      margin-right: 0.75em;
-      font-size: 1.4rem;
-    }
-  </style>
 </head>
 <body>
   <script>
@@ -412,7 +266,7 @@
       </section>
 
       <!-- Home Tab -->
-      <section id="home" class="active">
+      <section id="home" class="active" style="overflow-y:auto; min-height:100vh; background:var(--background-color);">
         <div class="character-info" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-end; gap: 2.5rem; margin-bottom: 2.5rem;">
           <div style="display: flex; flex-direction: column; align-items: center;">
             <span style="font-size:1.1em; color:#888;">Level</span>
@@ -430,13 +284,15 @@
         <!-- Tile Journey Game Start -->
         <div id="game-container" style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: 1.5rem; margin-bottom: 2.5rem;">
           <div class="tile-grid" id="tileGrid" aria-label="Game tile grid" role="grid" tabindex="0"></div>
-          <div class="character" id="character" aria-label="Character" style="display:none;">&#x1F9D6;</div>
         </div>
         <section class="message-panel" aria-live="polite" aria-atomic="true" id="messagePanel">
           <h2 id="tileTitle">Welcome to Your Journey</h2>
           <p id="tileMessage">Each day you move forward, uncovering your ongoing story and new surprises.</p>
           <p class="perk-text" id="tilePerk"></p>
         </section>
+        <footer style="text-align:center;font-size:0.95em;padding:1.2em 0 0.5em;color:#666;user-select:none;">
+          Reload daily to continue your journey — Your story never ends.
+        </footer>
         <div class="popup-notification" id="popupNotification" role="alert" aria-live="assertive" aria-atomic="true" style="display:none;">
           <div class="popup-icon" aria-hidden="true">🎉</div>
           <div id="popupMessage"></div>
@@ -1214,14 +1070,13 @@
       // Tile Journey logic for Home tab
       (function(){
         const tileGrid = document.getElementById('tileGrid');
-        const character = document.getElementById('character');
-        const popupNotification = document.getElementById('popupNotification');
-        const popupMessage = document.getElementById('popupMessage');
         const messagePanel = {
           title: document.getElementById('tileTitle'),
           message: document.getElementById('tileMessage'),
           perk: document.getElementById('tilePerk'),
         };
+        const popupNotification = document.getElementById('popupNotification');
+        const popupMessage = document.getElementById('popupMessage');
         const storySegments = [
           {message:"You found a mysterious key lying on the path.", perk:"New path unlocked"},
           {message:"A stranger offers you a cryptic warning.", perk:"Be cautious ahead"},
@@ -1250,7 +1105,7 @@
           {message:"You reach a crossroads full of possibilities.", perk:"Choose your next quest"}
         ];
         const tileCount = 25;
-        function createTiles(){
+        function createTiles(pos) {
           tileGrid.innerHTML = '';
           for(let i = 0; i < tileCount; i++){
             const div = document.createElement('div');
@@ -1258,6 +1113,11 @@
             div.setAttribute('role', 'gridcell');
             div.setAttribute('data-index', i);
             div.innerHTML = '<div style="width:14px;height:14px;background:rgba(255,255,255,0.4);border-radius:50%;box-shadow: inset 0 0 6px white;"></div>';
+            if (i === pos) {
+              div.classList.add('active');
+              // Character icon inside the tile
+              div.innerHTML = '<div style="width:40px;height:40px;background:#e94e77;border-radius:50%;border:3px solid #fff;box-shadow:0 0 12px #e94e77,0 0 10px #e94e77;display:flex;align-items:center;justify-content:center;font-size:1.6rem;color:#fff;margin:0 auto;">&#x1F9D6;</div>';
+            }
             tileGrid.appendChild(div);
           }
         }
@@ -1282,19 +1142,6 @@
           localStorage.setItem('tile-game-date', getDateString());
           localStorage.setItem('tile-game-story-index', storyIndex);
         }
-        function moveCharacterToTile(pos){
-          const allTiles = tileGrid.children;
-          for(let t of allTiles){ t.classList.remove('active'); }
-          const currentTile = tileGrid.querySelector(`.tile[data-index="${pos}"]`);
-          if(!currentTile) return;
-          currentTile.classList.add('active');
-          const gridRect = tileGrid.getBoundingClientRect();
-          const tileRect = currentTile.getBoundingClientRect();
-          const offsetLeft = tileRect.left - gridRect.left + (tileRect.width - character.offsetWidth)/2;
-          const offsetTop = tileRect.top - gridRect.top + (tileRect.height - character.offsetHeight)/2;
-          character.style.left = offsetLeft + 'px';
-          character.style.top = offsetTop + 'px';
-        }
         function showPopup(message, perk){
           if (!popupNotification) return;
           popupMessage.textContent = message + " — " + perk;
@@ -1311,7 +1158,6 @@
           messagePanel.perk.textContent = perk;
         }
         function init(){
-          createTiles();
           const { pos, savedDate, storyIndex } = getSavedData();
           const today = getDateString();
           let newPos = pos;
@@ -1320,12 +1166,12 @@
             newPos = (pos + 1) % tileCount;
             newStoryIndex = (storyIndex + 1) % storySegments.length;
             saveData(newPos, newStoryIndex);
-            moveCharacterToTile(newPos);
+            createTiles(newPos);
             const segment = storySegments[newStoryIndex];
             updateMessagePanel(segment.message, segment.perk);
             setTimeout(() => { showPopup(segment.message, segment.perk); }, 650);
           } else {
-            moveCharacterToTile(pos);
+            createTiles(pos);
             const segment = storySegments[newStoryIndex];
             updateMessagePanel(segment.message, segment.perk);
           }
