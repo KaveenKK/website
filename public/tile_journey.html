@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Tile Journey - Endless Story Game</title>
+<style>
+  :root {
+    --tile-size: 90px;
+    --tile-gap: 12px;
+    --primary-color: #4a90e2;
+    --accent-color: #f5a623;
+    --background-color: #f0f4f8;
+    --text-color: #333;
+    --character-color: #e94e77;
+    --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --notification-bg: #FFF8E1;
+    --notification-border: #f5a623;
+  }
+  body {
+    margin: 0;
+    background: var(--background-color);
+    font-family: var(--font-family);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  header {
+    background: var(--primary-color);
+    color: white;
+    padding: 1.2em 1em;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.6rem;
+    letter-spacing: 2px;
+    user-select: none;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  main {
+    flex-grow: 1;
+    padding: 1em;
+    max-width: 620px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  /* Tile grid */
+  .tile-grid {
+    display: grid;
+    grid-template-columns: repeat(5, var(--tile-size));
+    grid-template-rows: repeat(5, var(--tile-size));
+    gap: var(--tile-gap);
+    background: white;
+    padding: var(--tile-gap);
+    border-radius: 16px;
+    box-shadow:
+      0 10px 20px rgba(0,0,0,0.07),
+      inset 0 0 40px rgba(74,144,226,0.1);
+    user-select: none;
+  }
+  @media (max-width: 480px) {
+    .tile-grid {
+      --tile-size: 65px;
+      grid-template-columns: repeat(5, var(--tile-size));
+      grid-template-rows: repeat(5, var(--tile-size));
+    }
+  }
+  .tile {
+    background: linear-gradient(145deg, #dff1ff, #a5c7ff);
+    border-radius: 12px;
+    border: 2px solid transparent;
+    box-shadow:
+      0 4px 6px rgba(74,144,226,0.3),
+      inset 0 1px 0 rgba(255,255,255,0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    cursor: default;
+    position: relative;
+    transition:
+      border-color 0.35s ease,
+      box-shadow 0.35s ease,
+      background 0.35s ease;
+  }
+  .tile:hover {
+    background: linear-gradient(145deg, #b3d0ff, #81a2fc);
+    box-shadow:
+      0 6px 12px rgba(74,144,226,0.5),
+      inset 0 0 10px rgba(255,255,255,0.9);
+  }
+  .tile.active {
+    border-color: var(--accent-color);
+    box-shadow:
+      0 0 18px var(--accent-color),
+      inset 0 0 18px var(--accent-color);
+    background: linear-gradient(145deg, #fff3cc, #ffdb6d);
+  }
+  .character {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: var(--character-color);
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow:
+      0 0 12px var(--character-color),
+      0 0 10px var(--character-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    color: white;
+    transition: top 0.55s ease, left 0.55s ease;
+    pointer-events: none;
+    z-index: 20;
+    user-select: none;
+  }
+  /* Message Panel */
+  .message-panel {
+    margin-top: 1.8em;
+    background: white;
+    border-radius: 16px;
+    padding: 1.2em 1.6em;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 620px;
+    color: var(--text-color);
+    user-select: none;
+  }
+  .message-panel h2 {
+    margin-top: 0;
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 1.45rem;
+    letter-spacing: 0.5px;
+    user-select: text;
+  }
+  .message-panel p {
+    margin-bottom: 0.6rem;
+    font-size: 1rem;
+    user-select: text;
+  }
+  .message-panel .perk-text {
+    color: var(--accent-color);
+    font-weight: 700;
+    font-size: 1.05rem;
+    user-select: text;
+  }
+  /* Footer */
+  footer {
+    text-align: center;
+    font-size: 0.85rem;
+    padding: 1em 0 0.5em;
+    color: #666;
+    user-select: none;
+  }
+  /* Popup Notification */
+  .popup-notification {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+    max-width: 280px;
+    background: var(--notification-bg);
+    border: 2px solid var(--notification-border);
+    box-shadow: 0 6px 18px rgba(245,166,35,0.35);
+    border-radius: 14px;
+    padding: 1em 1.2em;
+    z-index: 50;
+    font-weight: 700;
+    color: #7a4c00;
+    font-size: 1rem;
+    user-select: none;
+    opacity: 0;
+    transform: translateX(120%);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+    display: flex;
+    align-items: center;
+  }
+  .popup-notification.show {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .popup-icon {
+    margin-right: 0.75em;
+    font-size: 1.4rem;
+  }
+</style>
+</head>
+<body>
+<header>
+  Tile Journey - Your Endless Story
+</header>
+<main>
+  <div id="game-container" style="position: relative;">
+    <div class="tile-grid" id="tileGrid" aria-label="Game tile grid" role="grid" tabindex="0"></div>
+    <div class="character" id="character" aria-label="Character">&#x1F9D6;</div>
+  </div>
+  <section class="message-panel" aria-live="polite" aria-atomic="true" id="messagePanel">
+    <h2 id="tileTitle">Welcome to Your Journey</h2>
+    <p id="tileMessage">Each day you move forward, uncovering your ongoing story and new surprises.</p>
+    <p class="perk-text" id="tilePerk"></p>
+  </section>
+</main>
+<footer>
+  Reload daily to continue your journey — Your story never ends.
+</footer>
+<div class="popup-notification" id="popupNotification" role="alert" aria-live="assertive" aria-atomic="true">
+  <div class="popup-icon" aria-hidden="true">🎉</div>
+  <div id="popupMessage"></div>
+</div>
+<script>
+  (function(){
+    const tileGrid = document.getElementById('tileGrid');
+    const character = document.getElementById('character');
+    const popupNotification = document.getElementById('popupNotification');
+    const popupMessage = document.getElementById('popupMessage');
+    const messagePanel = {
+      title: document.getElementById('tileTitle'),
+      message: document.getElementById('tileMessage'),
+      perk: document.getElementById('tilePerk'),
+    };
+
+    // Tile story pieces to cycle endlessly
+    const storySegments = [
+      {message:"You found a mysterious key lying on the path.", perk:"New path unlocked"},
+      {message:"A stranger offers you a cryptic warning.", perk:"Be cautious ahead"},
+      {message:"You discovered an old, weathered map.", perk:"Hint to hidden treasures"},
+      {message:"You help a lost traveler find their way.", perk:"Earn kindness badge"},
+      {message:"A frightening storm slows your journey.", perk:"Endure and gain resilience"},
+      {message:"A beautiful sunrise fills you with hope.", perk:"Energy restored"},
+      {message:"You stumble upon a treasure chest.", perk:"Gain 200 Coins"},
+      {message:"An unexpected riddle blocks your path.", perk:"Solve it to proceed"},
+      {message:"You make a memorable friend on the road.", perk:"Companionship bonus"},
+      {message:"You narrowly avoid a dangerous trap.", perk:"Cautious steps rewarded"},
+      {message:"You find a fragrant flower with healing properties.", perk:"Health restored"},
+      {message:"You are invited to a festive celebration.", perk:"Receive a luck charm"},
+      {message:"You learn a new skill from a wise mentor.", perk:"Skill points gained"},
+      {message:"You cross an ancient bridge with tales untold.", perk:"Discover hidden lore"},
+      {message:"You rescue a stranded animal.", perk:"Compassion rewarded"},
+      {message:"You find a secret passage through the forest.", perk:"Shortcut gained"},
+      {message:"A sudden challenge tests your strength.", perk:"Earn stamina boost"},
+      {message:"You camp under a sky full of stars.", perk:"Peaceful rest granted"},
+      {message:"You barter successfully at a bustling market.", perk:"Extra coins earned"},
+      {message:"You solve a mystery from the past.", perk:"Unlock new storyline"},
+      {message:"You face a rival in a friendly contest.", perk:"Respect earned"},
+      {message:"You find a rare gemstone shining bright.", perk:"Valuable treasure"},
+      {message:"You mend broken equipment.", perk:"Gear improved"},
+      {message:"You share a story with villagers.", perk:"Community spirit gained"},
+      {message:"You reach a crossroads full of possibilities.", perk:"Choose your next quest"}
+    ];
+    // Tile count (5x5 grid = 25)
+    const tileCount = 25;
+
+    // Generate tiles nameless but visually distinct
+    function createTiles(){
+      tileGrid.innerHTML = '';
+      for(let i = 0; i < tileCount; i++){
+        const div = document.createElement('div');
+        div.className = 'tile';
+        div.setAttribute('role', 'gridcell');
+        div.setAttribute('data-index', i);
+        // Empty content (nameless); maybe subtle shimmer effect?
+        div.innerHTML = '<div style="width:14px;height:14px;background:rgba(255,255,255,0.4);border-radius:50%;box-shadow: inset 0 0 6px white;"></div>';
+        tileGrid.appendChild(div);
+      }
+    }
+
+    // Get today's date string (yyyymmdd)
+    function getDateString(){
+      const now = new Date();
+      return now.getFullYear().toString().padStart(4,'0') +
+        (now.getMonth()+1).toString().padStart(2,'0') +
+        now.getDate().toString().padStart(2,'0');
+    }
+
+    // Retrieve saved data
+    function getSavedData(){
+      let pos = localStorage.getItem('tile-game-position');
+      let savedDate = localStorage.getItem('tile-game-date');
+      let storyIndex = localStorage.getItem('tile-game-story-index');
+
+      return {
+        pos: pos !== null ? parseInt(pos,10) : 0,
+        savedDate: savedDate || null,
+        storyIndex: storyIndex !== null ? parseInt(storyIndex,10) : 0
+      };
+    }
+
+    // Save data
+    function saveData(pos, storyIndex){
+      localStorage.setItem('tile-game-position', pos);
+      localStorage.setItem('tile-game-date', getDateString());
+      localStorage.setItem('tile-game-story-index', storyIndex);
+    }
+
+    // Position character on tile
+    function moveCharacterToTile(pos){
+      // Remove .active from all tiles
+      const allTiles = tileGrid.children;
+      for(let t of allTiles){
+        t.classList.remove('active');
+      }
+      // Highlight current tile
+      const currentTile = tileGrid.querySelector(`.tile[data-index="${pos}"]`);
+      if(!currentTile) return;
+      currentTile.classList.add('active');
+
+      // Position character absolutely inside the tileGrid relative to tile
+      const gridRect = tileGrid.getBoundingClientRect();
+      const tileRect = currentTile.getBoundingClientRect();
+
+      const offsetLeft = tileRect.left - gridRect.left + (tileRect.width - character.offsetWidth)/2;
+      const offsetTop = tileRect.top - gridRect.top + (tileRect.height - character.offsetHeight)/2;
+
+      character.style.left = offsetLeft + 'px';
+      character.style.top = offsetTop + 'px';
+    }
+
+    // Show popup notification with message and perk
+    function showPopup(message, perk){
+      popupMessage.textContent = message + " — " + perk;
+      popupNotification.classList.add('show');
+
+      setTimeout(() => {
+        popupNotification.classList.remove('show');
+      }, 4800);
+    }
+
+    // Update message panel with story content
+    function updateMessagePanel(message, perk){
+      messagePanel.title.textContent = "Your Story";
+      messagePanel.message.textContent = message;
+      messagePanel.perk.textContent = perk;
+    }
+
+    // Main init function
+    function init(){
+      createTiles();
+
+      const { pos, savedDate, storyIndex } = getSavedData();
+      const today = getDateString();
+
+      let newPos = pos;
+      let newStoryIndex = storyIndex;
+
+      if(savedDate !== today){
+        // Next day: move forward position and story
+        newPos = (pos + 1) % tileCount;
+        newStoryIndex = (storyIndex + 1) % storySegments.length;
+        saveData(newPos, newStoryIndex);
+        moveCharacterToTile(newPos);
+        // Show story segment in message panel and popup
+        const segment = storySegments[newStoryIndex];
+        updateMessagePanel(segment.message, segment.perk);
+        // Popup after slight delay
+        setTimeout(() => {
+          showPopup(segment.message, segment.perk);
+        }, 650);
+      } else {
+        // Same day - just show current position and message segment
+        moveCharacterToTile(pos);
+        const segment = storySegments[newStoryIndex];
+        updateMessagePanel(segment.message, segment.perk);
+      }
+    }
+
+    // Start after DOM and minor delay for layout stability
+    window.addEventListener('load', () => {
+      // Wait a tick to ensure layout complete for character position
+      setTimeout(init, 120);
+    });
+
+  })();
+</script>
+</body>
+</html> 
