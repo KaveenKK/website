@@ -282,14 +282,14 @@
           </div>
         </div>
         <!-- Tile Journey Game Start -->
-        <div id="game-container" style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: 1.5rem; margin-bottom: 2.5rem;">
+        <div id="game-container" style="position: relative; display: flex; flex-direction: column; align-items: center; margin-top: 1.5rem; margin-bottom: 2.5rem; width: 100%;">
           <div class="tile-grid" id="tileGrid" aria-label="Game tile grid" role="grid" tabindex="0"></div>
+          <section class="message-panel" aria-live="polite" aria-atomic="true" id="messagePanel" style="margin-top:2.2em; width:100%; max-width:620px;">
+            <h2 id="tileTitle">Welcome to Your Journey</h2>
+            <p id="tileMessage">Each day you move forward, uncovering your ongoing story and new surprises.</p>
+            <p class="perk-text" id="tilePerk"></p>
+          </section>
         </div>
-        <section class="message-panel" aria-live="polite" aria-atomic="true" id="messagePanel">
-          <h2 id="tileTitle">Welcome to Your Journey</h2>
-          <p id="tileMessage">Each day you move forward, uncovering your ongoing story and new surprises.</p>
-          <p class="perk-text" id="tilePerk"></p>
-        </section>
         <footer style="text-align:center;font-size:0.95em;padding:1.2em 0 0.5em;color:#666;user-select:none;">
           Reload daily to continue your journey — Your story never ends.
         </footer>

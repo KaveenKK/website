@@ -427,7 +427,8 @@
                 <p class="text-center text-muted-foreground mb-8">You're in the right place! Our self-improvement platform connects you with expert coaches to help you reach your personal and professional goals.</p>
                 <p class="text-center font-medium mb-8">For the best experience, install our app and sign up to get started.</p>
                 <div class="flex flex-col md:flex-row gap-4 justify-center">
-                  <button class="button-primary" id="installApp">Install App</button>
+                  <button class="button-primary" id="installApp" style="display:none;">Install App</button>
+                  <span id="installStatus" style="margin-left:1em;font-weight:500;color:#3A86FF;"></span>
                   <button class="button-secondary" id="alreadyInApp">I'm Already in the App</button>
                 </div>
               </div>
@@ -438,9 +439,35 @@
             userType = null;
             renderStep();
           };
-          document.getElementById('installApp').onclick = () => {
-            alert('Install app clicked!');
+          // PWA install logic
+          let deferredPrompt = null;
+          const installBtn = document.getElementById('installApp');
+          const installStatus = document.getElementById('installStatus');
+          window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            installBtn.style.display = 'inline-block';
+          });
+          installBtn.onclick = async () => {
+            if (!deferredPrompt) return;
+            installStatus.textContent = 'Installing...';
+            installBtn.disabled = true;
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            installBtn.style.display = 'none';
+            if (outcome === 'accepted') {
+              installStatus.textContent = 'Installed!';
+            } else {
+              installStatus.textContent = 'Install dismissed.';
+            }
+            setTimeout(() => { installStatus.textContent = ''; }, 2500);
           };
+          window.addEventListener('appinstalled', () => {
+            installBtn.style.display = 'none';
+            installStatus.textContent = 'Installed!';
+            setTimeout(() => { installStatus.textContent = ''; }, 2500);
+          });
           document.getElementById('alreadyInApp').onclick = () => {
             // Show a new block for Discord signup
             stepContainer.innerHTML = `
