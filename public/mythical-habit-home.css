@@ -1,0 +1,121 @@
+/* Mythical Habit Tracker Home Tab Styles */
+:root {
+  /* Use dashboard palette variables */
+}
+
+#mythical-habit-home-root {
+  max-width: 420px;
+  margin: 2rem auto;
+  padding: 1.5rem 1rem;
+  background: var(--color-bg);
+  border-radius: 16px;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+}
+
+.mh-card {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  padding: 1.2rem 1rem;
+  margin-bottom: 1.2rem;
+}
+
+.mh-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.mh-flex {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.mh-input {
+  flex: 1;
+  padding: 0.6em 0.9em;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fafbfc;
+  color: var(--color-text);
+}
+
+.mh-btn {
+  background: var(--color-primary);
+  color: var(--color-btn-text);
+  border: none;
+  border-radius: 8px;
+  padding: 0.6em 1.2em;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.mh-btn:disabled {
+  background: #bbb;
+  cursor: not-allowed;
+}
+
+.mh-grid {
+  display: grid;
+  gap: 0.7rem;
+}
+.mh-grid-cols-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.mh-grid-cols-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.mh-img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 0.5em;
+  display: block;
+}
+
+.mh-card-locked {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+
+.mh-checkbox {
+  width: 1.2em;
+  height: 1.2em;
+  margin-right: 0.7em;
+}
+
+.mh-journal {
+  width: 100%;
+  min-height: 90px;
+  padding: 0.8em;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 0.7em;
+  resize: none;
+  background: #fafbfc;
+  color: var(--color-text);
+}
+
+.mh-stats-bar {
+  display: flex;
+  justify-content: space-around;
+  gap: 1.2em;
+  margin-top: 1.2em;
+}
+.mh-stat {
+  text-align: center;
+}
+.mh-stat-label {
+  font-size: 0.95em;
+  color: #888;
+}
+.mh-stat-value {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: var(--color-primary);
+} 
