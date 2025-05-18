@@ -70,15 +70,11 @@
             const requiredXp = stage.id * 5 * 100;
             const percent = Math.min(1, xp / requiredXp);
             const xpNeeded = Math.max(0, requiredXp - xp);
-            let imgHtml = '';
+            let imgHtml;
             if (stage.id === 1) {
-              imgHtml = '<div id="egg-hatching-lottie"></div>';
-            } else if (stage.id === 2) {
-              imgHtml = '<div id="first-steps-lottie"></div>';
-            } else if (stage.id === 3) {
-              imgHtml = '<div id="training-lottie"></div>';
+              imgHtml = `<img src="images/EggHatching.jpg" alt="${stage.name}" class="mh-img" />`;
             } else if (stage.id === 4) {
-              imgHtml = '<div id="growing-wings-lottie"></div>';
+              imgHtml = `<img src="images/growingWings.jpg" alt="${stage.name}" class="mh-img" />`;
             } else {
               imgHtml = `<img src="${stage.image}" alt="${stage.name}" class="mh-img" />`;
             }
