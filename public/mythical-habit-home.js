@@ -65,12 +65,32 @@
       <div class="mh-card">
         <div class="mh-title">Character Journey</div>
         <div class="mh-grid mh-grid-cols-2">
-          ${stages.map(stage => `
-            <div class="mh-card ${activeStage === stage.id ? 'mh-card-active' : ''}" style="text-align:center; border:${activeStage === stage.id ? '2px solid var(--color-primary)' : '1px solid #eee'}; cursor:pointer;" data-stage="${stage.id}">
-              <div class="mh-stage-img-container">${stage.id === 1 ? '<div id="egg-hatching-lottie"></div>' : `<img src="${stage.image}" alt="${stage.name}" class="mh-img" />`}</div>
-              <span class="mh-stage-label">${stage.name}</span>
-            </div>
-          `).join('')}
+          ${stages.map(function(stage) {
+            // XP logic
+            const requiredXp = stage.id * 5 * 100;
+            const percent = Math.min(1, xp / requiredXp);
+            const xpNeeded = Math.max(0, requiredXp - xp);
+            let imgHtml = '';
+            if (stage.id === 1) {
+              imgHtml = '<div id="egg-hatching-lottie"></div>';
+            } else if (stage.id === 2) {
+              imgHtml = '<div id="first-steps-lottie"></div>';
+            } else if (stage.id === 3) {
+              imgHtml = '<div id="training-lottie"></div>';
+            } else if (stage.id === 4) {
+              imgHtml = '<div id="growing-wings-lottie"></div>';
+            } else {
+              imgHtml = `<img src="${stage.image}" alt="${stage.name}" class="mh-img" />`;
+            }
+            return `
+              <div class="mh-card ${activeStage === stage.id ? 'mh-card-active' : ''}" style="text-align:center; border:${activeStage === stage.id ? '2px solid var(--color-primary)' : '1px solid #eee'}; cursor:pointer;" data-stage="${stage.id}">
+                <div class="mh-stage-img-container">${imgHtml}</div>
+                <div class="mh-xp-bar-container"><div class="mh-xp-bar-bg"><div class="mh-xp-bar-fill" style="width:${Math.round(percent*100)}%"></div></div></div>
+                <span class="mh-xp-bar-label">${xp >= requiredXp ? 'Completed!' : `${xpNeeded} XP to complete`}</span>
+                <span class="mh-stage-label">${stage.name}</span>
+              </div>
+            `;
+          }).join('')}
         </div>
       </div>
       <div class="mh-card">
@@ -129,6 +149,39 @@
         loop: false,
         autoplay: true,
         path: 'images/EggHatching.json',
+        rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
+      });
+    }
+    // Render Lottie for First Steps
+    if (window.lottie && document.getElementById('first-steps-lottie')) {
+      window.lottie.loadAnimation({
+        container: document.getElementById('first-steps-lottie'),
+        renderer: 'svg',
+        loop: false,
+        autoplay: true,
+        path: 'images/FirstSteps.json',
+        rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
+      });
+    }
+    // Render Lottie for Training
+    if (window.lottie && document.getElementById('training-lottie')) {
+      window.lottie.loadAnimation({
+        container: document.getElementById('training-lottie'),
+        renderer: 'svg',
+        loop: false,
+        autoplay: true,
+        path: 'images/training.json',
+        rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
+      });
+    }
+    // Render Lottie for Growing Wings
+    if (window.lottie && document.getElementById('growing-wings-lottie')) {
+      window.lottie.loadAnimation({
+        container: document.getElementById('growing-wings-lottie'),
+        renderer: 'svg',
+        loop: false,
+        autoplay: true,
+        path: 'images/growingWings.json',
         rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
       });
     }
