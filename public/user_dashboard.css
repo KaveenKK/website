@@ -53,6 +53,7 @@ li { background: var(--color-bg); margin-bottom: 0.5rem; padding: 0.75rem; borde
     justify-content: space-around;
     padding: 0.25rem 0;
     height: 64px;
+    margin: 0;
   }
   .mobile-bottom-nav button {
     flex: 1;
@@ -81,7 +82,7 @@ li { background: var(--color-bg); margin-bottom: 0.5rem; padding: 0.75rem; borde
     font-size: 0.75rem;
     margin-top: 2px;
   }
-  body { padding-bottom: 70px; }
+  body { padding-bottom: 0 !important; }
   #headerRightBtns { display: none !important; }
   #hamburgerMenuBtn { display: block !important; }
   #mobileMenu { display: flex; }
