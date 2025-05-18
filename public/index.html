@@ -332,7 +332,7 @@
   <div class="illustrated-bg">
     <nav class="fixed top-0 left-0 right-0 z-40 flex items-center justify-between px-4 py-4 bg-white" style="background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);">
       <div class="flex items-center">
-        <h1 class="text-xl font-bold" style="background:linear-gradient(to right, var(--brand-purple), var(--brand-teal));background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Nevengi</h1>
+        <h1 class="text-xl font-bold" style="color:#18181b; background:none; -webkit-background-clip:unset; -webkit-text-fill-color:unset;">Nevengi</h1>
       </div>
       <button class="hamburger z-50 p-2" id="menuBtn" aria-label="Menu">
         <div></div><div></div><div></div>
@@ -677,9 +677,13 @@
       }
     }
     renderStep();
-    // Global always-visible install app button logic
+    // Always show install app instructions for all browsers
     let deferredPromptGlobal = null;
     const installBtnGlobal = document.getElementById('installAppGlobal');
+    function isSafari() {
+      const ua = window.navigator.userAgent;
+      return /Safari/.test(ua) && !/Chrome|CriOS|Android/.test(ua);
+    }
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPromptGlobal = e;
@@ -691,8 +695,10 @@
         await deferredPromptGlobal.userChoice;
         deferredPromptGlobal = null;
         installBtnGlobal.style.display = 'none';
+      } else if (isSafari()) {
+        alert('On Safari, tap the Share icon and select "Add to Home Screen" to install the app.');
       } else {
-        alert('App installation is not supported on your device, or the app is already installed.');
+        alert('To install the app, use your browser menu and select "Add to Home Screen" or "Install App".');
       }
     };
     window.addEventListener('appinstalled', () => {
