@@ -200,6 +200,46 @@
       .gap-8 { gap: 1rem; }
       .animation-fade-in, .animate-slide-in { animation-duration: 0.3s; }
     }
+    @media (max-width: 600px) {
+      .main-card {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        min-width: 0 !important;
+        margin: 0 auto !important;
+        padding: 1rem 0.5rem 1.2rem 0.5rem !important;
+        border-radius: 1.1rem !important;
+        box-sizing: border-box !important;
+      }
+      .main-card img, .main-card .w-32, .main-card .h-32 {
+        width: 56px !important;
+        height: 56px !important;
+        margin: 0 auto 0.7rem auto !important;
+        display: block !important;
+      }
+      .main-card button, .main-card .button-primary, .main-card .button-secondary {
+        width: 100% !important;
+        min-width: 0 !important;
+        margin: 0.4rem 0 0.4rem 0 !important;
+        font-size: 1.05rem !important;
+        box-sizing: border-box !important;
+      }
+      .main-card h2, .main-card h1 {
+        font-size: 1.08rem !important;
+        text-align: center !important;
+        margin-bottom: 0.5rem !important;
+      }
+      .main-card p, .main-card .text-center, .main-card .text-muted-foreground, .main-card .font-medium {
+        font-size: 0.98rem !important;
+        text-align: center !important;
+        margin-bottom: 0.4rem !important;
+      }
+      main.pt-24.pb-16.min-h-screen.flex.items-center {
+        min-height: 100vh !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        justify-content: center !important;
+      }
+    }
   </style>
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="/manifest.json" />
