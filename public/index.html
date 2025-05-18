@@ -363,7 +363,6 @@
     </footer>
   </div>
   <div class="absolute inset-0 z-neg1"></div>
-  <button class="button-primary" id="installAppGlobal" style="position:fixed;bottom:24px;right:24px;z-index:9999;display:inline-block;">Install App</button>
   <script>
     // Hamburger menu logic
     const menuBtn = document.getElementById('menuBtn');
@@ -689,33 +688,6 @@
       }
     }
     renderStep();
-    // Always show install app instructions for all browsers
-    let deferredPromptGlobal = null;
-    const installBtnGlobal = document.getElementById('installAppGlobal');
-    function isSafari() {
-      const ua = window.navigator.userAgent;
-      return /Safari/.test(ua) && !/Chrome|CriOS|Android/.test(ua);
-    }
-    window.addEventListener('beforeinstallprompt', (e) => {
-      e.preventDefault();
-      deferredPromptGlobal = e;
-      installBtnGlobal.style.display = 'inline-block';
-    });
-    installBtnGlobal.onclick = async () => {
-      if (deferredPromptGlobal) {
-        deferredPromptGlobal.prompt();
-        await deferredPromptGlobal.userChoice;
-        deferredPromptGlobal = null;
-        installBtnGlobal.style.display = 'none';
-      } else if (isSafari()) {
-        alert('On Safari, tap the Share icon and select "Add to Home Screen" to install the app.');
-      } else {
-        alert('To install the app, use your browser menu and select "Add to Home Screen" or "Install App".');
-      }
-    };
-    window.addEventListener('appinstalled', () => {
-      installBtnGlobal.style.display = 'none';
-    });
     function addEmailSignupLogic() {
       const form = document.getElementById('emailSignupForm');
       const emailInput = document.getElementById('signupEmail');

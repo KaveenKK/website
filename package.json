@@ -9,14 +9,15 @@
   "dependencies": {
     "@mux/mux-node": "^11.0.2",
     "axios": "^1.6.8",
+    "bcryptjs": "^3.0.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
+    "google-auth-library": "^9.0.0",
     "jsonwebtoken": "^9.0.0",
     "lit": "^3.0.0",
     "mongoose": "^7.6.1",
-    "socket.io": "^4.7.5",
-    "google-auth-library": "^9.0.0"
+    "socket.io": "^4.7.5"
   }
 }
