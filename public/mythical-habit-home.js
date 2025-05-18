@@ -260,7 +260,6 @@
     const today = new Date().toISOString().split('T')[0];
     journalEntries[today] = val;
     saveState();
-    render();
   }
   function onSaveJournal() {
     const today = new Date().toISOString().split('T')[0];
