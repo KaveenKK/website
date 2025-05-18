@@ -1,5 +1,12 @@
 // Mythical Habit Tracker Home Tab Logic
 (function() {
+  if (!window.lottie) {
+    var script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js';
+    script.onload = function() { render(); };
+    document.head.appendChild(script);
+  }
+
   // --- State ---
   function getLS(key, fallback) {
     try { const v = localStorage.getItem(key); return v !== null ? JSON.parse(v) : fallback; } catch { return fallback; }
@@ -47,21 +54,20 @@
     const today = new Date().toISOString().split('T')[0];
     const journalEntry = journalEntries[today] || '';
     const wordCount = journalEntry.trim() ? journalEntry.trim().split(/\s+/).length : 0;
-    const journalCompleted = !!journalEntries[today];
+    const journalCompleted = !!journalEntries[today] && journalEntries[today + '_saved'];
     // HTML
     root.innerHTML = `
-      <div class="mh-card">
-        <div class="mh-flex">
-          <input type="number" id="mh-xp-input" class="mh-input" placeholder="Enter XP" min="1" value="" />
-          <button class="mh-btn" id="mh-xp-convert">Convert</button>
-        </div>
+      <div class="mh-card mh-stats-bar">
+        <div class="mh-stat"><div class="mh-stat-label">XP</div><div class="mh-stat-value" id="mh-xp">${xp}</div></div>
+        <div class="mh-stat"><div class="mh-stat-label">Gold</div><div class="mh-stat-value" id="mh-gold">${gold}</div></div>
+        <div class="mh-stat"><div class="mh-stat-label">Level</div><div class="mh-stat-value" id="mh-level">${level}</div></div>
       </div>
       <div class="mh-card">
         <div class="mh-title">Character Journey</div>
         <div class="mh-grid mh-grid-cols-2">
           ${stages.map(stage => `
             <div class="mh-card ${activeStage === stage.id ? 'mh-card-active' : ''}" style="text-align:center; border:${activeStage === stage.id ? '2px solid var(--color-primary)' : '1px solid #eee'}; cursor:pointer;" data-stage="${stage.id}">
-              <img src="${stage.image}" alt="${stage.name}" class="mh-img" />
+              ${stage.id === 1 ? '<div id="egg-hatching-lottie" style="width:64px;height:64px;margin:0 auto 0.5em auto;"></div>' : `<img src="${stage.image}" alt="${stage.name}" class="mh-img" />`}
               <div style="font-size:0.95em;">${stage.name}</div>
             </div>
           `).join('')}
@@ -95,10 +101,11 @@
         <button class="mh-btn" id="mh-journal-save" ${wordCount < 50 || journalCompleted ? 'disabled' : ''}>Save Journal</button>
         <div style="font-size:0.95em;color:#888;margin-top:0.3em;">${wordCount} / 50 words</div>
       </div>
-      <div class="mh-card mh-stats-bar">
-        <div class="mh-stat"><div class="mh-stat-label">XP</div><div class="mh-stat-value" id="mh-xp">${xp}</div></div>
-        <div class="mh-stat"><div class="mh-stat-label">Gold</div><div class="mh-stat-value" id="mh-gold">${gold}</div></div>
-        <div class="mh-stat"><div class="mh-stat-label">Level</div><div class="mh-stat-value" id="mh-level">${level}</div></div>
+      <div class="mh-card">
+        <div class="mh-flex">
+          <input type="number" id="mh-xp-input" class="mh-input" placeholder="Enter XP" min="1" value="" />
+          <button class="mh-btn" id="mh-xp-convert">Convert</button>
+        </div>
       </div>
     `;
     // Attach events
@@ -109,8 +116,21 @@
     root.querySelectorAll('[data-quest]').forEach(el => {
       el.onchange = () => onCompleteQuest(Number(el.getAttribute('data-quest')));
     });
-    root.querySelector('#mh-journal').oninput = onJournalInput;
+    if (!journalCompleted) {
+      root.querySelector('#mh-journal').oninput = onJournalInput;
+    }
     root.querySelector('#mh-journal-save').onclick = onSaveJournal;
+
+    // Render Lottie for Egg Hatching
+    if (window.lottie && document.getElementById('egg-hatching-lottie')) {
+      window.lottie.loadAnimation({
+        container: document.getElementById('egg-hatching-lottie'),
+        renderer: 'svg',
+        loop: true,
+        autoplay: true,
+        path: 'images/EggHatching.json'
+      });
+    }
   }
 
   // --- Logic ---
@@ -194,6 +214,7 @@
     const wordCount = entry.trim() ? entry.trim().split(/\s+/).length : 0;
     if (wordCount >= 50) {
       addXp(100);
+      journalEntries[today + '_saved'] = true;
       alert('Journal saved! You earned 100 XP.');
       saveState();
       render();
