@@ -67,8 +67,8 @@
         <div class="mh-grid mh-grid-cols-2">
           ${stages.map(stage => `
             <div class="mh-card ${activeStage === stage.id ? 'mh-card-active' : ''}" style="text-align:center; border:${activeStage === stage.id ? '2px solid var(--color-primary)' : '1px solid #eee'}; cursor:pointer;" data-stage="${stage.id}">
-              ${stage.id === 1 ? '<div id="egg-hatching-lottie" style="width:64px;height:64px;margin:0 auto 0.5em auto;"></div>' : `<img src="${stage.image}" alt="${stage.name}" class="mh-img" />`}
-              <div style="font-size:0.95em;">${stage.name}</div>
+              <div class="mh-stage-img-container">${stage.id === 1 ? '<div id="egg-hatching-lottie"></div>' : `<img src="${stage.image}" alt="${stage.name}" class="mh-img" />`}</div>
+              <span class="mh-stage-label">${stage.name}</span>
             </div>
           `).join('')}
         </div>
@@ -126,9 +126,10 @@
       window.lottie.loadAnimation({
         container: document.getElementById('egg-hatching-lottie'),
         renderer: 'svg',
-        loop: true,
+        loop: false,
         autoplay: true,
-        path: 'images/EggHatching.json'
+        path: 'images/EggHatching.json',
+        rendererSettings: { preserveAspectRatio: 'xMidYMid meet' }
       });
     }
   }
