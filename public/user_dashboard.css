@@ -410,8 +410,11 @@ li { background: var(--color-bg); margin-bottom: 0.5rem; padding: 0.75rem; borde
     display: none !important;
   }
   #home {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
+    padding-top: 4.2rem !important; /* header height + extra space */
+    padding-bottom: 5.2rem !important; /* bottom nav height + extra space */
+    overflow-y: auto !important;
+    min-height: 100vh !important;
+    box-sizing: border-box !important;
   }
   #game-container {
     width: 100vw !important;

@@ -532,14 +532,23 @@
                 <div class="main-card animate-slide-in">
                   <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Sign Up to Continue</h2>
                   <p class="text-center text-muted-foreground mb-8">To access your dashboard and features, please sign up with Discord.</p>
-                  <div class="flex flex-col md:flex-row gap-4 justify-center">
-                    <button class="button-primary" id="signupWithDiscord">Signup with Discord</button>
-                    <button class="button-secondary" id="backBtn3">Go Back</button>
+                  <div class="flex flex-col md:flex-row gap-4 justify-center" id="email-signup-container">
+                    <form id="emailSignupForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
+                      <input type="email" id="signupEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                      <input type="password" id="signupPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                      <div id="codeSection" style="display:none;flex-direction:column;gap:0.5rem;">
+                        <input type="text" id="signupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                        <button type="button" id="resendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
+                      </div>
+                      <button type="submit" class="button-primary" id="signupSubmitBtn">Sign Up with Email</button>
+                      <button type="button" id="verifyCodeBtn" class="button-primary" style="display:none;">Verify Code</button>
+                      <div id="emailSignupMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
+                    </form>
                   </div>
                 </div>
               </div>
             `;
-            document.getElementById('signupWithDiscord').onclick = () => {
+            document.getElementById('signupSubmitBtn').onclick = () => {
               const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
                             window.navigator.standalone ||
                             document.referrer.includes('android-app://');
@@ -560,8 +569,11 @@
                 window.location.href = '/auth/discord/user';
               }
             };
-            document.getElementById('backBtn3').onclick = () => {
-              renderStep();
+            document.getElementById('resendCodeBtn').onclick = () => {
+              // Implement resend code logic
+            };
+            document.getElementById('verifyCodeBtn').onclick = () => {
+              // Implement verify code logic
             };
           };
         } else if (userType === 'influencer') {
@@ -704,6 +716,97 @@
     window.addEventListener('appinstalled', () => {
       installBtnGlobal.style.display = 'none';
     });
+    function addEmailSignupLogic() {
+      const form = document.getElementById('emailSignupForm');
+      const emailInput = document.getElementById('signupEmail');
+      const passwordInput = document.getElementById('signupPassword');
+      const codeSection = document.getElementById('codeSection');
+      const codeInput = document.getElementById('signupCode');
+      const signupBtn = document.getElementById('signupSubmitBtn');
+      const verifyBtn = document.getElementById('verifyCodeBtn');
+      const msg = document.getElementById('emailSignupMsg');
+      const resendBtn = document.getElementById('resendCodeBtn');
+      let email = '';
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        signupBtn.disabled = true;
+        msg.textContent = '';
+        email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            codeSection.style.display = 'flex';
+            signupBtn.style.display = 'none';
+            verifyBtn.style.display = 'inline-block';
+            msg.textContent = 'Verification code sent to your email.';
+          } else {
+            msg.textContent = data.error || 'Signup failed.';
+          }
+        } catch (err) {
+          msg.textContent = 'Network error.';
+        }
+        signupBtn.disabled = false;
+      };
+      verifyBtn.onclick = async () => {
+        verifyBtn.disabled = true;
+        msg.textContent = '';
+        const code = codeInput.value.trim();
+        if (!email || !code) { msg.textContent = 'Enter the code.'; verifyBtn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, code })
+          });
+          const data = await res.json();
+          if (res.ok && data.success && data.token) {
+            msg.textContent = 'Signup complete! Redirecting...';
+            localStorage.setItem('userToken', data.token);
+            setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
+          } else {
+            msg.textContent = data.error || 'Verification failed.';
+          }
+        } catch (err) {
+          msg.textContent = 'Network error.';
+        }
+        verifyBtn.disabled = false;
+      };
+      resendBtn.onclick = async () => {
+        resendBtn.disabled = true;
+        msg.textContent = '';
+        if (!email) { msg.textContent = 'Enter your email first.'; resendBtn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-resend', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            msg.textContent = 'Verification code resent.';
+          } else {
+            msg.textContent = data.error || 'Resend failed.';
+          }
+        } catch (err) {
+          msg.textContent = 'Network error.';
+        }
+        resendBtn.disabled = false;
+      };
+    }
+    // Call this after rendering the step with Discord signup
+    const observer = new MutationObserver(() => {
+      if (document.getElementById('emailSignupForm')) {
+        addEmailSignupLogic();
+      }
+    });
+    observer.observe(document.getElementById('stepContainer'), { childList: true, subtree: true });
   </script>
 </body>
 </html> 
