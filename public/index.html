@@ -689,6 +689,7 @@
     renderStep();
     function addEmailSignupLogic() {
       const form = document.getElementById('emailSignupForm');
+      if (!form) { console.error('[DEBUG] emailSignupForm not found'); return; }
       const emailInput = document.getElementById('signupEmail');
       const passwordInput = document.getElementById('signupPassword');
       const codeSection = document.getElementById('codeSection');
@@ -707,6 +708,7 @@
         emailHidden.value = email;
         localStorage.setItem('pendingSignupEmail', email);
         const password = passwordInput.value;
+        console.log('[DEBUG] Signup submit:', { email, password });
         if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; return; }
         try {
           const res = await fetch('/auth/email-signup', {
@@ -715,6 +717,7 @@
             body: JSON.stringify({ email, password })
           });
           const data = await res.json();
+          console.log('[DEBUG] Signup response:', data);
           if (res.ok && data.success) {
             codeSection.style.display = 'flex';
             signupBtn.style.display = 'none';
@@ -724,6 +727,7 @@
             msg.textContent = data.error || 'Signup failed.';
           }
         } catch (err) {
+          console.error('[DEBUG] Signup network error:', err);
           msg.textContent = 'Network error.';
         }
         signupBtn.disabled = false;
@@ -736,6 +740,7 @@
         if (!emailToVerify) {
           emailToVerify = localStorage.getItem('pendingSignupEmail') || '';
         }
+        console.log('[DEBUG] Verify code submit:', { emailToVerify, code });
         if (!emailToVerify || !code) { msg.textContent = 'Enter the code.'; verifyBtn.disabled = false; return; }
         try {
           const res = await fetch('/auth/email-verify', {
@@ -744,6 +749,7 @@
             body: JSON.stringify({ email: emailToVerify, code })
           });
           const data = await res.json();
+          console.log('[DEBUG] Verify response:', data);
           if (res.ok && data.success && data.token) {
             msg.textContent = 'Signup complete! Redirecting...';
             localStorage.setItem('userToken', data.token);
@@ -753,6 +759,7 @@
             msg.textContent = data.error || 'Verification failed.';
           }
         } catch (err) {
+          console.error('[DEBUG] Verify network error:', err);
           msg.textContent = 'Network error.';
         }
         verifyBtn.disabled = false;
@@ -764,6 +771,7 @@
         if (!emailToResend) {
           emailToResend = localStorage.getItem('pendingSignupEmail') || '';
         }
+        console.log('[DEBUG] Resend code:', { emailToResend });
         if (!emailToResend) { msg.textContent = 'Enter your email first.'; resendBtn.disabled = false; return; }
         try {
           const res = await fetch('/auth/email-resend', {
@@ -772,12 +780,14 @@
             body: JSON.stringify({ email: emailToResend })
           });
           const data = await res.json();
+          console.log('[DEBUG] Resend response:', data);
           if (res.ok && data.success) {
             msg.textContent = 'Verification code resent.';
           } else {
             msg.textContent = data.error || 'Resend failed.';
           }
         } catch (err) {
+          console.error('[DEBUG] Resend network error:', err);
           msg.textContent = 'Network error.';
         }
         resendBtn.disabled = false;
