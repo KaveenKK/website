@@ -721,15 +721,20 @@
           const data = await res.json();
           console.log('[DEBUG] Signup response:', data);
           if (res.ok && data.success) {
-            codeSection.style.display = 'flex';
-            signupBtn.style.display = 'none';
-            verifyBtn.style.display = 'inline-block';
-            emailInput.style.display = 'none';
-            passwordInput.style.display = 'none';
-            document.getElementById('signupEmailHidden').style.display = 'none';
+            if (!codeSection) { console.error('[DEBUG] codeSection not found after signup'); }
+            if (!verifyBtn) { console.error('[DEBUG] verifyBtn not found after signup'); }
+            if (codeSection) codeSection.style.display = 'flex';
+            if (signupBtn) signupBtn.style.display = 'none';
+            if (verifyBtn) verifyBtn.style.display = 'inline-block';
+            if (emailInput) emailInput.style.display = 'none';
+            if (passwordInput) passwordInput.style.display = 'none';
+            if (document.getElementById('signupEmailHidden')) document.getElementById('signupEmailHidden').style.display = 'none';
             msg.innerHTML = `Verification code sent to: <b>${email}</b>`;
           } else {
             msg.textContent = data.error || 'Signup failed.';
+            if (!codeSection) { console.error('[DEBUG] codeSection not found on signup error'); }
+            if (codeSection) codeSection.style.display = 'none';
+            if (verifyBtn) verifyBtn.style.display = 'none';
           }
         } catch (err) {
           console.error('[DEBUG] Signup network error:', err);
@@ -825,15 +830,20 @@
           });
           const data = await res.json();
           if (res.ok && data.success) {
-            codeSection.style.display = 'flex';
-            signupBtn.style.display = 'none';
-            verifyBtn.style.display = 'inline-block';
-            emailInput.style.display = 'none';
-            passwordInput.style.display = 'none';
-            document.getElementById('signupEmailHidden').style.display = 'none';
+            if (!codeSection) { console.error('[DEBUG] codeSection not found after signup'); }
+            if (!verifyBtn) { console.error('[DEBUG] verifyBtn not found after signup'); }
+            if (codeSection) codeSection.style.display = 'flex';
+            if (signupBtn) signupBtn.style.display = 'none';
+            if (verifyBtn) verifyBtn.style.display = 'inline-block';
+            if (emailInput) emailInput.style.display = 'none';
+            if (passwordInput) passwordInput.style.display = 'none';
+            if (document.getElementById('signupEmailHidden')) document.getElementById('signupEmailHidden').style.display = 'none';
             msg.textContent = 'Verification code sent to your email.';
           } else {
             msg.textContent = data.error || 'Signup failed.';
+            if (!codeSection) { console.error('[DEBUG] codeSection not found on signup error'); }
+            if (codeSection) codeSection.style.display = 'none';
+            if (verifyBtn) verifyBtn.style.display = 'none';
           }
         } catch (err) {
           msg.textContent = 'Network error.';
