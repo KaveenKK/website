@@ -730,6 +730,45 @@
             if (passwordInput) passwordInput.style.display = 'none';
             if (document.getElementById('signupEmailHidden')) document.getElementById('signupEmailHidden').style.display = 'none';
             msg.innerHTML = `Verification code sent to: <b>${email}</b>`;
+            // Re-query and re-attach handler
+            const newVerifyBtn = document.getElementById('verifyCodeBtn');
+            if (newVerifyBtn) {
+              newVerifyBtn.onclick = async () => {
+                alert('Verify button clicked!');
+                newVerifyBtn.disabled = true;
+                msg.textContent = '';
+                const code = codeInput.value.trim();
+                let emailToVerify = emailHidden.value.trim();
+                if (!emailToVerify) {
+                  emailToVerify = localStorage.getItem('pendingSignupEmail') || '';
+                }
+                console.log('[DEBUG] Verify code submit:', { emailToVerify, code });
+                if (!emailToVerify || !code) { msg.textContent = 'Enter the code.'; newVerifyBtn.disabled = false; return; }
+                try {
+                  const res = await fetch('/auth/email-verify', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: emailToVerify, code })
+                  });
+                  const data = await res.json();
+                  console.log('[DEBUG] Verify response:', data);
+                  if (res.ok && data.success && data.token) {
+                    msg.textContent = 'Signup complete! Redirecting...';
+                    localStorage.setItem('userToken', data.token);
+                    localStorage.removeItem('pendingSignupEmail');
+                    setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
+                  } else {
+                    msg.textContent = data.error || 'Verification failed.';
+                  }
+                } catch (err) {
+                  console.error('[DEBUG] Verify network error:', err);
+                  msg.textContent = 'Network error.';
+                }
+                newVerifyBtn.disabled = false;
+              };
+            } else {
+              console.error('[DEBUG] Could not find verifyCodeBtn after showing code section');
+            }
           } else {
             msg.textContent = data.error || 'Signup failed.';
             if (!codeSection) { console.error('[DEBUG] codeSection not found on signup error'); }
