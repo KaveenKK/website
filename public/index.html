@@ -466,6 +466,7 @@
           }
         };
       } else if (currentStep === 'user-email-signup') {
+        console.log('[DEBUG] Rendering user-email-signup step');
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4">
             <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
@@ -493,6 +494,7 @@
           currentStep = 'select-type';
           renderStep();
         };
+        console.log('[DEBUG] Calling addEmailSignupLogic');
         addEmailSignupLogic();
       } else if (currentStep === 'user-email-login') {
         stepContainer.innerHTML = `
@@ -944,13 +946,6 @@
         loginBtn.disabled = false;
       };
     }
-    // Call this after rendering the step with Discord signup
-    const observer = new MutationObserver(() => {
-      if (document.getElementById('emailSignupForm')) {
-        addEmailSignupLogic();
-      }
-    });
-    observer.observe(document.getElementById('stepContainer'), { childList: true, subtree: true });
   </script>
 </body>
 </html> 
