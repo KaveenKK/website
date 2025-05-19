@@ -367,6 +367,8 @@
     let currentStep = 'select-type';
     let userType = null;
     let hasEnoughFollowers = null;
+    let signupInProgress = false;
+    let coachSignupInProgress = false;
     function renderStep() {
       if (currentStep === 'select-type') {
         stepContainer.innerHTML = `
@@ -704,6 +706,8 @@
       let email = '';
       form.onsubmit = async (e) => {
         e.preventDefault();
+        if (signupInProgress) return;
+        signupInProgress = true;
         signupBtn.disabled = true;
         msg.textContent = '';
         email = emailInput.value.trim();
@@ -711,7 +715,7 @@
         localStorage.setItem('pendingSignupEmail', email);
         const password = passwordInput.value;
         console.log('[DEBUG] Signup submit:', { email, password });
-        if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; return; }
+        if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; signupInProgress = false; return; }
         try {
           const res = await fetch('/auth/email-signup', {
             method: 'POST',
@@ -732,6 +736,7 @@
             msg.innerHTML = `Verification code sent to: <b>${email}</b>`;
           } else {
             msg.textContent = data.error || 'Signup failed.';
+            console.error('[DEBUG] Signup failed:', data.error);
             if (!codeSection) { console.error('[DEBUG] codeSection not found on signup error'); }
             if (codeSection) codeSection.style.display = 'none';
             if (verifyBtn) verifyBtn.style.display = 'none';
@@ -741,6 +746,7 @@
           msg.textContent = 'Network error.';
         }
         signupBtn.disabled = false;
+        signupInProgress = false;
       };
       // Event delegation for Verify Code button
       form.addEventListener('click', async (event) => {
@@ -751,8 +757,10 @@
           msg.textContent = '';
           const code = codeInput.value.trim();
           let emailToVerify = emailHidden.value.trim();
+          const localEmail = localStorage.getItem('pendingSignupEmail');
+          console.log('[DEBUG] Verify handler values:', { code, emailHidden: emailHidden.value, localEmail });
           if (!emailToVerify) {
-            emailToVerify = localStorage.getItem('pendingSignupEmail') || '';
+            emailToVerify = localEmail || '';
           }
           console.log('[DEBUG] Verify code submit:', { emailToVerify, code });
           if (!emailToVerify || !code) { msg.textContent = 'Enter the code.'; btn.disabled = false; return; }
@@ -771,6 +779,7 @@
               setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
             } else {
               msg.textContent = data.error || 'Verification failed.';
+              console.error('[DEBUG] Verification failed:', data.error);
             }
           } catch (err) {
             console.error('[DEBUG] Verify network error:', err);
@@ -821,11 +830,13 @@
       let email = '';
       form.onsubmit = async (e) => {
         e.preventDefault();
+        if (coachSignupInProgress) return;
+        coachSignupInProgress = true;
         signupBtn.disabled = true;
         msg.textContent = '';
         email = emailInput.value.trim();
         const password = passwordInput.value;
-        if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; return; }
+        if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; coachSignupInProgress = false; return; }
         try {
           const res = await fetch('/auth/email-signup', {
             method: 'POST',
@@ -845,6 +856,7 @@
             msg.textContent = 'Verification code sent to your email.';
           } else {
             msg.textContent = data.error || 'Signup failed.';
+            console.error('[DEBUG] Signup failed:', data.error);
             if (!codeSection) { console.error('[DEBUG] codeSection not found on signup error'); }
             if (codeSection) codeSection.style.display = 'none';
             if (verifyBtn) verifyBtn.style.display = 'none';
@@ -853,6 +865,7 @@
           msg.textContent = 'Network error.';
         }
         signupBtn.disabled = false;
+        coachSignupInProgress = false;
       };
       verifyBtn.onclick = async () => {
         verifyBtn.disabled = true;
