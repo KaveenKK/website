@@ -748,74 +748,6 @@
         signupBtn.disabled = false;
         signupInProgress = false;
       };
-      // Event delegation for Verify Code button
-      form.addEventListener('click', async (event) => {
-        if (event.target && event.target.id === 'verifyCodeBtn') {
-          alert('Verify button clicked!');
-          const btn = event.target;
-          btn.disabled = true;
-          msg.textContent = '';
-          const code = codeInput.value.trim();
-          let emailToVerify = emailHidden.value.trim();
-          const localEmail = localStorage.getItem('pendingSignupEmail');
-          console.log('[DEBUG] Verify handler values:', { code, emailHidden: emailHidden.value, localEmail });
-          if (!emailToVerify) {
-            emailToVerify = localEmail || '';
-          }
-          console.log('[DEBUG] Verify code submit:', { emailToVerify, code });
-          if (!emailToVerify || !code) { msg.textContent = 'Enter the code.'; btn.disabled = false; return; }
-          try {
-            const res = await fetch('/auth/email-verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email: emailToVerify, code })
-            });
-            const data = await res.json();
-            console.log('[DEBUG] Verify response:', data);
-            if (res.ok && data.success && data.token) {
-              msg.textContent = 'Signup complete! Redirecting...';
-              localStorage.setItem('userToken', data.token);
-              localStorage.removeItem('pendingSignupEmail');
-              setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
-            } else {
-              msg.textContent = data.error || 'Verification failed.';
-              console.error('[DEBUG] Verification failed:', data.error);
-            }
-          } catch (err) {
-            console.error('[DEBUG] Verify network error:', err);
-            msg.textContent = 'Network error.';
-          }
-          btn.disabled = false;
-        }
-      });
-      resendBtn.onclick = async () => {
-        resendBtn.disabled = true;
-        msg.textContent = '';
-        let emailToResend = emailHidden.value.trim();
-        if (!emailToResend) {
-          emailToResend = localStorage.getItem('pendingSignupEmail') || '';
-        }
-        console.log('[DEBUG] Resend code:', { emailToResend });
-        if (!emailToResend) { msg.textContent = 'Enter your email first.'; resendBtn.disabled = false; return; }
-        try {
-          const res = await fetch('/auth/email-resend', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: emailToResend })
-          });
-          const data = await res.json();
-          console.log('[DEBUG] Resend response:', data);
-          if (res.ok && data.success) {
-            msg.textContent = 'Verification code resent.';
-          } else {
-            msg.textContent = data.error || 'Resend failed.';
-          }
-        } catch (err) {
-          console.error('[DEBUG] Resend network error:', err);
-          msg.textContent = 'Network error.';
-        }
-        resendBtn.disabled = false;
-      };
     }
     function addCoachEmailSignupLogic() {
       const form = document.getElementById('coachEmailSignupForm');
@@ -866,51 +798,6 @@
         }
         signupBtn.disabled = false;
         coachSignupInProgress = false;
-      };
-      verifyBtn.onclick = async () => {
-        verifyBtn.disabled = true;
-        msg.textContent = '';
-        const code = codeInput.value.trim();
-        if (!email || !code) { msg.textContent = 'Enter the code.'; verifyBtn.disabled = false; return; }
-        try {
-          const res = await fetch('/auth/email-verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, code, role: 'coach' })
-          });
-          const data = await res.json();
-          if (res.ok && data.success && data.token) {
-            msg.textContent = 'Signup complete! Redirecting...';
-            localStorage.setItem('coachToken', data.token);
-            setTimeout(() => { window.location.href = '/coach_dashboard.html'; }, 1200);
-          } else {
-            msg.textContent = data.error || 'Verification failed.';
-          }
-        } catch (err) {
-          msg.textContent = 'Network error.';
-        }
-        verifyBtn.disabled = false;
-      };
-      resendBtn.onclick = async () => {
-        resendBtn.disabled = true;
-        msg.textContent = '';
-        if (!email) { msg.textContent = 'Enter your email first.'; resendBtn.disabled = false; return; }
-        try {
-          const res = await fetch('/auth/email-resend', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, role: 'coach' })
-          });
-          const data = await res.json();
-          if (res.ok && data.success) {
-            msg.textContent = 'Verification code resent.';
-          } else {
-            msg.textContent = data.error || 'Resend failed.';
-          }
-        } catch (err) {
-          msg.textContent = 'Network error.';
-        }
-        resendBtn.disabled = false;
       };
     }
     function addUserEmailLoginLogic() {
@@ -979,6 +866,42 @@
         loginBtn.disabled = false;
       };
     }
+    document.addEventListener('click', async (event) => {
+      if (event.target && event.target.id === 'verifyCodeBtn') {
+        alert('Verify button clicked!');
+        const btn = event.target;
+        btn.disabled = true;
+        const codeInput = document.getElementById('signupCode');
+        const msg = document.getElementById('emailSignupMsg');
+        msg.textContent = '';
+        const code = codeInput ? codeInput.value.trim() : '';
+        const emailToVerify = localStorage.getItem('pendingSignupEmail') || '';
+        console.log('[DEBUG] Verify handler values:', { code, emailToVerify });
+        if (!emailToVerify || !code) { msg.textContent = 'Enter the code.'; btn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: emailToVerify, code })
+          });
+          const data = await res.json();
+          console.log('[DEBUG] Verify response:', data);
+          if (res.ok && data.success && data.token) {
+            msg.textContent = 'Signup complete! Redirecting...';
+            localStorage.setItem('userToken', data.token);
+            localStorage.removeItem('pendingSignupEmail');
+            setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
+          } else {
+            msg.textContent = data.error || 'Verification failed.';
+            console.error('[DEBUG] Verification failed:', data.error);
+          }
+        } catch (err) {
+          console.error('[DEBUG] Verify network error:', err);
+          msg.textContent = 'Network error.';
+        }
+        btn.disabled = false;
+      }
+    });
   </script>
 </body>
 </html> 
