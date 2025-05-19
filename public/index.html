@@ -705,6 +705,7 @@
         msg.textContent = '';
         email = emailInput.value.trim();
         emailHidden.value = email;
+        localStorage.setItem('pendingSignupEmail', email);
         const password = passwordInput.value;
         if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; return; }
         try {
@@ -731,7 +732,10 @@
         verifyBtn.disabled = true;
         msg.textContent = '';
         const code = codeInput.value.trim();
-        const emailToVerify = emailHidden.value.trim();
+        let emailToVerify = emailHidden.value.trim();
+        if (!emailToVerify) {
+          emailToVerify = localStorage.getItem('pendingSignupEmail') || '';
+        }
         if (!emailToVerify || !code) { msg.textContent = 'Enter the code.'; verifyBtn.disabled = false; return; }
         try {
           const res = await fetch('/auth/email-verify', {
@@ -743,6 +747,7 @@
           if (res.ok && data.success && data.token) {
             msg.textContent = 'Signup complete! Redirecting...';
             localStorage.setItem('userToken', data.token);
+            localStorage.removeItem('pendingSignupEmail');
             setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
           } else {
             msg.textContent = data.error || 'Verification failed.';
@@ -755,7 +760,10 @@
       resendBtn.onclick = async () => {
         resendBtn.disabled = true;
         msg.textContent = '';
-        const emailToResend = emailHidden.value.trim();
+        let emailToResend = emailHidden.value.trim();
+        if (!emailToResend) {
+          emailToResend = localStorage.getItem('pendingSignupEmail') || '';
+        }
         if (!emailToResend) { msg.textContent = 'Enter your email first.'; resendBtn.disabled = false; return; }
         try {
           const res = await fetch('/auth/email-resend', {
