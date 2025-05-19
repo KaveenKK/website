@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema({
-  discord_id: { type: String, index: true, sparse: true },
+  discord_id: { type: String, unique: true, sparse: true },
   username: { type: String },
   email: { type: String, required: true, unique: true },
   verified: { type: Boolean, default: false },

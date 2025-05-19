@@ -411,7 +411,7 @@
         };
         document.getElementById('coachSelectBtn').onclick = () => {
           userType = 'coach';
-          currentStep = 'coach-auth-choice';
+          currentStep = 'coach-follower-question';
           renderStep();
         };
       } else if (currentStep === 'user-auth-choice') {
@@ -516,6 +516,71 @@
           renderStep();
         };
         addUserEmailLoginLogic();
+      } else if (currentStep === 'coach-follower-question') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnCoachFollowers" style="background:none;border:none;cursor:pointer;font:inherit;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              <span>Back</span>
+            </button>
+            <div class="main-card">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Do you have more than 5,000 followers on any social media platform?</h2>
+              <div class="w-32 h-32 mx-auto mb-8 animate-float">
+                <img src="images/followers.webp" alt="Followers Count" class="w-full h-full" />
+              </div>
+              <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button class="button-primary" id="yesFollowers">Yes, I have 5,000+ followers</button>
+                <button class="button-secondary" id="noFollowers">Not yet</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('backBtnCoachFollowers').onclick = () => {
+          currentStep = 'select-type';
+          renderStep();
+        };
+        document.getElementById('yesFollowers').onclick = () => {
+          currentStep = 'coach-auth-choice';
+          renderStep();
+        };
+        document.getElementById('noFollowers').onclick = () => {
+          currentStep = 'coach-insufficient-followers';
+          renderStep();
+        };
+      } else if (currentStep === 'coach-insufficient-followers') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnCoachInsufficient" style="background:none;border:none;cursor:pointer;font:inherit;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              <span>Back</span>
+            </button>
+            <div class="main-card animate-slide-in">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Keep Growing Your Audience!</h2>
+              <div class="w-32 h-32 mx-auto mb-6 animate-pulse-soft">
+                <img src="images/socialmediacontent.webp" alt="Growth Icon" class="w-full h-full" />
+              </div>
+              <p class="text-center text-muted-foreground mb-8">We love your enthusiasm! Our coach platform is currently designed for influencers with established audiences of 5,000+ followers.</p>
+              <p class="text-center font-medium mb-8">In the meantime, we encourage you to join as a user and experience the platform from the client side while you grow your following.</p>
+              <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button class="button-primary" id="signupUserFromCoach">Sign Up as User</button>
+                <button class="button-secondary" id="backBtnCoachInsufficient2">Go Back</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('backBtnCoachInsufficient').onclick = () => {
+          currentStep = 'coach-follower-question';
+          renderStep();
+        };
+        document.getElementById('backBtnCoachInsufficient2').onclick = () => {
+          currentStep = 'coach-follower-question';
+          renderStep();
+        };
+        document.getElementById('signupUserFromCoach').onclick = () => {
+          userType = 'user';
+          currentStep = 'user-auth-choice';
+          renderStep();
+        };
       } else if (currentStep === 'coach-auth-choice') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
