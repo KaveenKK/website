@@ -724,7 +724,10 @@
             codeSection.style.display = 'flex';
             signupBtn.style.display = 'none';
             verifyBtn.style.display = 'inline-block';
-            msg.textContent = 'Verification code sent to your email.';
+            emailInput.style.display = 'none';
+            passwordInput.style.display = 'none';
+            document.getElementById('signupEmailHidden').style.display = 'none';
+            msg.innerHTML = `Verification code sent to: <b>${email}</b>`;
           } else {
             msg.textContent = data.error || 'Signup failed.';
           }
@@ -825,6 +828,9 @@
             codeSection.style.display = 'flex';
             signupBtn.style.display = 'none';
             verifyBtn.style.display = 'inline-block';
+            emailInput.style.display = 'none';
+            passwordInput.style.display = 'none';
+            document.getElementById('signupEmailHidden').style.display = 'none';
             msg.textContent = 'Verification code sent to your email.';
           } else {
             msg.textContent = data.error || 'Signup failed.';
