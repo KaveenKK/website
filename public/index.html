@@ -261,36 +261,8 @@
   <link rel="manifest" href="/manifest.json" />
   <link rel="apple-touch-icon" href="images/nevengilogo.webp" />
   <script>
+    // --- LOGIN REDIRECTION LOGIC (CLEAN SLATE) ---
     (function() {
-      // Register service worker
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-              console.log('ServiceWorker registration successful');
-              registration.addEventListener('updatefound', () => {
-                const newWorker = registration.installing;
-                newWorker.addEventListener('statechange', () => {
-                  if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                    window.location.reload();
-                  }
-                });
-              });
-            })
-            .catch(err => {
-              console.log('ServiceWorker registration failed: ', err);
-            });
-        });
-      }
-      // Add this to ensure auth endpoints are not cached
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.addEventListener('message', event => {
-          if (event.data && event.data.type === 'SKIP_WAITING') {
-            navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-          }
-        });
-      }
-      // Token validation and auto-redirect
       async function validateToken(token, type) {
         if (!token) return false;
         try {
@@ -301,30 +273,39 @@
           if (!res.ok) return false;
           const data = await res.json();
           return data.valid === true;
-        } catch {
+        } catch (e) {
+          console.log('[DEBUG] Token validation error:', e);
           return false;
         }
       }
-      (async function() {
+      window.addEventListener('DOMContentLoaded', async () => {
         const userToken = localStorage.getItem('userToken');
         const coachToken = localStorage.getItem('coachToken');
+        console.log('[DEBUG] Checking login tokens...');
         if (coachToken) {
-          if (await validateToken(coachToken, 'coach')) {
-            window.location.href = '/coach_dashboard.html';
+          const validCoach = await validateToken(coachToken, 'coach');
+          console.log('[DEBUG] coachToken found. Valid:', validCoach);
+          if (validCoach) {
+            console.log('[DEBUG] Redirecting to /coach_dashboard.html');
+            window.location.replace('/coach_dashboard.html');
             return;
           } else {
             localStorage.removeItem('coachToken');
           }
         }
         if (userToken) {
-          if (await validateToken(userToken, 'user')) {
-            window.location.href = '/user_dashboard.html';
+          const validUser = await validateToken(userToken, 'user');
+          console.log('[DEBUG] userToken found. Valid:', validUser);
+          if (validUser) {
+            console.log('[DEBUG] Redirecting to /user_dashboard.html');
+            window.location.replace('/user_dashboard.html');
             return;
           } else {
             localStorage.removeItem('userToken');
           }
         }
-      })();
+        console.log('[DEBUG] No valid login found. Staying on index.html.');
+      });
     })();
   </script>
 </head>
