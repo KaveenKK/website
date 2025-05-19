@@ -392,7 +392,7 @@ router.post('/email-signup', async (req, res) => {
 
 // POST /auth/email-verify
 router.post('/email-verify', async (req, res) => {
-  const { email, code } = req.body;
+  const { email, code, role } = req.body;
   if (!email || !code) return res.status(400).json({ error: 'Email and code required' });
   const user = await User.findOne({ email: email.toLowerCase() });
   if (!user) return res.status(400).json({ error: 'User not found' });
@@ -405,7 +405,8 @@ router.post('/email-verify', async (req, res) => {
   user.code_expiry = null;
   await user.save();
   // Issue JWT
-  const token = jwt.sign({ id: user._id, role: user.role || 'user', identity_completed: user.identity_completed }, process.env.JWT_SECRET, { expiresIn: '7d' });
+  const jwtRole = role === 'coach' ? 'coach' : (user.role || 'user');
+  const token = jwt.sign({ id: user._id, role: jwtRole, identity_completed: user.identity_completed }, process.env.JWT_SECRET, { expiresIn: '7d' });
   return res.json({ success: true, token });
 });
 

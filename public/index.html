@@ -477,6 +477,7 @@
               <form id="emailSignupForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
                 <input type="email" id="signupEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
                 <input type="password" id="signupPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <input type="hidden" id="signupEmailHidden" />
                 <div id="codeSection" style="display:none;flex-direction:column;gap:0.5rem;">
                   <input type="text" id="signupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
                   <button type="button" id="resendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
@@ -696,12 +697,14 @@
       const verifyBtn = document.getElementById('verifyCodeBtn');
       const msg = document.getElementById('emailSignupMsg');
       const resendBtn = document.getElementById('resendCodeBtn');
+      const emailHidden = document.getElementById('signupEmailHidden');
       let email = '';
       form.onsubmit = async (e) => {
         e.preventDefault();
         signupBtn.disabled = true;
         msg.textContent = '';
         email = emailInput.value.trim();
+        emailHidden.value = email;
         const password = passwordInput.value;
         if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; return; }
         try {
@@ -728,12 +731,13 @@
         verifyBtn.disabled = true;
         msg.textContent = '';
         const code = codeInput.value.trim();
-        if (!email || !code) { msg.textContent = 'Enter the code.'; verifyBtn.disabled = false; return; }
+        const emailToVerify = emailHidden.value.trim();
+        if (!emailToVerify || !code) { msg.textContent = 'Enter the code.'; verifyBtn.disabled = false; return; }
         try {
           const res = await fetch('/auth/email-verify', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, code })
+            body: JSON.stringify({ email: emailToVerify, code })
           });
           const data = await res.json();
           if (res.ok && data.success && data.token) {
@@ -751,12 +755,13 @@
       resendBtn.onclick = async () => {
         resendBtn.disabled = true;
         msg.textContent = '';
-        if (!email) { msg.textContent = 'Enter your email first.'; resendBtn.disabled = false; return; }
+        const emailToResend = emailHidden.value.trim();
+        if (!emailToResend) { msg.textContent = 'Enter your email first.'; resendBtn.disabled = false; return; }
         try {
           const res = await fetch('/auth/email-resend', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email })
+            body: JSON.stringify({ email: emailToResend })
           });
           const data = await res.json();
           if (res.ok && data.success) {
