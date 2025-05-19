@@ -382,8 +382,7 @@
                   </div>
                   <h3 class="text-xl font-bold text-center mb-4">I'm Looking for Guidance</h3>
                   <p class="text-center text-muted-foreground mb-6">Get personalized coaching, discover new routines, and track your progress on your self-improvement journey.</p>
-                  <button class="button-primary w-full" id="userSignupBtn">Sign up with Email</button>
-                  <button class="button-secondary w-full" id="userDiscordBtn">Sign up with Discord</button>
+                  <button class="button-primary w-full" id="userSelectBtn">Select</button>
                 </div>
               </div>
               <div class="main-card cursor-pointer" id="influencerCard">
@@ -393,8 +392,7 @@
                   </div>
                   <h3 class="text-xl font-bold text-center mb-4">I'm an Influencer/Coach</h3>
                   <p class="text-center text-muted-foreground mb-6">Share your expertise, build your client base, and grow your online presence with our coaching platform.</p>
-                  <button class="button-primary w-full" id="coachSignupBtn">Sign up with Email</button>
-                  <button class="button-secondary w-full" id="coachDiscordBtn">Sign up with Discord</button>
+                  <button class="button-primary w-full" id="coachSelectBtn">Select</button>
                 </div>
               </div>
             </div>
@@ -406,8 +404,43 @@
           if (grid) grid.style.gridTemplateColumns = '1fr';
           if (grid) grid.style.gap = '1rem';
         }
-        document.getElementById('userSignupBtn').onclick = () => {
+        document.getElementById('userSelectBtn').onclick = () => {
+          userType = 'user';
+          currentStep = 'user-auth-choice';
+          renderStep();
+        };
+        document.getElementById('coachSelectBtn').onclick = () => {
+          userType = 'coach';
+          currentStep = 'coach-auth-choice';
+          renderStep();
+        };
+      } else if (currentStep === 'user-auth-choice') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnUserAuth" style="background:none;border:none;cursor:pointer;font:inherit;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              <span>Back</span>
+            </button>
+            <div class="main-card">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Continue as User</h2>
+              <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button class="button-primary" id="userEmailSignupBtn">Sign up with Email</button>
+                <button class="button-secondary" id="userEmailLoginBtn">Log in with Email</button>
+                <button class="button-secondary" id="userDiscordBtn">Sign up with Discord</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('backBtnUserAuth').onclick = () => {
+          currentStep = 'select-type';
+          renderStep();
+        };
+        document.getElementById('userEmailSignupBtn').onclick = () => {
           currentStep = 'user-email-signup';
+          renderStep();
+        };
+        document.getElementById('userEmailLoginBtn').onclick = () => {
+          currentStep = 'user-email-login';
           renderStep();
         };
         document.getElementById('userDiscordBtn').onclick = () => {
@@ -431,37 +464,6 @@
           } else {
             window.location.href = '/auth/discord/user';
           }
-        };
-        document.getElementById('coachSignupBtn').onclick = () => {
-          currentStep = 'coach-email-signup';
-          renderStep();
-        };
-        document.getElementById('coachDiscordBtn').onclick = () => {
-          // Discord OAuth flow for coach
-          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                        window.navigator.standalone ||
-                        document.referrer.includes('android-app://');
-          if (isPWA) {
-            const clientId = '1362382273369997462';
-            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing-coach.html';
-            const scope = 'identify email';
-            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
-            if ('serviceWorker' in navigator) {
-              navigator.serviceWorker.getRegistrations().then(registrations => {
-                registrations.forEach(registration => registration.unregister());
-                window.location.href = discordOAuthUrl;
-              });
-            } else {
-              window.location.href = discordOAuthUrl;
-            }
-          } else {
-            window.location.href = '/auth/discord';
-          }
-        };
-        document.getElementById('influencerCard').onclick = () => {
-          userType = 'influencer';
-          currentStep = 'influencer-question';
-          renderStep();
         };
       } else if (currentStep === 'user-email-signup') {
         stepContainer.innerHTML = `
@@ -491,6 +493,80 @@
           renderStep();
         };
         addEmailSignupLogic();
+      } else if (currentStep === 'user-email-login') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnUserLogin" style="background:none;border:none;cursor:pointer;font:inherit;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              <span>Back</span>
+            </button>
+            <div class="main-card animate-slide-in">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Log In with Email</h2>
+              <form id="userEmailLoginForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
+                <input type="email" id="userLoginEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <input type="password" id="userLoginPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <button type="submit" class="button-primary" id="userLoginSubmitBtn">Log In</button>
+                <div id="userEmailLoginMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
+              </form>
+            </div>
+          </div>
+        `;
+        document.getElementById('backBtnUserLogin').onclick = () => {
+          currentStep = 'user-auth-choice';
+          renderStep();
+        };
+        addUserEmailLoginLogic();
+      } else if (currentStep === 'coach-auth-choice') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnCoachAuth" style="background:none;border:none;cursor:pointer;font:inherit;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              <span>Back</span>
+            </button>
+            <div class="main-card">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Continue as Coach</h2>
+              <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button class="button-primary" id="coachEmailSignupBtn">Sign up with Email</button>
+                <button class="button-secondary" id="coachEmailLoginBtn">Log in with Email</button>
+                <button class="button-secondary" id="coachDiscordBtn">Sign up with Discord</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('backBtnCoachAuth').onclick = () => {
+          currentStep = 'select-type';
+          renderStep();
+        };
+        document.getElementById('coachEmailSignupBtn').onclick = () => {
+          currentStep = 'coach-email-signup';
+          renderStep();
+        };
+        document.getElementById('coachEmailLoginBtn').onclick = () => {
+          currentStep = 'coach-email-login';
+          renderStep();
+        };
+        document.getElementById('coachDiscordBtn').onclick = () => {
+          // Discord OAuth flow for coach
+          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone ||
+                        document.referrer.includes('android-app://');
+          if (isPWA) {
+            const clientId = '1362382273369997462';
+            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing-coach.html';
+            const scope = 'identify email';
+            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+                window.location.href = discordOAuthUrl;
+              });
+            } else {
+              window.location.href = discordOAuthUrl;
+            }
+          } else {
+            window.location.href = '/auth/discord';
+          }
+        };
       } else if (currentStep === 'coach-email-signup') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4">
@@ -519,258 +595,29 @@
           renderStep();
         };
         addCoachEmailSignupLogic();
-      } else if (currentStep === 'influencer-question') {
+      } else if (currentStep === 'coach-email-login') {
         stepContainer.innerHTML = `
-          <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+          <div class="w-full max-w-2xl mx-auto px-4">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnCoachLogin" style="background:none;border:none;cursor:pointer;font:inherit;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
-            <div class="main-card">
-              <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Do you have more than 5,000 followers on any social media platform?</h2>
-              <div class="w-32 h-32 mx-auto mb-8 animate-float">
-                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xNyA5TDEwIDE2TDcgMTMiIHN0cm9rZT0iIzNBODZGRiIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xMiAyMkM2LjQ3NzE1IDIyIDIgMTcuNTIyOCAyIDEyQzIgNi40NzcxNSA2LjQ3NzE1IDIgMTIgMkMxNy41MjI4IDIgMjIgNi40NzcxNSAyMiAxMkMyMiAxNy41MjI4IDE3LjUyMjggMjIgMTIgMjJaIiBzdHJva2U9IiMzQTg2RkYiIHN0cm9rZS13aWR0aD0iMS41Ii8+PC9zdmc+Cg==" alt="Followers Count" class="w-full h-full" />
-              </div>
-              <div class="flex flex-col md:flex-row gap-4 justify-center">
-                <button class="button-primary" id="yesFollowers">Yes, I have 5,000+ followers</button>
-                <button class="button-secondary" id="noFollowers">Not yet</button>
-              </div>
+            <div class="main-card animate-slide-in">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Log In as Coach with Email</h2>
+              <form id="coachEmailLoginForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
+                <input type="email" id="coachLoginEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <input type="password" id="coachLoginPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <button type="submit" class="button-primary" id="coachLoginSubmitBtn">Log In</button>
+                <div id="coachEmailLoginMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
+              </form>
             </div>
           </div>
         `;
-        document.getElementById('backBtn').onclick = () => {
-          currentStep = 'select-type';
-          userType = null;
+        document.getElementById('backBtnCoachLogin').onclick = () => {
+          currentStep = 'coach-auth-choice';
           renderStep();
         };
-        document.getElementById('yesFollowers').onclick = () => {
-          hasEnoughFollowers = true;
-          currentStep = 'user-message';
-          renderStep();
-        };
-        document.getElementById('noFollowers').onclick = () => {
-          hasEnoughFollowers = false;
-          currentStep = 'user-message';
-          renderStep();
-        };
-      } else if (currentStep === 'user-message') {
-        if (userType === 'user') {
-          stepContainer.innerHTML = `
-            <div class="w-full max-w-2xl mx-auto px-4">
-              <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
-                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-                <span>Back</span>
-              </button>
-              <div class="main-card animate-slide-in">
-                <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Welcome to Your Self-Improvement Journey!</h2>
-                <div class="w-32 h-32 mx-auto mb-6 animate-float">
-                  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAyMlYxOE0xMiAxOEMxMC4zMTMxIDE4IDkgMTYuNjg2OSA5IDE1QzkgMTMuMzEzMSAxMC4zMTMxIDEyIDEyQzEzLjY4NjkgMTIgMTUgMTMuMzEzMSAxNSAxNUMxNSAxNi42ODY5IDEzLjY4NjkgMTggMTIgMThNMTIgOEMxMS40NDc3IDggMTEgNy41NTIyOCAxMSA3QzExIDYuNDQ3NzIgMTEuNDQ3NyA2IDEyIDZDMTIuNTUyMyA2IDEzIDYuNDQ3NzIgMTMgN0MxMyA3LjU1MjI4IDEyLjU1MjMgOCAxMiA4Wk0xMiA4VjEyIiBzdHJva2U9IiMzQTg2RkYiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgc3Ryb2tlPSIjM0E4NkZGIiBzdHJva2Utd2lkdGg9IjEuNSIvPjwvc3ZnPg==" alt="User Journey" class="w-full h-full" />
-                </div>
-                <p class="text-center text-muted-foreground mb-8">You're in the right place! Our self-improvement platform connects you with expert coaches to help you reach your personal and professional goals.</p>
-                <p class="text-center font-medium mb-8">For the best experience, install our app and sign up to get started.</p>
-                <div class="flex flex-col md:flex-row gap-4 justify-center">
-                  <button class="button-primary" id="installApp" style="display:inline-block;">Install App</button>
-                  <span id="installStatus" style="margin-left:1em;font-weight:500;color:#3A86FF;"></span>
-                  <button class="button-secondary" id="alreadyInApp">I'm Already in the App</button>
-                </div>
-              </div>
-            </div>
-          `;
-          document.getElementById('backBtn').onclick = () => {
-            currentStep = 'select-type';
-            userType = null;
-            renderStep();
-          };
-          // PWA install logic
-          let deferredPrompt = null;
-          const installBtn = document.getElementById('installApp');
-          const installStatus = document.getElementById('installStatus');
-          window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            installBtn.style.display = 'inline-block';
-          });
-          installBtn.onclick = async () => {
-            if (!deferredPrompt) return;
-            installStatus.textContent = 'Installing...';
-            installBtn.disabled = true;
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            installBtn.style.display = 'none';
-            if (outcome === 'accepted') {
-              installStatus.textContent = 'Installed!';
-            } else {
-              installStatus.textContent = 'Install dismissed.';
-            }
-            setTimeout(() => { installStatus.textContent = ''; }, 2500);
-          };
-          window.addEventListener('appinstalled', () => {
-            installBtn.style.display = 'none';
-            installStatus.textContent = 'Installed!';
-            setTimeout(() => { installStatus.textContent = ''; }, 2500);
-          });
-          document.getElementById('alreadyInApp').onclick = () => {
-            // Show a new block for Discord signup
-            stepContainer.innerHTML = `
-              <div class="w-full max-w-2xl mx-auto px-4">
-                <div class="main-card animate-slide-in">
-                  <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Sign Up to Continue</h2>
-                  <p class="text-center text-muted-foreground mb-8">To access your dashboard and features, please sign up with Discord.</p>
-                  <div class="flex flex-col md:flex-row gap-4 justify-center" id="email-signup-container">
-                    <form id="emailSignupForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
-                      <input type="email" id="signupEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                      <input type="password" id="signupPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                      <div id="codeSection" style="display:none;flex-direction:column;gap:0.5rem;">
-                        <input type="text" id="signupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                        <button type="button" id="resendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
-                      </div>
-                      <button type="submit" class="button-primary" id="signupSubmitBtn">Sign Up with Email</button>
-                      <button type="button" id="verifyCodeBtn" class="button-primary" style="display:none;">Verify Code</button>
-                      <div id="emailSignupMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            `;
-            document.getElementById('signupSubmitBtn').onclick = () => {
-              const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                            window.navigator.standalone ||
-                            document.referrer.includes('android-app://');
-              if (isPWA) {
-                const clientId = '1362382273369997462';
-                const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing.html';
-                const scope = 'identify email';
-                const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
-                if ('serviceWorker' in navigator) {
-                  navigator.serviceWorker.getRegistrations().then(registrations => {
-                    registrations.forEach(registration => registration.unregister());
-                    window.location.href = discordOAuthUrl;
-                  });
-                } else {
-                  window.location.href = discordOAuthUrl;
-                }
-              } else {
-                window.location.href = '/auth/discord/user';
-              }
-            };
-            document.getElementById('resendCodeBtn').onclick = () => {
-              // Implement resend code logic
-            };
-            document.getElementById('verifyCodeBtn').onclick = () => {
-              // Implement verify code logic
-            };
-          };
-        } else if (userType === 'influencer') {
-          if (hasEnoughFollowers) {
-            stepContainer.innerHTML = `
-              <div class="w-full max-w-2xl mx-auto px-4">
-                <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-                  <span>Back</span>
-                </button>
-                <div class="main-card animate-slide-in">
-                  <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Perfect! You're Ready to Join as a Coach</h2>
-                  <div class="w-32 h-32 mx-auto mb-6 animate-float">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0yMiAxM1YxNkgxNkMyMCAxNi4wMDAzIDIyIDE0IDIyIDEzWiIgc3Ryb2tlPSIjNENDOUYwIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PHBhdGggZD0iTTIyIDhWMTEiIHN0cm9rZT0iIzRDQzlGMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxwYXRoIGQ9Ik0xMiAyQzE2LjQxODMgMiAyMCA1LjU4MTcyIDIwIDEwQzIwIDE0LjQxODMgMTYuNDE4MyAxOCAxMiAxOEM3LjU4MTcyIDE4IDQgMTQuNDE4MyA0IDEwQzQgNS41ODE3MiA3LjU4MTcyIDIgMTIgMloiIHN0cm9rZT0iIzRDQzlGMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPjwvc3ZnPg==" alt="Coach Success" class="w-full h-full" />
-                  </div>
-                  <p class="text-center text-muted-foreground mb-8">With your established audience, you're positioned to make a real impact on our platform. You'll be able to share your expertise, build your client base, and grow your coaching business.</p>
-                  <div class="flex flex-col md:flex-row gap-4 justify-center">
-                    <button class="button-primary" id="signupCoach">Signup with Discord</button>
-                    <button class="button-secondary" id="backBtn2">Go Back</button>
-                  </div>
-                </div>
-              </div>
-            `;
-            document.getElementById('backBtn').onclick = () => {
-              currentStep = 'influencer-question';
-              hasEnoughFollowers = null;
-              renderStep();
-            };
-            document.getElementById('backBtn2').onclick = () => {
-              currentStep = 'influencer-question';
-              hasEnoughFollowers = null;
-              renderStep();
-            };
-            document.getElementById('signupCoach').onclick = () => {
-              // Backend logic for coach signup (like index_old.html)
-              const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                            window.navigator.standalone ||
-                            document.referrer.includes('android-app://');
-              if (isPWA) {
-                // Discord OAuth2 URL for coach PWA
-                const clientId = '1362382273369997462';
-                const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing-coach.html';
-                const scope = 'identify email';
-                const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
-                if ('serviceWorker' in navigator) {
-                  navigator.serviceWorker.getRegistrations().then(registrations => {
-                    registrations.forEach(registration => registration.unregister());
-                    window.location.href = discordOAuthUrl;
-                  });
-                } else {
-                  window.location.href = discordOAuthUrl;
-                }
-              } else {
-                window.location.href = '/auth/discord';
-              }
-            };
-          } else {
-            stepContainer.innerHTML = `
-              <div class="w-full max-w-2xl mx-auto px-4">
-                <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
-                  <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-                  <span>Back</span>
-                </button>
-                <div class="main-card animate-slide-in">
-                  <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Keep Growing Your Audience!</h2>
-                  <div class="w-32 h-32 mx-auto mb-6 animate-pulse-soft">
-                    <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xNiAxNkwxMiAyMkw4IDE2IiBzdHJva2U9IiM0Q0M5RjAiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48cGF0aCBkPSJNMTIgMlYxOCIgc3Ryb2tlPSIjNENDOUYwIiBzdHJva2Utd2lkdGg9IjEuNSIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+PC9zdmc+Cg==" alt="Growth Icon" class="w-full h-full" />
-                  </div>
-                  <p class="text-center text-muted-foreground mb-8">We love your enthusiasm! Our coach platform is currently designed for influencers with established audiences of 5,000+ followers.</p>
-                  <p class="text-center font-medium mb-8">In the meantime, we encourage you to join as a user and experience the platform from the client side while you grow your following.</p>
-                  <div class="flex flex-col md:flex-row gap-4 justify-center">
-                    <button class="button-primary" id="signupUser">Signup as a user with Discord</button>
-                    <button class="button-secondary" id="backBtn2">Go Back</button>
-                  </div>
-                </div>
-              </div>
-            `;
-            document.getElementById('backBtn').onclick = () => {
-              currentStep = 'influencer-question';
-              hasEnoughFollowers = null;
-              renderStep();
-            };
-            document.getElementById('backBtn2').onclick = () => {
-              currentStep = 'influencer-question';
-              hasEnoughFollowers = null;
-              renderStep();
-            };
-            document.getElementById('signupUser').onclick = () => {
-              // Backend logic for user signup (like coach signup)
-              const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                            window.navigator.standalone ||
-                            document.referrer.includes('android-app://');
-              if (isPWA) {
-                // Discord OAuth2 URL for user PWA
-                const clientId = '1362382273369997462';
-                const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing.html';
-                const scope = 'identify email';
-                const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
-                if ('serviceWorker' in navigator) {
-                  navigator.serviceWorker.getRegistrations().then(registrations => {
-                    registrations.forEach(registration => registration.unregister());
-                    window.location.href = discordOAuthUrl;
-                  });
-                } else {
-                  window.location.href = discordOAuthUrl;
-                }
-              } else {
-                window.location.href = '/auth/discord/user';
-              }
-            };
-          }
-        }
+        addCoachEmailLoginLogic();
       }
     }
     renderStep();
@@ -940,6 +787,72 @@
           msg.textContent = 'Network error.';
         }
         resendBtn.disabled = false;
+      };
+    }
+    function addUserEmailLoginLogic() {
+      const form = document.getElementById('userEmailLoginForm');
+      const emailInput = document.getElementById('userLoginEmail');
+      const passwordInput = document.getElementById('userLoginPassword');
+      const loginBtn = document.getElementById('userLoginSubmitBtn');
+      const msg = document.getElementById('userEmailLoginMsg');
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        loginBtn.disabled = true;
+        msg.textContent = '';
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) { msg.textContent = 'Email and password required.'; loginBtn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          const data = await res.json();
+          if (res.ok && data.success && data.token) {
+            msg.textContent = 'Login successful! Redirecting...';
+            localStorage.setItem('userToken', data.token);
+            setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
+          } else {
+            msg.textContent = data.error || 'Login failed.';
+          }
+        } catch (err) {
+          msg.textContent = 'Network error.';
+        }
+        loginBtn.disabled = false;
+      };
+    }
+    function addCoachEmailLoginLogic() {
+      const form = document.getElementById('coachEmailLoginForm');
+      const emailInput = document.getElementById('coachLoginEmail');
+      const passwordInput = document.getElementById('coachLoginPassword');
+      const loginBtn = document.getElementById('coachLoginSubmitBtn');
+      const msg = document.getElementById('coachEmailLoginMsg');
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        loginBtn.disabled = true;
+        msg.textContent = '';
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) { msg.textContent = 'Email and password required.'; loginBtn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, role: 'coach' })
+          });
+          const data = await res.json();
+          if (res.ok && data.success && data.token) {
+            msg.textContent = 'Login successful! Redirecting...';
+            localStorage.setItem('coachToken', data.token);
+            setTimeout(() => { window.location.href = '/coach_dashboard.html'; }, 1200);
+          } else {
+            msg.textContent = data.error || 'Login failed.';
+          }
+        } catch (err) {
+          msg.textContent = 'Network error.';
+        }
+        loginBtn.disabled = false;
       };
     }
     // Call this after rendering the step with Discord signup
