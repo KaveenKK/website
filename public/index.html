@@ -481,14 +481,14 @@
                 <input type="email" id="signupEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
                 <input type="password" id="signupPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
                 <input type="hidden" id="signupEmailHidden" />
-                <div id="codeSection" style="display:none;flex-direction:column;gap:0.5rem;">
-                  <input type="text" id="signupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                  <button type="button" id="resendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
-                </div>
                 <button type="submit" class="button-primary" id="signupSubmitBtn">Sign Up</button>
-                <button type="button" id="verifyCodeBtn" class="button-primary" style="display:none;">Verify Code</button>
                 <div id="emailSignupMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
               </form>
+              <div id="codeSection" style="display:none;flex-direction:column;gap:0.5rem;margin-top:1.2rem;">
+                <input type="text" id="signupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <button type="button" id="resendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
+                <button type="button" id="verifyCodeBtn" class="button-primary" style="margin-top:0.7rem;">Verify Code</button>
+              </div>
             </div>
           </div>
         `;
