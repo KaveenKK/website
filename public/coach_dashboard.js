@@ -6,11 +6,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Persist and retrieve token
   const params = new URLSearchParams(window.location.search);
   let token = params.get('token');
+  console.log('[DEBUG] URL token:', token);
   if (token) {
     localStorage.setItem('coachToken', token);
+    console.log('[DEBUG] Saved coachToken to localStorage:', token);
     history.replaceState({}, '', window.location.pathname);
   }
   token = token || localStorage.getItem('coachToken');
+  console.log('[DEBUG] Final coachToken in use:', token);
   if (!token) {
     alert('You must log in first');
     return window.location.href = '/auth/discord';
