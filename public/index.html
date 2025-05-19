@@ -382,7 +382,8 @@
                   </div>
                   <h3 class="text-xl font-bold text-center mb-4">I'm Looking for Guidance</h3>
                   <p class="text-center text-muted-foreground mb-6">Get personalized coaching, discover new routines, and track your progress on your self-improvement journey.</p>
-                  <button class="button-primary w-full">Select</button>
+                  <button class="button-primary w-full" id="userSignupBtn">Sign up with Email</button>
+                  <button class="button-secondary w-full" id="userDiscordBtn">Sign up with Discord</button>
                 </div>
               </div>
               <div class="main-card cursor-pointer" id="influencerCard">
@@ -392,7 +393,8 @@
                   </div>
                   <h3 class="text-xl font-bold text-center mb-4">I'm an Influencer/Coach</h3>
                   <p class="text-center text-muted-foreground mb-6">Share your expertise, build your client base, and grow your online presence with our coaching platform.</p>
-                  <button class="button-primary w-full">Select</button>
+                  <button class="button-primary w-full" id="coachSignupBtn">Sign up with Email</button>
+                  <button class="button-secondary w-full" id="coachDiscordBtn">Sign up with Discord</button>
                 </div>
               </div>
             </div>
@@ -404,16 +406,119 @@
           if (grid) grid.style.gridTemplateColumns = '1fr';
           if (grid) grid.style.gap = '1rem';
         }
-        document.getElementById('userCard').onclick = () => {
-          userType = 'user';
-          currentStep = 'user-message';
+        document.getElementById('userSignupBtn').onclick = () => {
+          currentStep = 'user-email-signup';
           renderStep();
+        };
+        document.getElementById('userDiscordBtn').onclick = () => {
+          // Discord OAuth flow for user
+          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone ||
+                        document.referrer.includes('android-app://');
+          if (isPWA) {
+            const clientId = '1362382273369997462';
+            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing.html';
+            const scope = 'identify email';
+            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+                window.location.href = discordOAuthUrl;
+              });
+            } else {
+              window.location.href = discordOAuthUrl;
+            }
+          } else {
+            window.location.href = '/auth/discord/user';
+          }
+        };
+        document.getElementById('coachSignupBtn').onclick = () => {
+          currentStep = 'coach-email-signup';
+          renderStep();
+        };
+        document.getElementById('coachDiscordBtn').onclick = () => {
+          // Discord OAuth flow for coach
+          const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                        window.navigator.standalone ||
+                        document.referrer.includes('android-app://');
+          if (isPWA) {
+            const clientId = '1362382273369997462';
+            const redirectUri = 'https://www.nevengi.com/pwa-oauth-landing-coach.html';
+            const scope = 'identify email';
+            const discordOAuthUrl = `https://discord.com/api/oauth2/authorize?client_id=${encodeURIComponent(clientId)}&redirect_uri=${encodeURIComponent(redirectUri)}&response_type=code&scope=${encodeURIComponent(scope)}`;
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.getRegistrations().then(registrations => {
+                registrations.forEach(registration => registration.unregister());
+                window.location.href = discordOAuthUrl;
+              });
+            } else {
+              window.location.href = discordOAuthUrl;
+            }
+          } else {
+            window.location.href = '/auth/discord';
+          }
         };
         document.getElementById('influencerCard').onclick = () => {
           userType = 'influencer';
           currentStep = 'influencer-question';
           renderStep();
         };
+      } else if (currentStep === 'user-email-signup') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              <span>Back</span>
+            </button>
+            <div class="main-card animate-slide-in">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Sign Up with Email</h2>
+              <form id="emailSignupForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
+                <input type="email" id="signupEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <input type="password" id="signupPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <div id="codeSection" style="display:none;flex-direction:column;gap:0.5rem;">
+                  <input type="text" id="signupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                  <button type="button" id="resendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
+                </div>
+                <button type="submit" class="button-primary" id="signupSubmitBtn">Sign Up</button>
+                <button type="button" id="verifyCodeBtn" class="button-primary" style="display:none;">Verify Code</button>
+                <div id="emailSignupMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
+              </form>
+            </div>
+          </div>
+        `;
+        document.getElementById('backBtn').onclick = () => {
+          currentStep = 'select-type';
+          renderStep();
+        };
+        addEmailSignupLogic();
+      } else if (currentStep === 'coach-email-signup') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4">
+            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
+              <span>Back</span>
+            </button>
+            <div class="main-card animate-slide-in">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Sign Up as Coach with Email</h2>
+              <form id="coachEmailSignupForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
+                <input type="email" id="coachSignupEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <input type="password" id="coachSignupPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                <div id="coachCodeSection" style="display:none;flex-direction:column;gap:0.5rem;">
+                  <input type="text" id="coachSignupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
+                  <button type="button" id="coachResendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
+                </div>
+                <button type="submit" class="button-primary" id="coachSignupSubmitBtn">Sign Up</button>
+                <button type="button" id="coachVerifyCodeBtn" class="button-primary" style="display:none;">Verify Code</button>
+                <div id="coachEmailSignupMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
+              </form>
+            </div>
+          </div>
+        `;
+        document.getElementById('backBtn').onclick = () => {
+          currentStep = 'select-type';
+          renderStep();
+        };
+        addCoachEmailSignupLogic();
       } else if (currentStep === 'influencer-question') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
@@ -459,7 +564,7 @@
               <div class="main-card animate-slide-in">
                 <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Welcome to Your Self-Improvement Journey!</h2>
                 <div class="w-32 h-32 mx-auto mb-6 animate-float">
-                  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAyMlYxOE0xMiAxOEMxMC4zMTMxIDE4IDkgMTYuNjg2OSA5IDE1QzkgMTMuMzEzMSAxMC4zMTMxIDEyIDEyIDEyQzEzLjY4NjkgMTIgMTUgMTMuMzEzMSAxNSAxNUMxNSAxNi42ODY5IDEzLjY4NjkgMTggMTIgMThNMTIgOEMxMS40NDc3IDggMTEgNy41NTIyOCAxMSA3QzExIDYuNDQ3NzIgMTEuNDQ3NyA2IDEyIDZDMTIuNTUyMyA2IDEzIDYuNDQ3NzIgMTMgN0MxMyA3LjU1MjI4IDEyLjU1MjMgOCAxMiA4Wk0xMiA4VjEyIiBzdHJva2U9IiMzQTg2RkYiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgc3Ryb2tlPSIjM0E4NkZGIiBzdHJva2Utd2lkdGg9IjEuNSIvPjwvc3ZnPg==" alt="User Journey" class="w-full h-full" />
+                  <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAyMlYxOE0xMiAxOEMxMC4zMTMxIDE4IDkgMTYuNjg2OSA5IDE1QzkgMTMuMzEzMSAxMC4zMTMxIDEyIDEyQzEzLjY4NjkgMTIgMTUgMTMuMzEzMSAxNSAxNUMxNSAxNi42ODY5IDEzLjY4NjkgMTggMTIgMThNMTIgOEMxMS40NDc3IDggMTEgNy41NTIyOCAxMSA3QzExIDYuNDQ3NzIgMTEuNDQ3NyA2IDEyIDZDMTIuNTUyMyA2IDEzIDYuNDQ3NzIgMTMgN0MxMyA3LjU1MjI4IDEyLjU1MjMgOCAxMiA4Wk0xMiA4VjEyIiBzdHJva2U9IiMzQTg2RkYiIHN0cm9rZS13aWR0aD0iMS41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz48Y2lyY2xlIGN4PSIxMiIgY3k9IjEyIiByPSIxMCIgc3Ryb2tlPSIjM0E4NkZGIiBzdHJva2Utd2lkdGg9IjEuNSIvPjwvc3ZnPg==" alt="User Journey" class="w-full h-full" />
                 </div>
                 <p class="text-center text-muted-foreground mb-8">You're in the right place! Our self-improvement platform connects you with expert coaches to help you reach your personal and professional goals.</p>
                 <p class="text-center font-medium mb-8">For the best experience, install our app and sign up to get started.</p>
@@ -740,6 +845,90 @@
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            msg.textContent = 'Verification code resent.';
+          } else {
+            msg.textContent = data.error || 'Resend failed.';
+          }
+        } catch (err) {
+          msg.textContent = 'Network error.';
+        }
+        resendBtn.disabled = false;
+      };
+    }
+    function addCoachEmailSignupLogic() {
+      const form = document.getElementById('coachEmailSignupForm');
+      const emailInput = document.getElementById('coachSignupEmail');
+      const passwordInput = document.getElementById('coachSignupPassword');
+      const codeSection = document.getElementById('coachCodeSection');
+      const codeInput = document.getElementById('coachSignupCode');
+      const signupBtn = document.getElementById('coachSignupSubmitBtn');
+      const verifyBtn = document.getElementById('coachVerifyCodeBtn');
+      const msg = document.getElementById('coachEmailSignupMsg');
+      const resendBtn = document.getElementById('coachResendCodeBtn');
+      let email = '';
+      form.onsubmit = async (e) => {
+        e.preventDefault();
+        signupBtn.disabled = true;
+        msg.textContent = '';
+        email = emailInput.value.trim();
+        const password = passwordInput.value;
+        if (!email || !password) { msg.textContent = 'Email and password required.'; signupBtn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, role: 'coach' })
+          });
+          const data = await res.json();
+          if (res.ok && data.success) {
+            codeSection.style.display = 'flex';
+            signupBtn.style.display = 'none';
+            verifyBtn.style.display = 'inline-block';
+            msg.textContent = 'Verification code sent to your email.';
+          } else {
+            msg.textContent = data.error || 'Signup failed.';
+          }
+        } catch (err) {
+          msg.textContent = 'Network error.';
+        }
+        signupBtn.disabled = false;
+      };
+      verifyBtn.onclick = async () => {
+        verifyBtn.disabled = true;
+        msg.textContent = '';
+        const code = codeInput.value.trim();
+        if (!email || !code) { msg.textContent = 'Enter the code.'; verifyBtn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-verify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, code, role: 'coach' })
+          });
+          const data = await res.json();
+          if (res.ok && data.success && data.token) {
+            msg.textContent = 'Signup complete! Redirecting...';
+            localStorage.setItem('coachToken', data.token);
+            setTimeout(() => { window.location.href = '/coach_dashboard.html'; }, 1200);
+          } else {
+            msg.textContent = data.error || 'Verification failed.';
+          }
+        } catch (err) {
+          msg.textContent = 'Network error.';
+        }
+        verifyBtn.disabled = false;
+      };
+      resendBtn.onclick = async () => {
+        resendBtn.disabled = true;
+        msg.textContent = '';
+        if (!email) { msg.textContent = 'Enter your email first.'; resendBtn.disabled = false; return; }
+        try {
+          const res = await fetch('/auth/email-resend', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, role: 'coach' })
           });
           const data = await res.json();
           if (res.ok && data.success) {
