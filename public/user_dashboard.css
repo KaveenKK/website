@@ -496,16 +496,16 @@ li {
 }
 
 :root {
-  --color-primary: #232323;
-  --color-secondary: #232323;
-  --color-accent: #232323;
+  --color-primary: #0052FF;
+  --color-secondary: #00F2FE;
+  --color-accent: #FF2A68;
   --color-bg: #F7F8FA;
   --color-card: rgba(255,255,255,0.85);
   --color-glass: rgba(255,255,255,0.65);
   --color-text: #222;
   --color-btn-text: #fff;
-  --color-btn-hover: #232323;
-  --color-highlight: #232323;
+  --color-btn-hover: #FF2A68;
+  --color-highlight: #0052FF;
   --color-soothing: #00F2FE;
 }
 body {
@@ -746,14 +746,14 @@ button.secondary:hover, .btn-secondary:hover {
 :root {
   --tile-size: 90px;
   --tile-gap: 12px;
-  --primary-color: #232323;
-  --accent-color: #232323;
+  --primary-color: #4a90e2;
+  --accent-color: #f5a623;
   --background-color: #f0f4f8;
   --text-color: #333;
   --character-color: #e94e77;
   --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   --notification-bg: #FFF8E1;
-  --notification-border: #232323;
+  --notification-border: #f5a623;
 }
 .tile-grid {
   display: grid;
@@ -864,12 +864,12 @@ button.secondary:hover, .btn-secondary:hover {
   max-width: 280px;
   background: var(--notification-bg);
   border: 2px solid var(--notification-border);
-  box-shadow: 0 6px 18px rgba(35,35,35,0.35);
+  box-shadow: 0 6px 18px rgba(245,166,35,0.35);
   border-radius: 14px;
   padding: 1em 1.2em;
   z-index: 50;
   font-weight: 700;
-  color: #232323;
+  color: #7a4c00;
   font-size: 1rem;
   user-select: none;
   opacity: 0;
