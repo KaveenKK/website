@@ -56,7 +56,6 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
-  <canvas id="starfield-bg"></canvas>
   <script>
     function showPopup(element, number, name) {
       const popup = element.querySelector('.popup');
@@ -1509,39 +1508,4 @@
     <button class="notify-btn" id="enable-notifications-btn">Enable Notifications</button>
   </div>
 </body>
-<script>
-// Starfield effect for background
-(function() {
-  const canvas = document.getElementById('starfield-bg');
-  if (!canvas) return;
-  const ctx = canvas.getContext('2d');
-  let w = window.innerWidth, h = window.innerHeight;
-  let stars = [];
-  function resize() {
-    w = window.innerWidth; h = window.innerHeight;
-    canvas.width = w; canvas.height = h;
-    const STAR_COUNT = Math.floor((w * h) / 1200);
-    stars = Array.from({length: STAR_COUNT}, () => ({
-      x: Math.random() * w,
-      y: Math.random() * h,
-      r: Math.random() * 0.7 + 0.3,
-      o: Math.random() * 0.5 + 0.3
-    }));
-  }
-  function draw() {
-    ctx.clearRect(0,0,w,h);
-    for (const s of stars) {
-      ctx.beginPath();
-      ctx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
-      ctx.fillStyle = `rgba(255,255,255,${s.o})`;
-      ctx.shadowColor = '#fff';
-      ctx.shadowBlur = 2;
-      ctx.fill();
-    }
-  }
-  window.addEventListener('resize', resize);
-  resize();
-  setInterval(draw, 60);
-})();
-</script>
 </html>
