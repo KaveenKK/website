@@ -143,215 +143,223 @@
     }
   });
   </script>
-  <!-- Revolut-style header -->
-  <header class="revolut-header">
-    <div class="header-left">
-      <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" class="profile-avatar">
-      <span id="userName" class="profile-name"></span>
+  <header style="display:flex;align-items:center;justify-content:space-between;background:#008cba;color:white;padding:1rem 2rem;position:relative;">
+    <!-- Hamburger menu for mobile -->
+    <button id="hamburgerMenuBtn" aria-label="Open menu" style="display:none;background:none;border:none;font-size:2rem;color:white;cursor:pointer;margin-right:1rem;z-index:1101;">
+      &#9776;
+    </button>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" style="width:48px;height:48px;border-radius:50%;object-fit:cover;border:2px solid #fff;background:#eee;">
+      <span id="userName" style="font-size:1.3rem;font-weight:bold;"></span>
+      <div style="width:100%;display:flex;justify-content:flex-start;margin-top:0.3em;">
+        <a href="powerhouses.html" id="powerHouseBtnHeader" style="background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.4em 1em;font-size:1em;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:0.5em;box-shadow:0 2px 8px rgba(90,90,214,0.08);transition:background 0.2s;margin-top:0.2em;">
+          <i class="ph ph-house icon-minimal"></i> Power House
+        </a>
+      </div>
     </div>
-    <div class="header-center">
-      <span class="brand-logo" style="font-weight:700;font-size:1.4rem;color:#0052FF;letter-spacing:0.04em;">Nevengi</span>
+    <div id="headerRightBtns" style="display:flex;align-items:center;gap:1rem;">
+      <button id="reportsTopBtn" style="background:#005f7a;">Reports</button>
+      <button id="logoutBtn">Logout</button>
     </div>
-    <div class="header-right">
-      <button id="reportsTopBtn" class="icon-btn"><i class="ph ph-file-text icon-minimal"></i></button>
-      <button id="logoutBtn" class="icon-btn"><i class="ph ph-sign-out icon-minimal"></i></button>
+    <!-- Mobile hamburger dropdown -->
+    <div id="mobileMenu" style="display:none;position:absolute;top:100%;left:0;width:180px;background:#fff;color:#333;box-shadow:0 4px 16px rgba(0,0,0,0.13);border-radius:0 0 8px 8px;z-index:1100;flex-direction:column;overflow:hidden;">
+      <button id="mobilePlansBtn" style="background:none;color:#29acd8;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Plans</button>
+      <button id="mobileSettingsBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Settings</button>
+      <button id="mobileLeadersBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Leaders</button>
+      <button id="mobileStatusBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Status</button>
+      <button id="mobileLogoutBtn" style="background:none;color:#d32f2f;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Logout</button>
     </div>
   </header>
-  <!-- Main Dashboard Card (Balance/Status) -->
-  <div id="dashboard" class="container hidden">
-    <div class="main-card glass-card">
-      <div class="main-balance-row">
-        <div class="main-balance-label">XP</div>
-        <div class="main-balance-value" id="xpAmount">0</div>
-        <div class="main-balance-label">Maples</div>
-        <div class="main-balance-value" id="mapleAmount">0</div>
-        <div class="main-balance-label">Energy</div>
-        <div class="main-balance-value" id="energyAmount">0</div>
-      </div>
-      <div class="progress-bars">
-        <div class="progress-bar-bg"><div class="progress-bar-xp" id="xpBar"></div></div>
-        <div class="progress-bar-bg"><div class="progress-bar-maple" id="mapleBar"></div></div>
-        <div class="progress-bar-bg"><div class="progress-bar-energy" id="energyBar"></div></div>
-      </div>
-      <div class="quick-actions">
-        <button class="quick-action-btn"><i class="ph ph-arrow-up-right"></i> Transfer</button>
-        <button class="quick-action-btn"><i class="ph ph-plus"></i> Top Up</button>
-        <button class="quick-action-btn"><i class="ph ph-repeat"></i> Exchange</button>
-        <button class="quick-action-btn"><i class="ph ph-vault"></i> Vaults</button>
-      </div>
+
+  <!-- Login Screen -->
+  <div id="loginScreen" class="container">
+    <h2>Login with Discord</h2>
+    <button id="loginBtn">Login with Discord</button>
+    <div style="margin-top:1.5rem;">
+      <p style="margin-bottom:0.5rem;color:#008cba;font-weight:500;">For the best experience, use our mobile app!</p>
+      <button id="installAppBtn" style="background:#005f7a;">Install Nevengi App</button>
+      <button id="getStartedBtn" style="background:#008cba;color:#fff;margin-top:1rem;display:none;">Get Started</button>
     </div>
-    <nav class="dashboard-nav">
-      <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i>Explore</button>
-      <button data-tab="rewards"><i class="ph ph-gift icon-minimal"></i>Rewards</button>
-      <button data-tab="leaderboard"><i class="ph ph-trophy icon-minimal"></i>Leaderboard</button>
-      <button data-tab="status"><i class="ph ph-barbell icon-minimal"></i>Status</button>
-      <button data-tab="plans"><i class="ph ph-credit-card icon-minimal"></i>Plans</button>
-      <button data-tab="reports"><i class="ph ph-file-text icon-minimal"></i>Reports</button>
-      <button data-tab="decision-helper"><i class="ph ph-lightbulb icon-minimal"></i>Helper</button>
-      <button data-tab="home"><i class="ph ph-house icon-minimal"></i>Home</button>
-      <button data-tab="settings"><i class="ph ph-gear icon-minimal"></i>Settings</button>
-    </nav>
-    <!-- Explore Coaches -->
-    <section id="explore">
-      <h2>Explore Coaches</h2>
-      <ul id="coachList"></ul>
-    </section>
+  </div>
 
-    <!-- Rewards Shop (Shopify) -->
-    <section id="rewards">
-      <h2>Rewards Shop</h2>
-      <div id="newUserReward" style="background:#e6ffe6;border:2px solid #43e97b;padding:1em 1.5em;border-radius:10px;margin-bottom:1.5em;display:none;align-items:center;justify-content:space-between;gap:1em;">
-        <div style="flex:1;">
-          <strong style="font-size:1.1em;color:#2e7d32;">🎉 New User Free XP</strong>
-          <div style="margin-top:0.3em;">Claim <b>200 XP</b> as a welcome gift!</div>
+  <!-- Main Dashboard -->
+  <div id="dashboard" class="container hidden">
+    <div style="flex:1;">
+      <nav class="dashboard-nav">
+        <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i>Explore Coaches</button>
+        <button data-tab="rewards"><i class="ph ph-gift icon-minimal"></i>Rewards Shop</button>
+        <button data-tab="leaderboard"><i class="ph ph-trophy icon-minimal"></i>Leaderboard</button>
+        <button data-tab="status"><i class="ph ph-barbell icon-minimal"></i>My XP & Maples</button>
+        <button data-tab="plans"><i class="ph ph-credit-card icon-minimal"></i>Pricing Plans</button>
+        <button data-tab="reports"><i class="ph ph-file-text icon-minimal"></i>Reports</button>
+        <button data-tab="decision-helper"><i class="ph ph-lightbulb icon-minimal"></i>Decision Helper</button>
+        <button data-tab="home"><i class="ph ph-house icon-minimal"></i>Home</button>
+        <button data-tab="settings"><i class="ph ph-gear icon-minimal"></i>Settings</button>
+        <a href="model.html" class="btn"><i class="ph ph-arrow-right icon-minimal"></i>Go to Page 2</a>
+      </nav>
+
+      <!-- Explore Coaches -->
+      <section id="explore">
+        <h2>Explore Coaches</h2>
+        <ul id="coachList"></ul>
+      </section>
+
+      <!-- Rewards Shop (Shopify) -->
+      <section id="rewards">
+        <h2>Rewards Shop</h2>
+        <div id="newUserReward" style="background:#e6ffe6;border:2px solid #43e97b;padding:1em 1.5em;border-radius:10px;margin-bottom:1.5em;display:none;align-items:center;justify-content:space-between;gap:1em;">
+          <div style="flex:1;">
+            <strong style="font-size:1.1em;color:#2e7d32;">🎉 New User Free XP</strong>
+            <div style="margin-top:0.3em;">Claim <b>200 XP</b> as a welcome gift!</div>
+          </div>
+          <button id="claimNewUserXpBtn" style="background:#43e97b;color:#fff;font-weight:bold;padding:0.5em 1.5em;border-radius:6px;font-size:1em;">Claim</button>
         </div>
-        <button id="claimNewUserXpBtn" style="background:#43e97b;color:#fff;font-weight:bold;padding:0.5em 1.5em;border-radius:6px;font-size:1em;">Claim</button>
-      </div>
-      <div id="shopify-collection"></div>
-    </section>
+        <div id="shopify-collection"></div>
+      </section>
 
-    <!-- Leaderboard -->
-    <section id="leaderboard">
-      <h2>Leaderboard</h2>
-      <ul id="leaderboardList"></ul>
-    </section>
+      <!-- Leaderboard -->
+      <section id="leaderboard">
+        <h2>Leaderboard</h2>
+        <ul id="leaderboardList"></ul>
+      </section>
 
-    <!-- XP & Maples -->
-    <section id="status">
-      <h2>My Status</h2>
-      <div class="status-box">
-        <div style="margin-bottom:1em;">
-          <strong>XP:</strong> <span id="xpAmount">0</span>
-          <div class="progress-bar-wrapper">
-            <div class="progress-bar-bg">
-              <div class="progress-bar-xp" id="xpBar"></div>
+      <!-- XP & Maples -->
+      <section id="status">
+        <h2>My Status</h2>
+        <div class="status-box">
+          <div style="margin-bottom:1em;">
+            <strong>XP:</strong> <span id="xpAmount">0</span>
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-xp" id="xpBar"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <strong>Maples:</strong> <span id="mapleAmount">0</span>
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-maple" id="mapleBar"></div>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:1em;">
+            <strong>Energy:</strong> <span id="energyAmount">0</span>
+            <div class="progress-bar-wrapper">
+              <div class="progress-bar-bg">
+                <div class="progress-bar-energy" id="energyBar" style="background:#ffd600;"></div>
+              </div>
             </div>
           </div>
         </div>
-        <div>
-          <strong>Maples:</strong> <span id="mapleAmount">0</span>
-          <div class="progress-bar-wrapper">
-            <div class="progress-bar-bg">
-              <div class="progress-bar-maple" id="mapleBar"></div>
-            </div>
+      </section>
+
+      <!-- Pricing Plans (PayPal Subscriptions) -->
+      <section id="plans">
+        <h2>Pricing Plans</h2>
+        <div class="pricing-options">
+          <div class="pricing-option">
+            <h3>I'm Broke(General Membership)</h3>
+            <p>
+              <span class="price-usd" data-usd="13.99">$13.99</span>
+              <span class="local-price"></span>
+              / month
+            </p>
+            <ul>
+              <li>Basic resources</li>
+              <li>Community Access</li>
+              <li>Check-ins every 2 weeks</li>
+            </ul>
+            <div id="paypal-button-container-1"></div>
+          </div>
+          <div class="pricing-option">
+            <h3>I'm Serious(Gold Membership)</h3>
+            <p>
+              <span class="price-usd" data-usd="40.00">$40.00</span>
+              <span class="local-price"></span>
+              / month
+            </p>
+            <span class="recommended-label">Recommended</span>
+            <ul>
+              <li>Most resources</li>
+              <li>Premium Community</li>
+              <li>Weekly Check-ins</li>
+            </ul>
+            <div id="paypal-button-container-2"></div>
+          </div>
+          <div class="pricing-option">
+            <h3>I want to be Exclusive(Nevengi Club Membership)</h3>
+            <p>
+              <span class="price-usd" data-usd="129.00">$129.00</span>
+              <span class="local-price"></span>
+              / month
+            </p>
+            <span class="recommended-label">VIP</span>
+            <ul>
+              <li>Nevengi Club Card</li>
+              <li>All resources</li>
+              <li>VIP Community</li>
+              <li>2× Weekly Check-ins</li>
+              <li>Priority Support</li>
+            </ul>
+            <div id="paypal-button-container-3"></div>
+          </div>
+          <div class="pricing-option">
+            <h3>Buy Maples (One-Time)</h3>
+            <p>
+              <span class="price-usd" data-usd="5.00">$5.00</span>
+              <span class="local-price"></span>
+              <span style="font-size:0.95em;color:#888;">/ one-time</span>
+            </p>
+            <ul>
+              <li>Get 100 Maples instantly</li>
+              <li>One-time purchase, not a subscription</li>
+            </ul>
+            <div id="paypal-button-container-maples"></div>
           </div>
         </div>
-        <div style="margin-top:1em;">
-          <strong>Energy:</strong> <span id="energyAmount">0</span>
-          <div class="progress-bar-wrapper">
-            <div class="progress-bar-bg">
-              <div class="progress-bar-energy" id="energyBar" style="background:#ffd600;"></div>
-            </div>
-          </div>
+      </section>
+
+      <!-- Home Tab -->
+      <section id="home" class="active" style="overflow-y:auto; min-height:100vh; background:var(--background-color);">
+        <div id="mythical-habit-home-root"></div>
+        <link rel="stylesheet" href="mythical-habit-home.css">
+        <script src="mythical-habit-home.js"></script>
+      </section>
+
+      <!-- Resources Tab -->
+      <section id="resources">
+        <h2>Resources</h2>
+        <div id="resourcesContainer">Loading resources…</div>
+      </section>
+
+      <!-- Reports -->
+      <section id="reports">
+        <h2>Weekly Reports</h2>
+        <div id="reportsContainer">Loading reports…</div>
+      </section>
+
+      <!-- Decision Helper Tab -->
+      <section id="decision-helper">
+        <decision-helper-ui></decision-helper-ui>
+      </section>
+
+      <!-- Settings -->
+      <section id="settings">
+        <h2>Settings</h2>
+        <div style="margin-bottom:1.5rem;">
+          <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Profile Gender</label>
+          <span id="genderLabel" style="font-size:1.1em;font-weight:500;">-</span>
         </div>
-      </div>
-    </section>
-
-    <!-- Pricing Plans (PayPal Subscriptions) -->
-    <section id="plans">
-      <h2>Pricing Plans</h2>
-      <div class="pricing-options">
-        <div class="pricing-option">
-          <h3>I'm Broke(General Membership)</h3>
-          <p>
-            <span class="price-usd" data-usd="13.99">$13.99</span>
-            <span class="local-price"></span>
-            / month
-          </p>
-          <ul>
-            <li>Basic resources</li>
-            <li>Community Access</li>
-            <li>Check-ins every 2 weeks</li>
-          </ul>
-          <div id="paypal-button-container-1"></div>
+        <div style="margin-bottom:1.5rem;">
+          <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Dark Mode</label>
+          <label class="switch">
+            <input type="checkbox" id="darkModeToggle">
+            <span class="slider"></span>
+          </label>
         </div>
-        <div class="pricing-option">
-          <h3>I'm Serious(Gold Membership)</h3>
-          <p>
-            <span class="price-usd" data-usd="40.00">$40.00</span>
-            <span class="local-price"></span>
-            / month
-          </p>
-          <span class="recommended-label">Recommended</span>
-          <ul>
-            <li>Most resources</li>
-            <li>Premium Community</li>
-            <li>Weekly Check-ins</li>
-          </ul>
-          <div id="paypal-button-container-2"></div>
-        </div>
-        <div class="pricing-option">
-          <h3>I want to be Exclusive(Nevengi Club Membership)</h3>
-          <p>
-            <span class="price-usd" data-usd="129.00">$129.00</span>
-            <span class="local-price"></span>
-            / month
-          </p>
-          <span class="recommended-label">VIP</span>
-          <ul>
-            <li>Nevengi Club Card</li>
-            <li>All resources</li>
-            <li>VIP Community</li>
-            <li>2× Weekly Check-ins</li>
-            <li>Priority Support</li>
-          </ul>
-          <div id="paypal-button-container-3"></div>
-        </div>
-        <div class="pricing-option">
-          <h3>Buy Maples (One-Time)</h3>
-          <p>
-            <span class="price-usd" data-usd="5.00">$5.00</span>
-            <span class="local-price"></span>
-            <span style="font-size:0.95em;color:#888;">/ one-time</span>
-          </p>
-          <ul>
-            <li>Get 100 Maples instantly</li>
-            <li>One-time purchase, not a subscription</li>
-          </ul>
-          <div id="paypal-button-container-maples"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Home Tab -->
-    <section id="home" class="active" style="overflow-y:auto; min-height:100vh; background:var(--background-color);">
-      <div id="mythical-habit-home-root"></div>
-      <link rel="stylesheet" href="mythical-habit-home.css">
-      <script src="mythical-habit-home.js"></script>
-    </section>
-
-    <!-- Resources Tab -->
-    <section id="resources">
-      <h2>Resources</h2>
-      <div id="resourcesContainer">Loading resources…</div>
-    </section>
-
-    <!-- Reports -->
-    <section id="reports">
-      <h2>Weekly Reports</h2>
-      <div id="reportsContainer">Loading reports…</div>
-    </section>
-
-    <!-- Decision Helper Tab -->
-    <section id="decision-helper">
-      <decision-helper-ui></decision-helper-ui>
-    </section>
-
-    <!-- Settings -->
-    <section id="settings">
-      <h2>Settings</h2>
-      <div style="margin-bottom:1.5rem;">
-        <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Profile Gender</label>
-        <span id="genderLabel" style="font-size:1.1em;font-weight:500;">-</span>
-      </div>
-      <div style="margin-bottom:1.5rem;">
-        <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Dark Mode</label>
-        <label class="switch">
-          <input type="checkbox" id="darkModeToggle">
-          <span class="slider"></span>
-        </label>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 
   <!-- PayPal SDK -->
@@ -1321,7 +1329,7 @@
 
   <!-- Add mobile bottom nav -->
   <nav class="mobile-bottom-nav">
-    <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i><div>Explore</div></button>
+    <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i><div>Coaches</div></button>
     <button data-tab="rewards"><i class="ph ph-gift icon-minimal"></i><div>Rewards</div></button>
     <button data-tab="home"><i class="ph ph-house icon-minimal"></i><div>Home</div></button>
     <button data-tab="resources"><i class="ph ph-play-circle icon-minimal"></i><div>Resources</div></button>
