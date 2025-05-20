@@ -376,6 +376,137 @@
       }
       if (token) checkOnboarding();
 
+      // Replace the incomplete profile banner with a multi-step onboarding form
+      async function showOnboardingSlidesIfNeeded() {
+        if (!token) return;
+        const headers = { Authorization: 'Bearer ' + token };
+        const res = await fetch('/api/user-profile', { headers });
+        if (!res.ok) return;
+        const user = await res.json();
+        if (user.identity_completed === false || user.identity_completed === undefined) {
+          // Remove old banner if present
+          const oldBanner = document.getElementById('incompleteProfileBanner');
+          if (oldBanner) oldBanner.remove();
+          // Create onboarding container
+          let onboarding = document.getElementById('onboardingSlidesBanner');
+          if (!onboarding) {
+            onboarding = document.createElement('div');
+            onboarding.id = 'onboardingSlidesBanner';
+            onboarding.style = 'background:linear-gradient(135deg,#fffbe6,#e0f7fa);color:#222;padding:2em 1em 1.5em 1em;text-align:center;font-size:1.1em;font-weight:500;border-radius:16px;margin:1.5em auto 1em auto;max-width:700px;box-shadow:0 2px 16px #0001;position:relative;z-index:10;';
+            onboarding.innerHTML = `
+              <form id="onboardingSlidesForm" style="max-width:600px;margin:0 auto;">
+                <div id="onboardingStep1" class="onboarding-step active" style="display:block;">
+                  <h2 style="font-size:1.5em;margin-bottom:1em;color:#3A86FF;">Rate Your Life Sectors</h2>
+                  <div class="form-group"><label>Physical Health</label><input type="range" name="physical" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Mental & Emotional Wellbeing</label><input type="range" name="mental" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Social Confidence</label><input type="range" name="social" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Love & Relationships</label><input type="range" name="love" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Career or Business</label><input type="range" name="career" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Creative Expression</label><input type="range" name="creative" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Travel / Adventure</label><input type="range" name="travel" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Family & Close Connections</label><input type="range" name="family" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Personal Style & Appearance</label><input type="range" name="style" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="form-group"><label>Spirituality & Mindset</label><input type="range" name="spiritual" min="1" max="10" value="5" oninput="this.nextElementSibling.textContent=this.value"><span>5</span></div>
+                  <div class="btn-group" style="display:flex;justify-content:flex-end;margin-top:1.5em;">
+                    <button type="button" id="onboardingNext1" class="button-primary" style="background:#3A86FF;color:#fff;">Next</button>
+                  </div>
+                </div>
+                <div id="onboardingStep2" class="onboarding-step" style="display:none;">
+                  <h2 style="font-size:1.5em;margin-bottom:1em;color:#3A86FF;">Identity Details</h2>
+                  <div class="form-group"><label>Date of Birth</label><input type="date" name="date_of_birth" required></div>
+                  <div class="form-group"><label>Country</label><input type="text" name="country" required placeholder="Enter your country"></div>
+                  <div class="form-group"><label>Gender</label><select name="gender" required><option value="">Select</option><option value="male">Male</option><option value="female">Female</option></select></div>
+                  <div class="btn-group" style="display:flex;justify-content:space-between;margin-top:1.5em;">
+                    <button type="button" id="onboardingBack2" class="button-secondary" style="background:#eee;color:#3A86FF;">Back</button>
+                    <button type="button" id="onboardingNext2" class="button-primary" style="background:#3A86FF;color:#fff;">Next</button>
+                  </div>
+                </div>
+                <div id="onboardingStep3" class="onboarding-step" style="display:none;">
+                  <h2 style="font-size:1.5em;margin-bottom:1em;color:#3A86FF;">Select the Channels You Like</h2>
+                  <div class="channels-group"><h3>Physical Health 🏋️‍♂️</h3><label><input type="checkbox" name="channel_physical_men"> Physical Fitness for Men</label><label><input type="checkbox" name="channel_physical_women"> Physical Fitness for Women</label><label><input type="checkbox" name="channel_physical_health"> Physical Health</label></div>
+                  <div class="channels-group"><h3>Mental & Emotional Wellbeing 🧘‍♂️</h3><label><input type="checkbox" name="channel_yoga"> Yoga</label><label><input type="checkbox" name="channel_meditation"> Meditation</label></div>
+                  <div class="channels-group"><h3>Social Confidence 🗣️</h3><label><input type="checkbox" name="channel_public_speaking"> Public Speaking</label><label><input type="checkbox" name="channel_social_confidence"> Social Confidence</label><label><input type="checkbox" name="channel_influencing"> Influencing</label></div>
+                  <div class="channels-group"><h3>Love & Relationships ❤️</h3><label><input type="checkbox" name="channel_dating_men"> Dating for Men</label><label><input type="checkbox" name="channel_dating_women"> Dating for Women</label></div>
+                  <div class="channels-group"><h3>Career or Business 💼</h3><label><input type="checkbox" name="channel_entrepreneurship"> Entrepreneurship</label><label><input type="checkbox" name="channel_work_career"> Work and Career</label><label><input type="checkbox" name="channel_ai"> Artificial Intelligence</label></div>
+                  <div class="channels-group"><h3>Creative Expression 🎨</h3><label><input type="checkbox" name="channel_art"> Art</label><label><input type="checkbox" name="channel_music"> Music</label><label><input type="checkbox" name="channel_diy"> DIY & Crafting</label></div>
+                  <div class="channels-group"><h3>Travel / Adventure ✈️</h3><label><input type="checkbox" name="channel_travelling"> Travelling</label><label><input type="checkbox" name="channel_adrenaline"> Adrenaline Adventure</label></div>
+                  <div class="channels-group"><h3>Family & Close Connections 👨‍👩‍👧‍👦</h3><label><input type="checkbox" name="channel_family"> Family and Close Friends</label></div>
+                  <div class="channels-group"><h3>Personal Style & Appearance 👗</h3><label><input type="checkbox" name="channel_fashion"> Appearance and Fashion</label><label><input type="checkbox" name="channel_minimalism"> Minimalism</label></div>
+                  <div class="channels-group"><h3>Spirituality & Mindset 🙏</h3><label><input type="checkbox" name="channel_loa"> Law of Attraction</label><label><input type="checkbox" name="channel_manifestation"> Manifestation and Visualization</label><label><input type="checkbox" name="channel_spirituality"> Spirituality</label><label><input type="checkbox" name="channel_stoicism"> Stoicism and Philosophy</label><label><input type="checkbox" name="channel_gratitude"> Gratitude</label><label><input type="checkbox" name="channel_masculine_energy"> Masculine Energy</label><label><input type="checkbox" name="channel_feminine_energy"> Feminine Energy</label><label><input type="checkbox" name="channel_tarot"> Tarot</label></div>
+                  <div class="form-group" style="margin-top:1.5em;">
+                    <label style="display:flex;align-items:center;gap:10px;">
+                      <input type="checkbox" name="myCheckbox" id="myCheckbox" required>
+                      <span>I have read and understood the <a href="/terms.html" target="_blank" style="color:#3A86FF;text-decoration:underline;">Terms & Conditions</a> of Nevengi and agree to proceed.</span>
+                    </label>
+                    <p style="color:#888;font-size:12px;margin-top:5px;">*required</p>
+                  </div>
+                  <div class="btn-group" style="display:flex;justify-content:space-between;margin-top:1.5em;">
+                    <button type="button" id="onboardingBack3" class="button-secondary" style="background:#eee;color:#3A86FF;">Back</button>
+                    <button type="submit" id="onboardingSubmitBtn" class="button-primary" style="background:#3A86FF;color:#fff;">Submit</button>
+                  </div>
+                </div>
+              </form>
+              <style>
+                .onboarding-step { display:none; }
+                .onboarding-step.active { display:block; }
+                .form-group { margin-bottom:1.2em; }
+                .channels-group { margin-bottom:1.2em; text-align:left; }
+                .channels-group h3 { margin-bottom:0.5em; color:#3A86FF; font-size:1.1em; }
+                .channels-group label { display:inline-block; margin-right:1.2em; margin-bottom:0.5em; font-size:1em; cursor:pointer; }
+                .btn-group button { min-width:110px; font-size:1em; border-radius:8px; border:none; padding:0.7em 1.5em; margin:0 0.2em; }
+              </style>
+            `;
+            const dashboard = document.getElementById('dashboard');
+            dashboard.parentNode.insertBefore(onboarding, dashboard);
+            // Slide navigation logic
+            const stepEls = [
+              document.getElementById('onboardingStep1'),
+              document.getElementById('onboardingStep2'),
+              document.getElementById('onboardingStep3')
+            ];
+            let currentStep = 0;
+            function showStep(idx) {
+              stepEls.forEach((el,i)=>el.style.display=i===idx?'block':'none');
+              currentStep = idx;
+            }
+            showStep(0);
+            document.getElementById('onboardingNext1').onclick = ()=>showStep(1);
+            document.getElementById('onboardingBack2').onclick = ()=>showStep(0);
+            document.getElementById('onboardingNext2').onclick = ()=>showStep(2);
+            document.getElementById('onboardingBack3').onclick = ()=>showStep(1);
+            // Form submit logic
+            document.getElementById('onboardingSlidesForm').onsubmit = async function(e) {
+              e.preventDefault();
+              const form = e.target;
+              const formData = new FormData(form);
+              const data = {};
+              for (const [key, value] of formData.entries()) {
+                if (data[key] !== undefined) {
+                  if (!Array.isArray(data[key])) data[key] = [data[key]];
+                  data[key].push(value);
+                } else {
+                  data[key] = value;
+                }
+              }
+              // Send to backend
+              const res = await fetch('/api/complete-profile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify(data)
+              });
+              if (res.ok) {
+                onboarding.remove();
+                // Optionally reload dashboard data
+                location.reload();
+              } else {
+                alert('Failed to complete profile. Please try again.');
+              }
+            };
+          }
+        }
+      }
+      if (token) showOnboardingSlidesIfNeeded();
+
       // Tab navigation handler for both navs
       function handleTabClick(tab) {
         document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
