@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import Coach from "../models/Coach.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import adminMiddleware from "../middleware/adminMiddleware.js";
+import axios from 'axios';
 
 const router = express.Router();
 
@@ -61,6 +62,7 @@ router.post(
         { new: true }
       );
       if (!coach) return res.status(404).json({ error: "Coach not found" });
+      await sendCoachApprovedNotification(coach);
       res.json({ success: true, coach });
     } catch (err) {
       console.error("❌ Error approving coach:", err);
@@ -68,5 +70,28 @@ router.post(
     }
   }
 );
+
+// Helper to send OneSignal notification to coach
+async function sendCoachApprovedNotification(coach) {
+  if (!process.env.ONESIGNAL_APP_ID || !process.env.NEVENGI_ONESIGNAL_API) return;
+  try {
+    await axios.post('https://onesignal.com/api/v1/notifications', {
+      app_id: process.env.ONESIGNAL_APP_ID,
+      filters: [
+        { field: 'tag', key: 'user_id', relation: '=', value: coach._id.toString() }
+      ],
+      headings: { en: 'You are now an approved coach!' },
+      contents: { en: 'Congratulations! Your coach application has been approved and you are now visible to users.' },
+      url: 'https://www.nevengi.com/coach_dashboard.html',
+    }, {
+      headers: {
+        'Authorization': `Basic ${process.env.NEVENGI_ONESIGNAL_API}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (err) {
+    console.error('❌ OneSignal coach notification error:', err?.response?.data || err.message);
+  }
+}
 
 export default router;

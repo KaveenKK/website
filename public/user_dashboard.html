@@ -27,12 +27,25 @@
         // serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js', // Uncomment if you add this file
       });
       // Show custom prompt if not granted/denied
-      const permission = await OneSignal.Notifications.permissionLevel();
+      const permission = await OneSignal.Notifications.permissionLevel;
       if (permission === 'default') {
         document.getElementById('custom-notify-prompt').style.display = 'block';
       }
-      document.getElementById('enable-notifications-btn').onclick = function() {
-        OneSignal.Notifications.requestPermission();
+      document.getElementById('enable-notifications-btn').onclick = async function() {
+        await OneSignal.Notifications.requestPermission();
+        // After permission, tag user with their _id for push targeting
+        try {
+          const token = localStorage.getItem('userToken');
+          if (token) {
+            const res = await fetch('/api/user-profile', { headers: { Authorization: 'Bearer ' + token } });
+            if (res.ok) {
+              const user = await res.json();
+              if (user && user._id) {
+                OneSignal.User.addTag('user_id', user._id);
+              }
+            }
+          }
+        } catch (e) { /* ignore */ }
         document.getElementById('custom-notify-prompt').style.display = 'none';
       };
     });

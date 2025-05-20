@@ -53,4 +53,17 @@ const userSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Add pre-save hook to update level based on XP
+userSchema.pre('save', function(next) {
+  if (typeof this.xp === 'number') {
+    const oldLevel = this.level || 1;
+    const newLevel = Math.floor(this.xp / 100) + 1;
+    if (newLevel !== oldLevel) {
+      this._levelUp = { oldLevel, newLevel };
+    }
+    this.level = newLevel;
+  }
+  next();
+});
+
 export default mongoose.model("User", userSchema);

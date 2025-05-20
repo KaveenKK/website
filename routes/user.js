@@ -4,6 +4,7 @@ import Coach from "../models/Coach.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import WeeklyReport from '../models/WeeklyReport.js';
 import ExclusiveContent from "../models/ExclusiveContent.js";
+import axios from 'axios';
 
 const router = express.Router();
 
@@ -85,6 +86,15 @@ router.post("/submit", async (req, res) => {
       },
       { upsert: true, new: true }
     );
+    // If XP was updated in this request, check for level up and send notification
+    if (typeof req.body.xp === 'number') {
+      const oldLevel = user.level || 1;
+      user.xp = req.body.xp;
+      await user.save();
+      if (user._levelUp && user._levelUp.newLevel > oldLevel) {
+        await sendLevelUpNotification(user, user._levelUp.newLevel);
+      }
+    }
     return res.json({ message: "Profile updated", user });
   } catch (err) {
     console.error("Update error:", err);
@@ -327,6 +337,29 @@ router.post('/reports/:weekNumber/review', authMiddleware, async (req, res) => {
   }
 });
 
+// Helper to send OneSignal notification on level up
+async function sendLevelUpNotification(user, newLevel) {
+  if (!process.env.ONESIGNAL_APP_ID || !process.env.NEVENGI_ONESIGNAL_API) return;
+  try {
+    await axios.post('https://onesignal.com/api/v1/notifications', {
+      app_id: process.env.ONESIGNAL_APP_ID,
+      filters: [
+        { field: 'tag', key: 'user_id', relation: '=', value: user._id.toString() }
+      ],
+      headings: { en: 'Level Up!' },
+      contents: { en: `Congratulations! You reached level ${newLevel}! 🎉` },
+      url: 'https://www.nevengi.com/user_dashboard.html',
+    }, {
+      headers: {
+        'Authorization': `Basic ${process.env.NEVENGI_ONESIGNAL_API}`,
+        'Content-Type': 'application/json'
+      }
+    });
+  } catch (err) {
+    console.error('❌ OneSignal notification error:', err?.response?.data || err.message);
+  }
+}
+
 /**
  * POST /api/claim-new-user-xp
  * Claim 200 XP as a new user reward
@@ -340,7 +373,11 @@ router.post('/claim-new-user-xp', authMiddleware, async (req, res) => {
     }
     user.xp = (user.xp || 0) + 200;
     user.claimed_new_user_xp = true;
+    const oldLevel = user.level || 1;
     await user.save();
+    if (user._levelUp && user._levelUp.newLevel > oldLevel) {
+      await sendLevelUpNotification(user, user._levelUp.newLevel);
+    }
     return res.json({ success: true, claimed: true });
   } catch (err) {
     console.error('❌ Claim new user XP error:', err);

@@ -75,7 +75,7 @@
       // OneSignal.User.addTag("coach_id", localStorage.getItem('coachId'));
       // OneSignal.User.addTag("discord_id", localStorage.getItem('discordId'));
       // Show custom prompt if not granted/denied
-      const permission = await OneSignal.Notifications.permissionLevel();
+      const permission = await OneSignal.Notifications.permissionLevel;
       if (permission === 'default') {
         document.getElementById('custom-notify-prompt').style.display = 'block';
       }
