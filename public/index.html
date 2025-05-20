@@ -403,7 +403,7 @@
               Find Your <span style="background:linear-gradient(to right, var(--brand-purple), var(--brand-teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Perfect Path</span>
             </h2>
             <div class="ghost-img-wrapper">
-              <img src="images/ghost.png" alt="Ghost" class="ghost-main-img" />
+              <img src="images/nevengicharacterwbc.webp" alt="Ghost" class="ghost-main-img" />
             </div>
             <div class="flex gap-8" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
               <div class="main-card cursor-pointer" id="userCard">
@@ -979,7 +979,11 @@
       }
     });
     function showInstallPopup() {
+      // Remove any existing popup first
+      const existing = document.getElementById('installPopupContainer');
+      if (existing) document.body.removeChild(existing);
       const popup = document.createElement('div');
+      popup.id = 'installPopupContainer';
       popup.style.position = 'fixed';
       popup.style.top = '0';
       popup.style.left = '0';
@@ -999,7 +1003,8 @@
       `;
       document.body.appendChild(popup);
       document.getElementById('closeInstallPopup').onclick = () => {
-        document.body.removeChild(popup);
+        const toRemove = document.getElementById('installPopupContainer');
+        if (toRemove) document.body.removeChild(toRemove);
       };
     }
     function showVerifyErrorPopup(message) {
