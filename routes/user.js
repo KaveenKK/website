@@ -29,11 +29,13 @@ router.post("/submit", async (req, res) => {
     date_of_birth,
     country,
     gender,
+    username,
+    email,
     ...rest
   } = req.body;
 
-  if (!discord_id && !google_id) return res.status(400).json({ error: "Missing discord_id or google_id" });
-  const query = discord_id ? { discord_id: String(discord_id) } : { google_id: String(google_id) };
+  if (!discord_id && !google_id && !email) return res.status(400).json({ error: "Missing discord_id, google_id, or email" });
+  const query = discord_id ? { discord_id: String(discord_id) } : google_id ? { google_id: String(google_id) } : { email: String(email).toLowerCase() };
   console.log("🧪 Incoming form data:", req.body);
 
   // Validate age
@@ -49,6 +51,12 @@ router.post("/submit", async (req, res) => {
   const channels = Object.entries(rest)
     .filter(([key, value]) => key.startsWith("channel_") && value === "on")
     .map(([key]) => key.replace('channel_', ''));
+
+  // Set username to email prefix if missing
+  let finalUsername = username;
+  if ((!finalUsername || finalUsername === 'undefined') && email) {
+    finalUsername = email.split('@')[0];
+  }
 
   try {
     console.log("🧪🧪🧪 Upserting user profile");
@@ -72,6 +80,7 @@ router.post("/submit", async (req, res) => {
           gender,
           identity_completed: true,
           channels,
+          username: finalUsername,
         },
       },
       { upsert: true, new: true }

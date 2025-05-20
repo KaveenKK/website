@@ -91,10 +91,17 @@ app.post('/api/submit', async (req, res) => {
       physical, mental, social, love, career, creative,
       travel, family, style, spiritual, additional,
       date_of_birth, gender, country,
+      username, email,
       ...rest
     } = req.body;
 
-    if (!discord_id) return res.status(400).send('Missing discord_id');
+    if (!discord_id && !email) return res.status(400).send('Missing discord_id or email');
+
+    // Set username to email prefix if missing
+    let finalUsername = username;
+    if ((!finalUsername || finalUsername === 'undefined') && email) {
+      finalUsername = email.split('@')[0];
+    }
 
     // Age validation
     const birthDate = new Date(date_of_birth);
@@ -120,6 +127,7 @@ app.post('/api/submit', async (req, res) => {
           gender, country, date_of_birth: birthDate,
           identity_completed: true,
           channels,
+          username: finalUsername,
         }
       },
       { new: true, upsert: true }

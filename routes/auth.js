@@ -77,10 +77,14 @@ router.get("/discord/user/callback", async (req, res) => {
     // Find or create our User record
     let user = await User.findOne({ discord_id: discordUser.id });
     if (!user) {
+      let username = discordUser.username;
+      if ((!username || username === 'undefined') && discordUser.email) {
+        username = discordUser.email.split('@')[0];
+      }
       user = await User.create({
         discord_id: discordUser.id,
         email: discordUser.email,
-        username: discordUser.username,
+        username,
         avatar: discordUser.avatar || null,
         identity_completed: false,
         xp: 0,
@@ -232,10 +236,14 @@ router.get("/discord/user/pwa-callback", async (req, res) => {
     // Find or create our User record
     let user = await User.findOne({ discord_id: discordUser.id });
     if (!user) {
+      let username = discordUser.username;
+      if ((!username || username === 'undefined') && discordUser.email) {
+        username = discordUser.email.split('@')[0];
+      }
       user = await User.create({
         discord_id: discordUser.id,
         email: discordUser.email,
-        username: discordUser.username,
+        username,
         avatar: discordUser.avatar || null,
         identity_completed: false,
         xp: 0,
@@ -363,6 +371,10 @@ router.post('/email-signup', async (req, res) => {
   const code_expiry = new Date(Date.now() + 15 * 60 * 1000); // 15 min
   let hashedPassword = password;
   if (!user) hashedPassword = await bcrypt.hash(password, 10);
+  let username = user?.username;
+  if ((!username || username === 'undefined') && email) {
+    username = email.split('@')[0];
+  }
   const upsert = await User.findOneAndUpdate(
     { email: email.toLowerCase() },
     {
@@ -373,6 +385,7 @@ router.post('/email-signup', async (req, res) => {
         code_expiry,
         verified: false,
         provider: 'email',
+        username,
       },
     },
     { upsert: true, new: true }
