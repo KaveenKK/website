@@ -287,12 +287,20 @@
       letter-spacing: 0.01em;
     }
     .select-type-top-margin {
-      margin-top: 5.5rem;
+      margin-top: 7rem;
     }
     @media (max-width: 600px) {
       .select-type-top-margin {
-        margin-top: 4.5rem;
+        margin-top: 6rem;
       }
+    }
+    .back-btn-white {
+      color: #fff !important;
+    }
+    .back-btn-white svg {
+      color: #fff !important;
+      fill: #fff !important;
+      stroke: #fff !important;
     }
   </style>
   <meta name="theme-color" content="#000000" />
@@ -506,7 +514,7 @@
       } else if (currentStep === 'user-auth-choice') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnUserAuth" style="background:none;border:none;cursor:pointer;font:inherit;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnUserAuth" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
@@ -558,7 +566,7 @@
         console.log('[DEBUG] Rendering user-email-signup step');
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
@@ -588,7 +596,7 @@
       } else if (currentStep === 'user-email-login') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnUserLogin" style="background:none;border:none;cursor:pointer;font:inherit;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnUserLogin" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
@@ -611,7 +619,7 @@
       } else if (currentStep === 'coach-follower-question') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnCoachFollowers" style="background:none;border:none;cursor:pointer;font:inherit;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnCoachFollowers" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
@@ -642,7 +650,7 @@
       } else if (currentStep === 'coach-insufficient-followers') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnCoachInsufficient" style="background:none;border:none;cursor:pointer;font:inherit;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnCoachInsufficient" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
@@ -676,7 +684,7 @@
       } else if (currentStep === 'coach-auth-choice') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnCoachAuth" style="background:none;border:none;cursor:pointer;font:inherit;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnCoachAuth" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
@@ -727,7 +735,7 @@
       } else if (currentStep === 'coach-email-signup') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
@@ -755,7 +763,7 @@
       } else if (currentStep === 'coach-email-login') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4">
-            <button class="flex items-center text-brand-purple mb-8 hover:underline gap-2" id="backBtnCoachLogin" style="background:none;border:none;cursor:pointer;font:inherit;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnCoachLogin" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
