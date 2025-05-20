@@ -577,7 +577,7 @@
               <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Continue as User</h2>
               <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <button class="button-primary" id="userEmailSignupBtn">Sign up with Email</button>
-                <button class="button-secondary" id="userLoginDiscordBtn">Login with Discord</button>
+                <button class="button-secondary" id="userSignupDiscordBtn">Sign up with Discord</button>
               </div>
             </div>
           </div>
@@ -590,7 +590,7 @@
           currentStep = 'user-email-signup';
           renderStep();
         };
-        document.getElementById('userLoginDiscordBtn').onclick = () => {
+        document.getElementById('userSignupDiscordBtn').onclick = () => {
           // Discord OAuth flow for user
           const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
                         window.navigator.standalone ||
@@ -711,7 +711,7 @@
               <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Continue as Coach</h2>
               <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <button class="button-primary" id="coachEmailSignupBtn">Sign up with Email</button>
-                <button class="button-secondary" id="coachLoginDiscordBtn">Login with Discord</button>
+                <button class="button-secondary" id="coachSignupDiscordBtn">Sign up with Discord</button>
               </div>
             </div>
           </div>
@@ -724,7 +724,7 @@
           currentStep = 'coach-email-signup';
           renderStep();
         };
-        document.getElementById('coachLoginDiscordBtn').onclick = () => {
+        document.getElementById('coachSignupDiscordBtn').onclick = () => {
           // Discord OAuth flow for coach
           const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
                         window.navigator.standalone ||
