@@ -483,20 +483,14 @@
           </div>
         `;
         document.getElementById('installAppBtn').onclick = () => {
-          let deferredPrompt;
           let installPrompted = false;
-          window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-          });
           if (window.deferredPrompt) {
             window.deferredPrompt.prompt();
-            installPrompted = true;
-          } else if (deferredPrompt) {
-            deferredPrompt.prompt();
+            window.deferredPrompt.userChoice.then(() => {
+              window.deferredPrompt = null;
+            });
             installPrompted = true;
           } else {
-            // Show fallback popup for iPhone
             showInstallPopup();
           }
           setTimeout(() => {
@@ -1002,6 +996,12 @@
         btn.disabled = false;
       }
     });
+    // --- PWA INSTALL PROMPT LOGIC ---
+    window.deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      window.deferredPrompt = e;
+    });
     function showInstallPopup() {
       // Remove any existing popup first
       const existing = document.getElementById('installPopupContainer');
@@ -1020,8 +1020,11 @@
       popup.style.zIndex = '9999';
       popup.innerHTML = `
         <div style="background:#fff;padding:2rem 1.5rem;border-radius:1.2rem;max-width:90vw;text-align:center;">
-          <h3 style="margin-bottom:1rem;">How to Install on iPhone</h3>
-          <p style="color:#333;font-size:1.1rem;">If you are using iPhone, click the <b>Share</b> button and choose <b>Add to Home Screen</b> after signing up.</p>
+          <h3 style="margin-bottom:1rem;">How to Install on Safari (iPhone/iPad)</h3>
+          <p style="color:#333;font-size:1.1rem;">If you are using Safari on iPhone or iPad, click the <b>Share</b> button and choose <b>Add to Home Screen</b> after signing up.</p>
+          <hr style="margin:1.5rem 0;opacity:0.2;">
+          <h4 style="margin-bottom:0.7rem;">If you are on Chrome or Edge browser</h4>
+          <p style="color:#333;font-size:1.05rem;">Look for an <b>Install</b> or <b>Add Nevengi to Home screen</b> option in your browser menu (usually in the top right or bottom bar).<br>If you see a pop-up banner, tap <b>Install</b>.</p>
           <button style="margin-top:1.5rem;" class="button-primary" id="closeInstallPopup">Close</button>
         </div>
       `;
