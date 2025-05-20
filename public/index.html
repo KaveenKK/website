@@ -278,6 +278,22 @@
         margin-bottom: 1.5rem;
       }
     }
+    .shiny-white-title {
+      background: linear-gradient(90deg, #fff 0%, #e0eaff 50%, #fff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 0 16px #fff, 0 0 32px #e0eaff, 0 0 2px #fff;
+      letter-spacing: 0.01em;
+    }
+    .select-type-top-margin {
+      margin-top: 5.5rem;
+    }
+    @media (max-width: 600px) {
+      .select-type-top-margin {
+        margin-top: 4.5rem;
+      }
+    }
   </style>
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="/manifest.json" />
@@ -398,9 +414,9 @@
     function renderStep() {
       if (currentStep === 'select-type') {
         stepContainer.innerHTML = `
-          <div class="w-full max-w-4xl mx-auto px-4 animation-fade-in">
-            <h2 class="text-2xl font-bold text-center mb-12">
-              Find Your <span style="background:linear-gradient(to right, var(--brand-purple), var(--brand-teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Perfect Path</span>
+          <div class="w-full max-w-4xl mx-auto px-4 animation-fade-in select-type-top-margin">
+            <h2 class="shiny-white-title text-2xl font-bold text-center mb-12">
+              World's 1st Self Improvement Platform
             </h2>
             <div class="ghost-img-wrapper">
               <img src="images/nevengicharacterwbc.webp" alt="Ghost" class="ghost-main-img" />
