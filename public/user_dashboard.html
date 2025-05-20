@@ -22,14 +22,19 @@
       await OneSignal.init({
         appId: "7572a4ea-e59a-4b7f-b914-16f34530aa59",
         safari_web_id: "web.onesignal.auto.48cecb45-b9e1-42c4-afaa-e45f7f034833",
-        notifyButton: { enable: true },
+        notifyButton: { enable: false }, // Hide the bell
         serviceWorkerPath: 'OneSignalSDKWorker.js',
         // serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js', // Uncomment if you add this file
       });
-      // To prompt after a user action, call:
-      // OneSignal.Notifications.requestPermission();
-      // or
-      // OneSignal.InAppMessages.showSlidedownPrompt();
+      // Show custom prompt if not granted/denied
+      const permission = await OneSignal.Notifications.permissionLevel();
+      if (permission === 'default') {
+        document.getElementById('custom-notify-prompt').style.display = 'block';
+      }
+      document.getElementById('enable-notifications-btn').onclick = function() {
+        OneSignal.Notifications.requestPermission();
+        document.getElementById('custom-notify-prompt').style.display = 'none';
+      };
     });
   </script>
 </head>
@@ -1407,6 +1412,57 @@
         max-height: 220px !important;
       }
     }
+    /* Custom notification prompt styles */
+    #custom-notify-prompt {
+      display: none;
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0002;
+      padding: 2em 2.2em 1.7em 2.2em;
+      z-index: 9999;
+      min-width: 320px;
+      max-width: 90vw;
+      text-align: center;
+      animation: fadeInUp 0.5s;
+    }
+    #custom-notify-prompt .notify-icon {
+      font-size: 2.8em;
+      margin-bottom: 0.5em;
+      display: block;
+    }
+    #custom-notify-prompt .notify-title {
+      font-size: 1.25em;
+      font-weight: bold;
+      margin-bottom: 0.4em;
+      color: #008cba;
+    }
+    #custom-notify-prompt .notify-desc {
+      font-size: 1.05em;
+      color: #444;
+      margin-bottom: 1.2em;
+    }
+    #custom-notify-prompt .notify-btn {
+      background: linear-gradient(90deg, #f78270, #feb57c);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8em 2em;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #f7827033;
+      transition: background 0.2s;
+    }
+    #custom-notify-prompt .notify-btn:hover {
+      background: linear-gradient(90deg, #feb57c, #f78270);
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
   </style>
   <script type="module" src="js/main.js"></script>
   <!-- Import Decision Helper UI -->
@@ -1416,5 +1472,11 @@
     navigator.serviceWorker.register('/sw.js');
   }
   </script>
+  <div id="custom-notify-prompt">
+    <span class="notify-icon">🏆</span>
+    <div class="notify-title">Level Up Notifications</div>
+    <div class="notify-desc">Get notified instantly when your character achieves a new level!</div>
+    <button class="notify-btn" id="enable-notifications-btn">Enable Notifications</button>
+  </div>
 </body>
 </html>

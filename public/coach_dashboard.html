@@ -6,13 +6,66 @@
   <link rel="stylesheet" href="coach_dashboard.css">
   <!-- OneSignal Web Push SDK v16 -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <style>
+    /* Custom notification prompt styles */
+    #custom-notify-prompt {
+      display: none;
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 4px 24px #0002;
+      padding: 2em 2.2em 1.7em 2.2em;
+      z-index: 9999;
+      min-width: 320px;
+      max-width: 90vw;
+      text-align: center;
+      animation: fadeInUp 0.5s;
+    }
+    #custom-notify-prompt .notify-icon {
+      font-size: 2.8em;
+      margin-bottom: 0.5em;
+      display: block;
+    }
+    #custom-notify-prompt .notify-title {
+      font-size: 1.25em;
+      font-weight: bold;
+      margin-bottom: 0.4em;
+      color: #43e97b;
+    }
+    #custom-notify-prompt .notify-desc {
+      font-size: 1.05em;
+      color: #444;
+      margin-bottom: 1.2em;
+    }
+    #custom-notify-prompt .notify-btn {
+      background: linear-gradient(90deg, #43e97b, #008cba);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.8em 2em;
+      font-size: 1.1em;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 2px 8px #43e97b33;
+      transition: background 0.2s;
+    }
+    #custom-notify-prompt .notify-btn:hover {
+      background: linear-gradient(90deg, #008cba, #43e97b);
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
   <script>
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
       await OneSignal.init({
         appId: "7572a4ea-e59a-4b7f-b914-16f34530aa59",
         safari_web_id: "web.onesignal.auto.48cecb45-b9e1-42c4-afaa-e45f7f034833",
-        notifyButton: { enable: true },
+        notifyButton: { enable: false }, // Hide the bell
         serviceWorkerPath: 'OneSignalSDKWorker.js',
         // serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js', // Uncomment if you add this file
       });
@@ -21,6 +74,15 @@
       // Optionally, tag with coach ID or Discord ID if available
       // OneSignal.User.addTag("coach_id", localStorage.getItem('coachId'));
       // OneSignal.User.addTag("discord_id", localStorage.getItem('discordId'));
+      // Show custom prompt if not granted/denied
+      const permission = await OneSignal.Notifications.permissionLevel();
+      if (permission === 'default') {
+        document.getElementById('custom-notify-prompt').style.display = 'block';
+      }
+      document.getElementById('enable-notifications-btn').onclick = function() {
+        OneSignal.Notifications.requestPermission();
+        document.getElementById('custom-notify-prompt').style.display = 'none';
+      };
     });
   </script>
 </head>
@@ -284,5 +346,11 @@ if (expectedPWA !== null) {
     <button data-tab="starterCourse"><span>🎓</span><div>Course</div></button>
     <button id="moreBtn"><span>☰</span><div>More</div></button>
   </nav>
+  <div id="custom-notify-prompt">
+    <span class="notify-icon">✅</span>
+    <div class="notify-title">Approval Notifications</div>
+    <div class="notify-desc">Get notified instantly when you are approved as a coach!</div>
+    <button class="notify-btn" id="enable-notifications-btn">Enable Notifications</button>
+  </div>
 </body>
 </html>
