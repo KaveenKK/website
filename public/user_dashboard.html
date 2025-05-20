@@ -643,9 +643,9 @@
         const xpMax = 5000;
         const mapleMax = 1000;
         const energyMax = 1000;
-        document.getElementById('xpBar').style.width = Math.min(100, (xp / xpMax) * 100) + '%';
-        document.getElementById('mapleBar').style.width = Math.min(100, (maples / mapleMax) * 100) + '%';
-        document.getElementById('energyBar').style.width = Math.min(100, (energy / energyMax) * 100) + '%';
+        document.getElementById('xpBar').style.width = Math.max(0, Math.min(100, (xp / xpMax) * 100)) + '%';
+        document.getElementById('mapleBar').style.width = Math.max(0, Math.min(100, (maples / mapleMax) * 100)) + '%';
+        document.getElementById('energyBar').style.width = Math.max(0, Math.min(100, (energy / energyMax) * 100)) + '%';
         // Extract the 10 category values from user, check both top-level and user.niches
         userCategoryData = {
           physical: user.physical ?? user.niches?.physical,
