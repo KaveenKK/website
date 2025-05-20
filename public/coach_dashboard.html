@@ -4,6 +4,25 @@
   <meta charset="UTF-8">
   <title>Coach Dashboard</title>
   <link rel="stylesheet" href="coach_dashboard.css">
+  <!-- OneSignal Web Push SDK v16 -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "7572a4ea-e59a-4b7f-b914-16f34530aa59",
+        safari_web_id: "web.onesignal.auto.48cecb45-b9e1-42c4-afaa-e45f7f034833",
+        notifyButton: { enable: true },
+        serviceWorkerPath: 'OneSignalSDKWorker.js',
+        // serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js', // Uncomment if you add this file
+      });
+      // Tag this user as a coach for targeted notifications
+      OneSignal.User.addTag("role", "coach");
+      // Optionally, tag with coach ID or Discord ID if available
+      // OneSignal.User.addTag("coach_id", localStorage.getItem('coachId'));
+      // OneSignal.User.addTag("discord_id", localStorage.getItem('discordId'));
+    });
+  </script>
 </head>
 <body>
 <script>
