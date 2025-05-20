@@ -282,15 +282,34 @@
       const res = await fetch(`${API_BASE}/api/houses/scan`, { headers });
       const { users, houses } = await res.json();
       // Place entities in a circle
-      const total = houses.length;
+      const total = users.length + houses.length;
       const R = 140;
       let angle = 0;
       const step = total > 0 ? (2 * Math.PI) / total : 1;
       let idx = 0;
+      // Animate in users
+      users.forEach((u, i) => {
+        setTimeout(() => {
+          const theta = angle + i * step;
+          const x = R * Math.cos(theta) + 170 - 27;
+          const y = R * Math.sin(theta) + 170 - 27;
+          const div = document.createElement('div');
+          div.className = 'ph-scan-entity';
+          div.style.transform = `translate(${x}px,${y}px)`;
+          div.innerHTML = `
+            <img class="ph-entity-avatar" src="${u.avatar ? `https://cdn.discordapp.com/avatars/${u.discord_id || ''}/${u.avatar}.png` : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png'}" alt="Avatar">
+            <span class="ph-entity-name">${u.username}</span>
+            <span class="ph-entity-sim">${u.similarity}%</span>
+          `;
+          div.onclick = () => showUserModal(u);
+          scanCircle.appendChild(div);
+          setTimeout(() => div.classList.add('show'), 100);
+        }, 200 + i * 80);
+      });
       // Animate in houses
       houses.forEach((h, i) => {
         setTimeout(() => {
-          const theta = angle + i * step;
+          const theta = angle + (users.length + i) * step;
           const x = R * Math.cos(theta) + 170 - 27;
           const y = R * Math.sin(theta) + 170 - 27;
           const div = document.createElement('div');
@@ -304,7 +323,7 @@
           div.onclick = () => showHouseModal(h);
           scanCircle.appendChild(div);
           setTimeout(() => div.classList.add('show'), 100);
-        }, 200 + i * 80);
+        }, 200 + (users.length + i) * 80);
       });
       setTimeout(() => {
         scanBtn.disabled = false;
