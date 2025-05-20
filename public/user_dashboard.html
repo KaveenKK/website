@@ -50,6 +50,10 @@
       };
     });
   </script>
+  <!-- Add Google Fonts for geometric sans-serif -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Add Phosphor Icons CDN -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
   <script>
@@ -149,7 +153,7 @@
       <span id="userName" style="font-size:1.3rem;font-weight:bold;"></span>
       <div style="width:100%;display:flex;justify-content:flex-start;margin-top:0.3em;">
         <a href="powerhouses.html" id="powerHouseBtnHeader" style="background:#5a5ad6;color:#fff;border:none;border-radius:8px;padding:0.4em 1em;font-size:1em;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:0.5em;box-shadow:0 2px 8px rgba(90,90,214,0.08);transition:background 0.2s;margin-top:0.2em;">
-          <span style="font-size:1.2em;">🏠</span> Power House
+          <i class="ph ph-house icon-minimal"></i> Power House
         </a>
       </div>
     </div>
@@ -182,16 +186,16 @@
   <div id="dashboard" class="container hidden">
     <div style="flex:1;">
       <nav class="dashboard-nav">
-        <button data-tab="explore">Explore Coaches</button>
-        <button data-tab="rewards">Rewards Shop</button>
-        <button data-tab="leaderboard">Leaderboard</button>
-        <button data-tab="status">My XP & Maples</button>
-        <button data-tab="plans">Pricing Plans</button>
-        <button data-tab="reports">Reports</button>
-        <button data-tab="decision-helper">Decision Helper</button>
-        <button data-tab="home">Home</button>
-        <button data-tab="settings">Settings</button>
-        <a href="model.html" class="btn">Go to Page 2</a>
+        <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i>Explore Coaches</button>
+        <button data-tab="rewards"><i class="ph ph-gift icon-minimal"></i>Rewards Shop</button>
+        <button data-tab="leaderboard"><i class="ph ph-trophy icon-minimal"></i>Leaderboard</button>
+        <button data-tab="status"><i class="ph ph-barbell icon-minimal"></i>My XP & Maples</button>
+        <button data-tab="plans"><i class="ph ph-credit-card icon-minimal"></i>Pricing Plans</button>
+        <button data-tab="reports"><i class="ph ph-file-text icon-minimal"></i>Reports</button>
+        <button data-tab="decision-helper"><i class="ph ph-lightbulb icon-minimal"></i>Decision Helper</button>
+        <button data-tab="home"><i class="ph ph-house icon-minimal"></i>Home</button>
+        <button data-tab="settings"><i class="ph ph-gear icon-minimal"></i>Settings</button>
+        <a href="model.html" class="btn"><i class="ph ph-arrow-right icon-minimal"></i>Go to Page 2</a>
       </nav>
 
       <!-- Explore Coaches -->
@@ -1325,11 +1329,11 @@
 
   <!-- Add mobile bottom nav -->
   <nav class="mobile-bottom-nav">
-    <button data-tab="explore"><span>🏆</span><div>Coaches</div></button>
-    <button data-tab="rewards"><span>🎁</span><div>Rewards</div></button>
-    <button data-tab="home"><span>🏠</span><div>Home</div></button>
-    <button data-tab="resources"><span>🎬</span><div>Resources</div></button>
-    <button data-tab="reports"><span>📄</span><div>Reports</div></button>
+    <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i><div>Coaches</div></button>
+    <button data-tab="rewards"><i class="ph ph-gift icon-minimal"></i><div>Rewards</div></button>
+    <button data-tab="home"><i class="ph ph-house icon-minimal"></i><div>Home</div></button>
+    <button data-tab="resources"><i class="ph ph-play-circle icon-minimal"></i><div>Resources</div></button>
+    <button data-tab="reports"><i class="ph ph-file-text icon-minimal"></i><div>Reports</div></button>
   </nav>
 
   <style>
