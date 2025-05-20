@@ -160,6 +160,11 @@ const publicPath = path.join(__dirname, 'public');
 // Serve static files (HTML, CSS, JS, images)
 app.use(express.static(publicPath));
 
+// Serve OneSignal service worker directly to avoid SPA fallback
+app.get('/OneSignalSDKWorker.js', (req, res) => {
+  res.sendFile(path.join(publicPath, 'OneSignalSDKWorker.js'));
+});
+
 // Catch-all for client-side routing (serve index.html for non-API GETs)
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api/')) {
