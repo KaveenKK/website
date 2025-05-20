@@ -469,6 +469,13 @@ li { background: var(--color-bg); margin-bottom: 0.5rem; padding: 0.75rem; borde
   --color-btn-hover: #feb57c;
   --color-highlight: #f78270;
   --color-soothing: #51a582;
+  --gradient-dark: linear-gradient(135deg, #181a1b 0%, #23272a 60%, #1a3a2a 100%);
+  --gradient-mid: linear-gradient(135deg, #23272a 0%, #1a3a2a 60%, #2e4d3a 100%);
+  --gradient-light: linear-gradient(135deg, #23272a 0%, #2e4d3a 60%, #3a6a4d 100%);
+  --gradient-card: linear-gradient(135deg, #23272a 0%, #1a3a2a 80%, #3a6a4d 100%);
+  --gradient-inner: linear-gradient(135deg, #23272a 0%, #3a6a4d 100%);
+  --gradient-green: linear-gradient(135deg, #1a3a2a 0%, #3a6a4d 100%);
+  --text-on-dark: #fff;
 }
 .dark-mode {
   --bg: #36393e;
@@ -480,8 +487,8 @@ li { background: var(--color-bg); margin-bottom: 0.5rem; padding: 0.75rem; borde
   --popup-border: #36393e;
 }
 body {
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--gradient-dark) !important;
+  color: var(--text-on-dark) !important;
   background-repeat: no-repeat;
   overflow-x: hidden;
   width: 100%;
@@ -496,28 +503,16 @@ header {
   max-width: 1200px;
   margin: 2rem auto;
   padding: 0 1rem;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--gradient-dark) !important;
+  color: var(--text-on-dark) !important;
   border-radius: 12px;
 }
-section, .status-box, .pricing-option, .coach-item, .unlockables, .daily-stats, .affirmation, .progress-bar-bg, .mobile-bottom-nav, .blue-bar, .popup {
-  background: var(--color-bg) !important;
-  color: var(--color-text) !important;
-}
-ul, li {
-  background: var(--color-bg) !important;
-  color: var(--color-text) !important;
-}
-nav, .dashboard-nav, .mobile-bottom-nav {
-  background: var(--color-bg) !important;
-  color: var(--color-text) !important;
-}
-button, .btn, .btn-primary {
-  background: var(--color-primary) !important;
-  color: var(--color-btn-text) !important;
+section, .status-box, .pricing-option, .coach-item, .unlockables, .daily-stats, .affirmation, .progress-bar-bg, .mobile-bottom-nav, .blue-bar, .popup, ul, li, nav, .dashboard-nav, .mobile-bottom-nav {
+  background: var(--gradient-mid) !important;
+  color: var(--text-on-dark) !important;
 }
 h1, h2, h3, h4, h5, h6, label, p, span, strong {
-  color: var(--color-text) !important;
+  color: var(--text-on-dark) !important;
 }
 .dark-mode img, .dark-mode .icon-circle img, .dark-mode .character-img {
   filter: brightness(0.7) contrast(1.1) !important;
@@ -539,20 +534,20 @@ h1, h2, h3, h4, h5, h6, label, p, span, strong {
 .dark-mode li,
 .dark-mode nav,
 .dark-mode .dashboard-nav {
-  background: var(--color-bg) !important;
-  color: var(--color-text) !important;
+  background: var(--gradient-dark) !important;
+  color: var(--text-on-dark) !important;
 }
 .dark-mode button, .dark-mode .btn, .dark-mode .btn-primary {
   background: var(--color-primary) !important;
   color: var(--color-btn-text) !important;
 }
 .dark-mode h1, .dark-mode h2, .dark-mode h3, .dark-mode h4, .dark-mode h5, .dark-mode h6, .dark-mode label, .dark-mode p, .dark-mode span, .dark-mode strong {
-  color: var(--color-text) !important;
+  color: var(--text-on-dark) !important;
 }
 .dark-mode #newUserReward {
   background: var(--color-accent) !important;
   border: 2px solid var(--color-primary) !important;
-  color: var(--color-text) !important;
+  color: var(--text-on-dark) !important;
 }
 .silver-glow .ring-bar {
   filter: drop-shadow(0 0 6px #C0C0C0) drop-shadow(0 0 12px #fff);
