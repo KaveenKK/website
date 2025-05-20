@@ -14,194 +14,6 @@
   <link rel="icon" href="images/nevengilogo.webp" type="image/webp">
   <title>Nevengi User Dashboard</title>
   <link rel="stylesheet" href="user_dashboard.css">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap">
-  <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web">
-  <style>
-    body.discord-ui {
-      background: #313338;
-      color: #fff;
-      font-family: 'Roboto', 'Poppins', 'Montserrat', Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      min-height: 100vh;
-      display: flex;
-    }
-    .discord-sidebar {
-      width: 72px;
-      background: #23272a;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 12px 0;
-      height: 100vh;
-      position: fixed;
-      left: 0;
-      top: 0;
-      z-index: 100;
-      box-shadow: 2px 0 8px rgba(0,0,0,0.12);
-    }
-    .discord-sidebar .sidebar-nav {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      margin-top: 16px;
-      width: 100%;
-      align-items: center;
-    }
-    .discord-sidebar .sidebar-nav button {
-      background: none;
-      border: none;
-      color: #b9bbbe;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.7rem;
-      margin-bottom: 2px;
-      transition: background 0.18s, color 0.18s;
-      cursor: pointer;
-    }
-    .discord-sidebar .sidebar-nav button.active,
-    .discord-sidebar .sidebar-nav button:hover {
-      background: #5865f2;
-      color: #fff;
-    }
-    .discord-sidebar .sidebar-user {
-      margin-top: auto;
-      width: 100%;
-      padding: 10px 0 8px 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      border-top: 1px solid #36393f;
-      background: #23272a;
-    }
-    .discord-sidebar .sidebar-user img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      border: 2px solid #5865f2;
-      margin-bottom: 6px;
-      object-fit: cover;
-      background: #444;
-    }
-    .discord-sidebar .sidebar-user span {
-      font-size: 0.98em;
-      color: #fff;
-      font-weight: 500;
-      margin-bottom: 4px;
-      text-align: center;
-      word-break: break-all;
-    }
-    .discord-sidebar .sidebar-user .sidebar-user-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 2px;
-    }
-    .discord-sidebar .sidebar-user .sidebar-user-actions button {
-      background: #5865f2;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 0.95em;
-      cursor: pointer;
-      transition: background 0.18s;
-    }
-    .discord-sidebar .sidebar-user .sidebar-user-actions button:hover {
-      background: #4752c4;
-    }
-    .discord-main {
-      margin-left: 72px;
-      display: flex;
-      width: 100vw;
-      min-height: 100vh;
-      background: #313338;
-    }
-    .discord-channels {
-      width: 220px;
-      background: #2c2f33;
-      padding: 18px 0 0 0;
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      border-right: 1px solid #23272a;
-      min-height: 100vh;
-    }
-    .discord-channels .channel-btn {
-      background: none;
-      border: none;
-      color: #b9bbbe;
-      padding: 10px 22px;
-      text-align: left;
-      font-size: 1.08em;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      width: 100%;
-      cursor: pointer;
-      transition: background 0.18s, color 0.18s;
-    }
-    .discord-channels .channel-btn.active,
-    .discord-channels .channel-btn:hover {
-      background: #36393f;
-      color: #fff;
-    }
-    .discord-content {
-      flex: 1;
-      padding: 0;
-      min-height: 100vh;
-      background: #313338;
-      overflow-x: hidden;
-      overflow-y: auto;
-    }
-    .discord-header {
-      background: #36393f;
-      color: #fff;
-      padding: 18px 32px 12px 32px;
-      font-size: 1.25em;
-      font-weight: 600;
-      border-bottom: 1px solid #23272a;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 64px;
-    }
-    .discord-header .header-actions {
-      display: flex;
-      gap: 1.2em;
-      align-items: center;
-    }
-    .discord-header .header-actions button {
-      background: #5865f2;
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 16px;
-      font-size: 1em;
-      font-weight: 500;
-      cursor: pointer;
-      transition: background 0.18s;
-    }
-    .discord-header .header-actions button:hover {
-      background: #4752c4;
-    }
-    /* Responsive for mobile */
-    @media (max-width: 900px) {
-      .discord-channels { width: 60px; }
-      .discord-channels .channel-btn span { display: none; }
-      .discord-channels .channel-btn { justify-content: center; padding: 10px 0; }
-    }
-    @media (max-width: 700px) {
-      .discord-sidebar { display: none; }
-      .discord-main { margin-left: 0; }
-      .discord-channels { display: none; }
-    }
-  </style>
   <!-- OneSignal Web Push SDK v16 -->
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
   <script>
@@ -243,214 +55,305 @@
   <!-- Add Phosphor Icons CDN -->
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body class="discord-ui">
-  <div class="discord-sidebar">
-    <div class="sidebar-nav">
-      <button class="sidebar-btn" data-tab="explore" title="Explore"><i class="ph ph-magnifying-glass"></i></button>
-      <button class="sidebar-btn" data-tab="rewards" title="Rewards"><i class="ph ph-gift"></i></button>
-      <button class="sidebar-btn" data-tab="leaderboard" title="Leaderboard"><i class="ph ph-trophy"></i></button>
-      <button class="sidebar-btn" data-tab="status" title="Status"><i class="ph ph-barbell"></i></button>
-      <button class="sidebar-btn" data-tab="plans" title="Plans"><i class="ph ph-credit-card"></i></button>
-      <button class="sidebar-btn" data-tab="reports" title="Reports"><i class="ph ph-file-text"></i></button>
-      <button class="sidebar-btn" data-tab="decision-helper" title="Decision Helper"><i class="ph ph-lightbulb"></i></button>
-      <button class="sidebar-btn" data-tab="home" title="Home"><i class="ph ph-house"></i></button>
-      <button class="sidebar-btn" data-tab="settings" title="Settings"><i class="ph ph-gear"></i></button>
+<body>
+  <script>
+    function showPopup(element, number, name) {
+      const popup = element.querySelector('.popup');
+      popup.textContent = `${number} - ${name}`;
+      popup.style.display = 'block';
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 2000);
+    }
+  </script>
+  <script>
+  // Robust PWA/mobile/desktop detection for context check
+  function isReallyPWA() {
+    // 1. Display mode checks
+    if (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: minimal-ui)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
+      window.matchMedia('(display-mode: window-controls-overlay)').matches
+    ) return true;
+    // 2. iOS Safari
+    if (typeof window.navigator.standalone !== 'undefined' && window.navigator.standalone) return true;
+    // 3. Android TWA
+    if (document.referrer && document.referrer.startsWith('android-app://')) return true;
+    // 4. Service worker control
+    if (navigator.serviceWorker && navigator.serviceWorker.controller) return true;
+    // 5. LaunchQueue API (experimental)
+    if (typeof window.launchQueue !== 'undefined') return true;
+    // 6. Chromium userAgentData
+    if (navigator.userAgentData && navigator.userAgentData.mobile && window.matchMedia('(display-mode: standalone)').matches) return true;
+    return false;
+  }
+  const expectedPWA = localStorage.getItem('expectedPWA');
+  if (expectedPWA !== null) {
+    const mode = getPWADisplayMode();
+    const inPWA = ['standalone','minimal-ui','fullscreen','window-controls-overlay'].includes(mode);
+    if ((expectedPWA === 'true' && !inPWA) || (expectedPWA === 'false' && inPWA)) {
+      document.body.innerHTML = `
+        <div style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.8);color:#fff;display:flex;align-items:center;justify-content:center;z-index:9999;">
+          <div style="background:#222;padding:2rem;border-radius:1rem;text-align:center;max-width:90vw;">
+            <h2>Wrong Context</h2>
+            <p>Please open the Nevengi app (PWA) to continue if you started there, or use the browser if you started there.</p>
+          </div>
+        </div>
+      `;
+    }
+  }
+  </script>
+  <script>
+  // Always show install app button, and provide fallback instructions if prompt is not available
+  document.addEventListener('DOMContentLoaded', function() {
+    let deferredPrompt;
+    const installBtn = document.getElementById('installAppBtn');
+    if (installBtn) installBtn.style.display = 'inline-block';
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+    });
+    if (installBtn) {
+      installBtn.addEventListener('click', async () => {
+        if (deferredPrompt) {
+          deferredPrompt.prompt();
+          await deferredPrompt.userChoice;
+          deferredPrompt = null;
+        } else {
+          alert('App installation is not supported on your device, or the app is already installed.');
+        }
+      });
+    }
+    window.addEventListener('appinstalled', () => {
+      if (installBtn) installBtn.style.display = 'none';
+    });
+    // Show Get Started button only in PWA or desktop (not mobile web)
+    function shouldShowGetStarted() {
+      const isPWA = isReallyPWA();
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      return isPWA || !isMobile;
+    }
+    const getStartedBtn = document.getElementById('getStartedBtn');
+    if (getStartedBtn && shouldShowGetStarted()) {
+      getStartedBtn.style.display = 'inline-block';
+      getStartedBtn.addEventListener('click', function() {
+        document.getElementById('loginBtn').click();
+      });
+    }
+  });
+  </script>
+  <!-- Revolut-style header -->
+  <header class="revolut-header">
+    <div class="header-left">
+      <img id="userProfilePic" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture" class="profile-avatar">
+      <span id="userName" class="profile-name"></span>
     </div>
-    <div class="sidebar-user">
-      <img id="userProfilePicSidebar" src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png" alt="Profile Picture">
-      <span id="userNameSidebar"></span>
-      <div class="sidebar-user-actions">
-        <button id="sidebarSettingsBtn"><i class="ph ph-gear"></i></button>
-        <button id="sidebarLogoutBtn"><i class="ph ph-sign-out"></i></button>
+    <div class="header-center">
+      <span class="brand-logo" style="font-weight:700;font-size:1.4rem;color:#0052FF;letter-spacing:0.04em;">Nevengi</span>
+    </div>
+    <div class="header-right">
+      <button id="reportsTopBtn" class="icon-btn"><i class="ph ph-file-text icon-minimal"></i></button>
+      <button id="logoutBtn" class="icon-btn"><i class="ph ph-sign-out icon-minimal"></i></button>
+    </div>
+  </header>
+  <!-- Main Dashboard Card (Balance/Status) -->
+  <div id="dashboard" class="container hidden">
+    <div class="main-card glass-card">
+      <div class="main-balance-row">
+        <div class="main-balance-label">XP</div>
+        <div class="main-balance-value" id="xpAmount">0</div>
+        <div class="main-balance-label">Maples</div>
+        <div class="main-balance-value" id="mapleAmount">0</div>
+        <div class="main-balance-label">Energy</div>
+        <div class="main-balance-value" id="energyAmount">0</div>
+      </div>
+      <div class="progress-bars">
+        <div class="progress-bar-bg"><div class="progress-bar-xp" id="xpBar"></div></div>
+        <div class="progress-bar-bg"><div class="progress-bar-maple" id="mapleBar"></div></div>
+        <div class="progress-bar-bg"><div class="progress-bar-energy" id="energyBar"></div></div>
+      </div>
+      <div class="quick-actions">
+        <button class="quick-action-btn"><i class="ph ph-arrow-up-right"></i> Transfer</button>
+        <button class="quick-action-btn"><i class="ph ph-plus"></i> Top Up</button>
+        <button class="quick-action-btn"><i class="ph ph-repeat"></i> Exchange</button>
+        <button class="quick-action-btn"><i class="ph ph-vault"></i> Vaults</button>
       </div>
     </div>
-  </div>
-  <div class="discord-main">
-    <div class="discord-channels">
-      <button class="channel-btn" data-tab="explore"><i class="ph ph-magnifying-glass"></i><span>Explore Coaches</span></button>
-      <button class="channel-btn" data-tab="rewards"><i class="ph ph-gift"></i><span>Rewards Shop</span></button>
-      <button class="channel-btn" data-tab="leaderboard"><i class="ph ph-trophy"></i><span>Leaderboard</span></button>
-      <button class="channel-btn" data-tab="status"><i class="ph ph-barbell"></i><span>My XP & Maples</span></button>
-      <button class="channel-btn" data-tab="plans"><i class="ph ph-credit-card"></i><span>Pricing Plans</span></button>
-      <button class="channel-btn" data-tab="reports"><i class="ph ph-file-text"></i><span>Reports</span></button>
-      <button class="channel-btn" data-tab="decision-helper"><i class="ph ph-lightbulb"></i><span>Decision Helper</span></button>
-      <button class="channel-btn" data-tab="home"><i class="ph ph-house"></i><span>Home</span></button>
-      <button class="channel-btn" data-tab="settings"><i class="ph ph-gear"></i><span>Settings</span></button>
-    </div>
-    <div class="discord-content">
-      <div class="discord-header">
-        <span id="discordHeaderTitle">Dashboard</span>
-        <div class="header-actions">
-          <button id="reportsTopBtn">Reports</button>
-          <button id="logoutBtn">Logout</button>
+    <nav class="dashboard-nav">
+      <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i>Explore</button>
+      <button data-tab="rewards"><i class="ph ph-gift icon-minimal"></i>Rewards</button>
+      <button data-tab="leaderboard"><i class="ph ph-trophy icon-minimal"></i>Leaderboard</button>
+      <button data-tab="status"><i class="ph ph-barbell icon-minimal"></i>Status</button>
+      <button data-tab="plans"><i class="ph ph-credit-card icon-minimal"></i>Plans</button>
+      <button data-tab="reports"><i class="ph ph-file-text icon-minimal"></i>Reports</button>
+      <button data-tab="decision-helper"><i class="ph ph-lightbulb icon-minimal"></i>Helper</button>
+      <button data-tab="home"><i class="ph ph-house icon-minimal"></i>Home</button>
+      <button data-tab="settings"><i class="ph ph-gear icon-minimal"></i>Settings</button>
+    </nav>
+    <!-- Explore Coaches -->
+    <section id="explore">
+      <h2>Explore Coaches</h2>
+      <ul id="coachList"></ul>
+    </section>
+
+    <!-- Rewards Shop (Shopify) -->
+    <section id="rewards">
+      <h2>Rewards Shop</h2>
+      <div id="newUserReward" style="background:#e6ffe6;border:2px solid #43e97b;padding:1em 1.5em;border-radius:10px;margin-bottom:1.5em;display:none;align-items:center;justify-content:space-between;gap:1em;">
+        <div style="flex:1;">
+          <strong style="font-size:1.1em;color:#2e7d32;">🎉 New User Free XP</strong>
+          <div style="margin-top:0.3em;">Claim <b>200 XP</b> as a welcome gift!</div>
+        </div>
+        <button id="claimNewUserXpBtn" style="background:#43e97b;color:#fff;font-weight:bold;padding:0.5em 1.5em;border-radius:6px;font-size:1em;">Claim</button>
+      </div>
+      <div id="shopify-collection"></div>
+    </section>
+
+    <!-- Leaderboard -->
+    <section id="leaderboard">
+      <h2>Leaderboard</h2>
+      <ul id="leaderboardList"></ul>
+    </section>
+
+    <!-- XP & Maples -->
+    <section id="status">
+      <h2>My Status</h2>
+      <div class="status-box">
+        <div style="margin-bottom:1em;">
+          <strong>XP:</strong> <span id="xpAmount">0</span>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-xp" id="xpBar"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <strong>Maples:</strong> <span id="mapleAmount">0</span>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-maple" id="mapleBar"></div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:1em;">
+          <strong>Energy:</strong> <span id="energyAmount">0</span>
+          <div class="progress-bar-wrapper">
+            <div class="progress-bar-bg">
+              <div class="progress-bar-energy" id="energyBar" style="background:#ffd600;"></div>
+            </div>
+          </div>
         </div>
       </div>
-      <div id="dashboard" class="container" style="background:none;box-shadow:none;border-radius:0;padding:2.2rem 2.7rem;">
-        <!-- All dashboard sections (explore, rewards, leaderboard, status, plans, home, resources, reports, decision-helper, settings) remain unchanged here -->
-        <!-- Explore Coaches -->
-        <section id="explore">
-          <h2>Explore Coaches</h2>
-          <ul id="coachList"></ul>
-        </section>
+    </section>
 
-        <!-- Rewards Shop (Shopify) -->
-        <section id="rewards">
-          <h2>Rewards Shop</h2>
-          <div id="newUserReward" style="background:#e6ffe6;border:2px solid #43e97b;padding:1em 1.5em;border-radius:10px;margin-bottom:1.5em;display:none;align-items:center;justify-content:space-between;gap:1em;">
-            <div style="flex:1;">
-              <strong style="font-size:1.1em;color:#2e7d32;">🎉 New User Free XP</strong>
-              <div style="margin-top:0.3em;">Claim <b>200 XP</b> as a welcome gift!</div>
-            </div>
-            <button id="claimNewUserXpBtn" style="background:#43e97b;color:#fff;font-weight:bold;padding:0.5em 1.5em;border-radius:6px;font-size:1em;">Claim</button>
-          </div>
-          <div id="shopify-collection"></div>
-        </section>
-
-        <!-- Leaderboard -->
-        <section id="leaderboard">
-          <h2>Leaderboard</h2>
-          <ul id="leaderboardList"></ul>
-        </section>
-
-        <!-- XP & Maples -->
-        <section id="status">
-          <h2>My Status</h2>
-          <div class="status-box">
-            <div style="margin-bottom:1em;">
-              <strong>XP:</strong> <span id="xpAmount">0</span>
-              <div class="progress-bar-wrapper">
-                <div class="progress-bar-bg">
-                  <div class="progress-bar-xp" id="xpBar"></div>
-                </div>
-              </div>
-            </div>
-            <div>
-              <strong>Maples:</strong> <span id="mapleAmount">0</span>
-              <div class="progress-bar-wrapper">
-                <div class="progress-bar-bg">
-                  <div class="progress-bar-maple" id="mapleBar"></div>
-                </div>
-              </div>
-            </div>
-            <div style="margin-top:1em;">
-              <strong>Energy:</strong> <span id="energyAmount">0</span>
-              <div class="progress-bar-wrapper">
-                <div class="progress-bar-bg">
-                  <div class="progress-bar-energy" id="energyBar" style="background:#ffd600;"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Pricing Plans (PayPal Subscriptions) -->
-        <section id="plans">
-          <h2>Pricing Plans</h2>
-          <div class="pricing-options">
-            <div class="pricing-option">
-              <h3>I'm Broke(General Membership)</h3>
-              <p>
-                <span class="price-usd" data-usd="13.99">$13.99</span>
-                <span class="local-price"></span>
-                / month
-              </p>
-              <ul>
-                <li>Basic resources</li>
-                <li>Community Access</li>
-                <li>Check-ins every 2 weeks</li>
-              </ul>
-              <div id="paypal-button-container-1"></div>
-            </div>
-            <div class="pricing-option">
-              <h3>I'm Serious(Gold Membership)</h3>
-              <p>
-                <span class="price-usd" data-usd="40.00">$40.00</span>
-                <span class="local-price"></span>
-                / month
-              </p>
-              <span class="recommended-label">Recommended</span>
-              <ul>
-                <li>Most resources</li>
-                <li>Premium Community</li>
-                <li>Weekly Check-ins</li>
-              </ul>
-              <div id="paypal-button-container-2"></div>
-            </div>
-            <div class="pricing-option">
-              <h3>I want to be Exclusive(Nevengi Club Membership)</h3>
-              <p>
-                <span class="price-usd" data-usd="129.00">$129.00</span>
-                <span class="local-price"></span>
-                / month
-              </p>
-              <span class="recommended-label">VIP</span>
-              <ul>
-                <li>Nevengi Club Card</li>
-                <li>All resources</li>
-                <li>VIP Community</li>
-                <li>2× Weekly Check-ins</li>
-                <li>Priority Support</li>
-              </ul>
-              <div id="paypal-button-container-3"></div>
-            </div>
-            <div class="pricing-option">
-              <h3>Buy Maples (One-Time)</h3>
-              <p>
-                <span class="price-usd" data-usd="5.00">$5.00</span>
-                <span class="local-price"></span>
-                <span style="font-size:0.95em;color:#888;">/ one-time</span>
-              </p>
-              <ul>
-                <li>Get 100 Maples instantly</li>
-                <li>One-time purchase, not a subscription</li>
-              </ul>
-              <div id="paypal-button-container-maples"></div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Home Tab -->
-        <section id="home" class="active" style="overflow-y:auto; min-height:100vh; background:var(--background-color);">
-          <div id="mythical-habit-home-root"></div>
-          <link rel="stylesheet" href="mythical-habit-home.css">
-          <script src="mythical-habit-home.js"></script>
-        </section>
-
-        <!-- Resources Tab -->
-        <section id="resources">
-          <h2>Resources</h2>
-          <div id="resourcesContainer">Loading resources…</div>
-        </section>
-
-        <!-- Reports -->
-        <section id="reports">
-          <h2>Weekly Reports</h2>
-          <div id="reportsContainer">Loading reports…</div>
-        </section>
-
-        <!-- Decision Helper Tab -->
-        <section id="decision-helper">
-          <decision-helper-ui></decision-helper-ui>
-        </section>
-
-        <!-- Settings -->
-        <section id="settings">
-          <h2>Settings</h2>
-          <div style="margin-bottom:1.5rem;">
-            <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Profile Gender</label>
-            <span id="genderLabel" style="font-size:1.1em;font-weight:500;">-</span>
-          </div>
-          <div style="margin-bottom:1.5rem;">
-            <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Dark Mode</label>
-            <label class="switch">
-              <input type="checkbox" id="darkModeToggle">
-              <span class="slider"></span>
-            </label>
-          </div>
-        </section>
+    <!-- Pricing Plans (PayPal Subscriptions) -->
+    <section id="plans">
+      <h2>Pricing Plans</h2>
+      <div class="pricing-options">
+        <div class="pricing-option">
+          <h3>I'm Broke(General Membership)</h3>
+          <p>
+            <span class="price-usd" data-usd="13.99">$13.99</span>
+            <span class="local-price"></span>
+            / month
+          </p>
+          <ul>
+            <li>Basic resources</li>
+            <li>Community Access</li>
+            <li>Check-ins every 2 weeks</li>
+          </ul>
+          <div id="paypal-button-container-1"></div>
+        </div>
+        <div class="pricing-option">
+          <h3>I'm Serious(Gold Membership)</h3>
+          <p>
+            <span class="price-usd" data-usd="40.00">$40.00</span>
+            <span class="local-price"></span>
+            / month
+          </p>
+          <span class="recommended-label">Recommended</span>
+          <ul>
+            <li>Most resources</li>
+            <li>Premium Community</li>
+            <li>Weekly Check-ins</li>
+          </ul>
+          <div id="paypal-button-container-2"></div>
+        </div>
+        <div class="pricing-option">
+          <h3>I want to be Exclusive(Nevengi Club Membership)</h3>
+          <p>
+            <span class="price-usd" data-usd="129.00">$129.00</span>
+            <span class="local-price"></span>
+            / month
+          </p>
+          <span class="recommended-label">VIP</span>
+          <ul>
+            <li>Nevengi Club Card</li>
+            <li>All resources</li>
+            <li>VIP Community</li>
+            <li>2× Weekly Check-ins</li>
+            <li>Priority Support</li>
+          </ul>
+          <div id="paypal-button-container-3"></div>
+        </div>
+        <div class="pricing-option">
+          <h3>Buy Maples (One-Time)</h3>
+          <p>
+            <span class="price-usd" data-usd="5.00">$5.00</span>
+            <span class="local-price"></span>
+            <span style="font-size:0.95em;color:#888;">/ one-time</span>
+          </p>
+          <ul>
+            <li>Get 100 Maples instantly</li>
+            <li>One-time purchase, not a subscription</li>
+          </ul>
+          <div id="paypal-button-container-maples"></div>
+        </div>
       </div>
-    </div>
+    </section>
+
+    <!-- Home Tab -->
+    <section id="home" class="active" style="overflow-y:auto; min-height:100vh; background:var(--background-color);">
+      <div id="mythical-habit-home-root"></div>
+      <link rel="stylesheet" href="mythical-habit-home.css">
+      <script src="mythical-habit-home.js"></script>
+    </section>
+
+    <!-- Resources Tab -->
+    <section id="resources">
+      <h2>Resources</h2>
+      <div id="resourcesContainer">Loading resources…</div>
+    </section>
+
+    <!-- Reports -->
+    <section id="reports">
+      <h2>Weekly Reports</h2>
+      <div id="reportsContainer">Loading reports…</div>
+    </section>
+
+    <!-- Decision Helper Tab -->
+    <section id="decision-helper">
+      <decision-helper-ui></decision-helper-ui>
+    </section>
+
+    <!-- Settings -->
+    <section id="settings">
+      <h2>Settings</h2>
+      <div style="margin-bottom:1.5rem;">
+        <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Profile Gender</label>
+        <span id="genderLabel" style="font-size:1.1em;font-weight:500;">-</span>
+      </div>
+      <div style="margin-bottom:1.5rem;">
+        <label style="font-weight:bold;display:block;margin-bottom:0.5em;">Dark Mode</label>
+        <label class="switch">
+          <input type="checkbox" id="darkModeToggle">
+          <span class="slider"></span>
+        </label>
+      </div>
+    </section>
   </div>
+
   <!-- PayPal SDK -->
   <script src="https://www.paypal.com/sdk/js?
        client-id=AfHtfA-t7x13qyJhGsb4JBu2z8XulDrnr407Eb8d36peTeos6Q80YrRUm1owoRrPldprDxh5HFaLsxrZ
@@ -1418,7 +1321,7 @@
 
   <!-- Add mobile bottom nav -->
   <nav class="mobile-bottom-nav">
-    <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i><div>Coaches</div></button>
+    <button data-tab="explore"><i class="ph ph-magnifying-glass icon-minimal"></i><div>Explore</div></button>
     <button data-tab="rewards"><i class="ph ph-gift icon-minimal"></i><div>Rewards</div></button>
     <button data-tab="home"><i class="ph ph-house icon-minimal"></i><div>Home</div></button>
     <button data-tab="resources"><i class="ph ph-play-circle icon-minimal"></i><div>Resources</div></button>
