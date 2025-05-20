@@ -256,6 +256,28 @@
         justify-content: center !important;
       }
     }
+    .ghost-img-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 2.5rem;
+    }
+    .ghost-main-img {
+      max-width: 220px;
+      width: 100%;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+      box-shadow: 0 4px 24px 0 rgba(31,38,135,0.08);
+      border-radius: 1.5rem;
+    }
+    @media (max-width: 600px) {
+      .ghost-main-img {
+        max-width: 140px;
+      }
+      .ghost-img-wrapper {
+        margin-bottom: 1.5rem;
+      }
+    }
   </style>
   <meta name="theme-color" content="#000000" />
   <link rel="manifest" href="/manifest.json" />
@@ -324,9 +346,13 @@
       <div class="flex flex-col gap-6">
         <a href="/auth/discord/user" class="button-primary" style="text-align:center; text-decoration:none;">User Login</a>
         <a href="/auth/discord" class="button-secondary" style="text-align:center; text-decoration:none;">Coach Login</a>
-        <a href="https://nevengi-research-center.super.site/" class="button-secondary" target="_blank" rel="noopener noreferrer" style="text-align:center; text-decoration:none;">NRC</a>
         <a href="https://discord.gg/SYtbqPMqju" class="button-secondary" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;text-align:center; text-decoration:none;">
-          <img src="images/discord-icon.png" alt="Discord Icon" style="width:20px;height:20px;margin-right:8px;">Join Discord
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:8px;">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276c-.598.3428-1.2205.6447-1.8733.8923a.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1835 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1835 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+            </svg>
+          </span>
+          Join Discord
         </a>
       </div>
       <div class="mt-10 flex flex-col gap-2">
@@ -376,6 +402,9 @@
             <h2 class="text-2xl font-bold text-center mb-12">
               Find Your <span style="background:linear-gradient(to right, var(--brand-purple), var(--brand-teal));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Perfect Path</span>
             </h2>
+            <div class="ghost-img-wrapper">
+              <img src="images/ghost.png" alt="Ghost" class="ghost-main-img" />
+            </div>
             <div class="flex gap-8" style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;">
               <div class="main-card cursor-pointer" id="userCard">
                 <div class="flex flex-col items-center">
@@ -408,12 +437,54 @@
         }
         document.getElementById('userSelectBtn').onclick = () => {
           userType = 'user';
-          currentStep = 'user-auth-choice';
+          currentStep = 'pwa-prompt-user';
           renderStep();
         };
         document.getElementById('coachSelectBtn').onclick = () => {
           userType = 'coach';
-          currentStep = 'coach-follower-question';
+          currentStep = 'pwa-prompt-coach';
+          renderStep();
+        };
+      } else if (currentStep === 'pwa-prompt-user' || currentStep === 'pwa-prompt-coach') {
+        stepContainer.innerHTML = `
+          <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
+            <div class="main-card" style="text-align:center;">
+              <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Get the Full Experience</h2>
+              <p class="mb-6">For the best experience, install the Nevengi app on your device. If you already have the app, continue.</p>
+              <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button class="button-primary" id="installAppBtn">Install App</button>
+                <button class="button-secondary" id="alreadyInAppBtn">I'm Already in the App</button>
+              </div>
+            </div>
+          </div>
+        `;
+        document.getElementById('installAppBtn').onclick = () => {
+          let deferredPrompt;
+          let installPrompted = false;
+          window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+          });
+          if (window.deferredPrompt) {
+            window.deferredPrompt.prompt();
+            installPrompted = true;
+          } else if (deferredPrompt) {
+            deferredPrompt.prompt();
+            installPrompted = true;
+          } else {
+            // Show fallback popup for iPhone
+            showInstallPopup();
+          }
+          setTimeout(() => {
+            if (!installPrompted) showInstallPopup();
+          }, 1000);
+        };
+        document.getElementById('alreadyInAppBtn').onclick = () => {
+          if (currentStep === 'pwa-prompt-user') {
+            currentStep = 'user-auth-choice';
+          } else {
+            currentStep = 'coach-follower-question';
+          }
           renderStep();
         };
       } else if (currentStep === 'user-auth-choice') {
@@ -868,15 +939,21 @@
     }
     document.addEventListener('click', async (event) => {
       if (event.target && event.target.id === 'verifyCodeBtn') {
-        alert('Verify button clicked!');
         const btn = event.target;
         btn.disabled = true;
         const codeInput = document.getElementById('signupCode');
         const msg = document.getElementById('emailSignupMsg');
         msg.textContent = '';
-        const code = codeInput ? codeInput.value.trim() : '';
-        const emailToVerify = localStorage.getItem('pendingSignupEmail') || '';
-        console.log('[DEBUG] Verify handler values:', { code, emailToVerify });
+        let code = '';
+        let emailToVerify = '';
+        try {
+          code = codeInput ? codeInput.value.trim() : '';
+          emailToVerify = localStorage.getItem('pendingSignupEmail') || '';
+        } catch (err) {
+          showVerifyErrorPopup('Unable to access localStorage. This may be due to private/incognito mode or browser settings. Please try in a regular browser window.');
+          btn.disabled = false;
+          return;
+        }
         if (!emailToVerify || !code) { msg.textContent = 'Enter the code.'; btn.disabled = false; return; }
         try {
           const res = await fetch('/auth/email-verify', {
@@ -885,23 +962,70 @@
             body: JSON.stringify({ email: emailToVerify, code })
           });
           const data = await res.json();
-          console.log('[DEBUG] Verify response:', data);
           if (res.ok && data.success && data.token) {
             msg.textContent = 'Signup complete! Redirecting...';
-            localStorage.setItem('userToken', data.token);
-            localStorage.removeItem('pendingSignupEmail');
+            try { localStorage.setItem('userToken', data.token); localStorage.removeItem('pendingSignupEmail'); } catch (err) {}
             setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
           } else {
             msg.textContent = data.error || 'Verification failed.';
-            console.error('[DEBUG] Verification failed:', data.error);
+            if (!data.success) {
+              showVerifyErrorPopup('Verification failed. This may be due to private/incognito mode or browser settings. Please try in a regular browser window.');
+            }
           }
         } catch (err) {
-          console.error('[DEBUG] Verify network error:', err);
-          msg.textContent = 'Network error.';
+          showVerifyErrorPopup('Network or browser error during verification. This may be due to private/incognito mode or browser settings. Please try in a regular browser window.');
         }
         btn.disabled = false;
       }
     });
+    function showInstallPopup() {
+      const popup = document.createElement('div');
+      popup.style.position = 'fixed';
+      popup.style.top = '0';
+      popup.style.left = '0';
+      popup.style.width = '100vw';
+      popup.style.height = '100vh';
+      popup.style.background = 'rgba(0,0,0,0.7)';
+      popup.style.display = 'flex';
+      popup.style.alignItems = 'center';
+      popup.style.justifyContent = 'center';
+      popup.style.zIndex = '9999';
+      popup.innerHTML = `
+        <div style="background:#fff;padding:2rem 1.5rem;border-radius:1.2rem;max-width:90vw;text-align:center;">
+          <h3 style="margin-bottom:1rem;">How to Install on iPhone</h3>
+          <p style="color:#333;font-size:1.1rem;">If you are using iPhone, click the <b>Share</b> button and choose <b>Add to Home Screen</b> after signing up.</p>
+          <button style="margin-top:1.5rem;" class="button-primary" id="closeInstallPopup">Close</button>
+        </div>
+      `;
+      document.body.appendChild(popup);
+      document.getElementById('closeInstallPopup').onclick = () => {
+        document.body.removeChild(popup);
+      };
+    }
+    function showVerifyErrorPopup(message) {
+      const popup = document.createElement('div');
+      popup.style.position = 'fixed';
+      popup.style.top = '0';
+      popup.style.left = '0';
+      popup.style.width = '100vw';
+      popup.style.height = '100vh';
+      popup.style.background = 'rgba(0,0,0,0.7)';
+      popup.style.display = 'flex';
+      popup.style.alignItems = 'center';
+      popup.style.justifyContent = 'center';
+      popup.style.zIndex = '9999';
+      popup.innerHTML = `
+        <div style="background:#fff;padding:2rem 1.5rem;border-radius:1.2rem;max-width:90vw;text-align:center;">
+          <h3 style="margin-bottom:1rem;">Verification Error</h3>
+          <p style="color:#333;font-size:1.1rem;">${message}</p>
+          <button style="margin-top:1.5rem;" class="button-primary" id="closeVerifyErrorPopup">Close</button>
+        </div>
+      `;
+      document.body.appendChild(popup);
+      document.getElementById('closeVerifyErrorPopup').onclick = () => {
+        document.body.removeChild(popup);
+      };
+    }
   </script>
 </body>
 </html> 
