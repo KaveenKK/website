@@ -7,6 +7,19 @@
 </head>
 <body>
 <script>
+// Extract token and discord_id from URL and store in localStorage
+(function() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.has('token')) {
+    localStorage.setItem('coachToken', params.get('token'));
+    if (params.has('discord_id')) {
+      localStorage.setItem('discordId', params.get('discord_id'));
+    }
+    // Remove query params from URL for cleanliness
+    history.replaceState({}, '', window.location.pathname);
+  }
+})();
+
 // Robust PWA/mobile/desktop detection for context check
 function getPWADisplayMode() {
   if (document.referrer.startsWith('android-app://')) return 'twa';
