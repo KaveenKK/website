@@ -416,4 +416,29 @@ router.get('/check-identity-completed', async (req, res) => {
   return res.json({ completed: !!user.identity_completed });
 });
 
+/**
+ * POST /api/add-xp
+ * Adds XP to the current user and triggers level up notification if needed
+ */
+router.post('/add-xp', authMiddleware, async (req, res) => {
+  try {
+    const { amount } = req.body;
+    if (typeof amount !== 'number' || !isFinite(amount) || amount <= 0) {
+      return res.status(400).json({ success: false, error: 'Invalid XP amount' });
+    }
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ success: false, error: 'User not found' });
+    const oldLevel = user.level || 1;
+    user.xp = (user.xp || 0) + amount;
+    await user.save();
+    if (user._levelUp && user._levelUp.newLevel > oldLevel) {
+      await sendLevelUpNotification(user, user._levelUp.newLevel);
+    }
+    return res.json({ success: true, xp: user.xp, level: user.level });
+  } catch (err) {
+    console.error('❌ Add XP error:', err);
+    res.status(500).json({ success: false, error: 'Failed to add XP' });
+  }
+});
+
 export default router;

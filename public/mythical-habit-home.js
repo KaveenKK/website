@@ -13,14 +13,17 @@
   }
   function setLS(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
 
-  let xp = getLS('mh_xp', 50);
-  let gold = getLS('mh_gold', 0);
-  let level = getLS('mh_level', 1);
+  // Only keep these in localStorage
   let unlockedCards = getLS('mh_unlockedCards', [0, 1]);
   let completedQuests = getLS('mh_completedQuests', []);
   let activeStage = getLS('mh_activeStage', 1);
   let lastReset = getLS('mh_lastReset', '');
   let journalEntries = getLS('mh_journalEntries', {});
+
+  // Backend state
+  let xp = 0;
+  let level = 1;
+  let gold = 0; // Gold remains local for now
 
   // --- Data ---
   const stages = [
@@ -46,11 +49,34 @@
     { id: 2, task: 'Meditate for 10 minutes', xpReward: 25 },
   ];
 
+  // --- Backend fetch helpers ---
+  async function fetchProfile() {
+    const token = localStorage.getItem('userToken');
+    if (!token) return { xp: 0, level: 1 };
+    const res = await fetch('/api/user-profile', { headers: { Authorization: 'Bearer ' + token } });
+    if (!res.ok) return { xp: 0, level: 1 };
+    const user = await res.json();
+    return { xp: Number(user.xp) || 0, level: Number(user.level) || 1 };
+  }
+  async function addXpBackend(amount) {
+    const token = localStorage.getItem('userToken');
+    if (!token) return;
+    await fetch('/api/add-xp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({ amount })
+    });
+  }
+
   // --- UI Rendering ---
-  function render() {
+  async function render() {
+    // Always fetch backend XP/level
+    const profile = await fetchProfile();
+    xp = profile.xp;
+    level = profile.level;
+    // Journal state
     const root = document.getElementById('mythical-habit-home-root');
     if (!root) return;
-    // Journal state
     const today = new Date().toISOString().split('T')[0];
     const journalEntry = journalEntries[today] || '';
     const wordCount = journalEntry.trim() ? journalEntry.trim().split(/\s+/).length : 0;
@@ -66,7 +92,6 @@
         <div class="mh-title">Character Journey</div>
         <div class="mh-grid mh-grid-cols-2">
           ${stages.map(function(stage) {
-            // XP logic
             const requiredXp = stage.id * 5 * 100;
             const percent = Math.min(1, xp / requiredXp);
             const xpNeeded = Math.max(0, requiredXp - xp);
@@ -185,39 +210,29 @@
 
   // --- Logic ---
   function saveState() {
-    setLS('mh_xp', xp);
-    setLS('mh_gold', gold);
-    setLS('mh_level', level);
     setLS('mh_unlockedCards', unlockedCards);
     setLS('mh_completedQuests', completedQuests);
     setLS('mh_activeStage', activeStage);
     setLS('mh_lastReset', lastReset);
     setLS('mh_journalEntries', journalEntries);
   }
-  function addXp(amount) {
-    xp += amount;
-    const newLevel = Math.floor(xp / 100) + 1;
-    if (newLevel > level) {
-      const levelsGained = newLevel - level;
-      level = newLevel;
-      gold += levelsGained * 50;
-      alert(`Level Up! You are now level ${newLevel}!\nYou received ${levelsGained * 50} gold for leveling up!`);
-    }
-    saveState();
-    render();
+  async function addXp(amount) {
+    await addXpBackend(amount);
+    await render();
   }
-  function onConvertXp() {
+  async function onConvertXp() {
     const input = document.getElementById('mh-xp-input');
     const amount = Number(input.value);
     if (isNaN(amount) || amount <= 0) { alert('Please enter a valid XP amount'); return; }
     if (amount > xp) { alert("You don't have enough XP!"); return; }
-    const goldAmount = Math.floor(amount * 0.5);
-    xp -= amount;
-    gold += goldAmount;
+    // For now, just remove XP locally and add gold locally (gold is local only)
+    // In a real app, gold should also be backend
+    await addXpBackend(-amount); // Remove XP from backend
+    gold += Math.floor(amount * 0.5);
     input.value = '';
-    alert(`Converted ${amount} XP to ${goldAmount} Gold!`);
+    alert(`Converted ${amount} XP to ${Math.floor(amount * 0.5)} Gold!`);
     saveState();
-    render();
+    await render();
   }
   function unlockRandomCard() {
     const locked = cards.filter(card => !unlockedCards.includes(card.id));
@@ -229,14 +244,14 @@
       render();
     }
   }
-  function onCompleteQuest(questId) {
+  async function onCompleteQuest(questId) {
     if (!completedQuests.includes(questId)) {
       completedQuests.push(questId);
       const quest = quests.find(q => q.id === questId);
-      addXp(quest ? quest.xpReward : 0);
+      await addXp(quest ? quest.xpReward : 0);
       alert(`Quest completed! You earned ${quest ? quest.xpReward : 0} XP.`);
       saveState();
-      render();
+      await render();
     }
   }
   function onActivateStage(stageId) {
@@ -257,16 +272,16 @@
     journalEntries[today] = val;
     saveState();
   }
-  function onSaveJournal() {
+  async function onSaveJournal() {
     const today = new Date().toISOString().split('T')[0];
     const entry = journalEntries[today] || '';
     const wordCount = entry.trim() ? entry.trim().split(/\s+/).length : 0;
     if (wordCount >= 50) {
-      addXp(100);
+      await addXp(100);
       journalEntries[today + '_saved'] = true;
       alert('Journal saved! You earned 100 XP.');
       saveState();
-      render();
+      await render();
     } else {
       alert('Please write at least 50 words to save your journal.');
     }
