@@ -158,12 +158,12 @@
       </div>
     </div>
     <div id="headerRightBtns" style="display:flex;align-items:center;gap:1rem;">
-      <button id="reportsTopBtn" style="background:#005f7a;">Reports</button>
       <button id="logoutBtn">Logout</button>
     </div>
     <!-- Mobile hamburger dropdown -->
     <div id="mobileMenu" style="display:none;position:absolute;top:100%;left:0;width:180px;background:#fff;color:#333;box-shadow:0 4px 16px rgba(0,0,0,0.13);border-radius:0 0 8px 8px;z-index:1100;flex-direction:column;overflow:hidden;">
       <button id="mobilePlansBtn" style="background:none;color:#29acd8;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Plans</button>
+      <button id="mobileReportsBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Reports</button>
       <button id="mobileSettingsBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Settings</button>
       <button id="mobileLeadersBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Leaders</button>
       <button id="mobileStatusBtn" style="background:none;color:#008cba;padding:1rem;text-align:left;border:none;width:100%;font-size:1rem;">Status</button>
@@ -878,6 +878,7 @@
       const hamburgerMenuBtn = document.getElementById('hamburgerMenuBtn');
       const mobileMenu = document.getElementById('mobileMenu');
       const mobilePlansBtn = document.getElementById('mobilePlansBtn');
+      const mobileReportsBtn = document.getElementById('mobileReportsBtn');
       const mobileSettingsBtn = document.getElementById('mobileSettingsBtn');
       const mobileLeadersBtn = document.getElementById('mobileLeadersBtn');
       const mobileStatusBtn = document.getElementById('mobileStatusBtn');
@@ -961,6 +962,17 @@
           document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => btn.classList.remove('active'));
         });
       }
+      // Reports button logic
+      if (mobileReportsBtn) {
+        mobileReportsBtn.addEventListener('click', function() {
+          mobileMenu.style.display = 'none';
+          document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+          document.getElementById('reports').classList.add('active');
+          // Set active state on navs
+          document.querySelectorAll('.dashboard-nav button, .mobile-bottom-nav button').forEach(btn => btn.classList.remove('active'));
+        });
+      }
+
       // Settings section logic
       const genderLabel = document.getElementById('genderLabel');
       function updateCharacterImage(gender) {
