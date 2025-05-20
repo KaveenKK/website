@@ -368,8 +368,16 @@
     <div class="menu-overlay" id="menuOverlay"></div>
     <div id="sideMenu" style="position:fixed;top:0;right:0;z-index:40;height:100%;width:16rem;background:#fff;box-shadow:0 0 24px 0 rgba(0,0,0,0.08);transform:translateX(100%);transition:transform 0.3s; padding-top:5rem;padding-left:1rem;padding-right:1rem;">
       <div class="flex flex-col gap-6">
-        <a href="/auth/discord/user" class="button-primary" style="text-align:center; text-decoration:none;">User Login</a>
-        <a href="/auth/discord" class="button-secondary" style="text-align:center; text-decoration:none;">Coach Login</a>
+        <button class="button-primary" id="userLoginExpandBtn" style="text-align:center;">User Login</button>
+        <div id="userLoginOptions" style="display:none;flex-direction:column;gap:0.5em;margin-bottom:0.5em;">
+          <button class="button-secondary" id="userLoginDiscordBtn" style="text-align:center;">Login with Discord</button>
+          <button class="button-secondary" id="userLoginEmailBtn" style="text-align:center;">Login with Email</button>
+        </div>
+        <button class="button-secondary" id="coachLoginExpandBtn" style="text-align:center;">Coach Login</button>
+        <div id="coachLoginOptions" style="display:none;flex-direction:column;gap:0.5em;margin-bottom:0.5em;">
+          <button class="button-secondary" id="coachLoginDiscordBtn" style="text-align:center;">Login with Discord</button>
+          <button class="button-secondary" id="coachLoginEmailBtn" style="text-align:center;">Login with Email</button>
+        </div>
         <a href="https://discord.gg/SYtbqPMqju" class="button-secondary" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;text-align:center; text-decoration:none;">
           <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:8px;">
             <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -411,6 +419,56 @@
       menuBtn.classList.remove('active');
       menuOverlay.classList.remove('active');
       sideMenu.style.transform = 'translateX(100%)';
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Expandable login logic
+      const menu = document.querySelector('#sideMenu .flex.flex-col.gap-6');
+      if (menu) {
+        menu.innerHTML = `
+          <button class="button-primary" id="userLoginExpandBtn" style="text-align:center;">User Login</button>
+          <div id="userLoginOptions" style="display:none;flex-direction:column;gap:0.5em;margin-bottom:0.5em;">
+            <button class="button-secondary" id="userLoginDiscordBtn" style="text-align:center;">Login with Discord</button>
+            <button class="button-secondary" id="userLoginEmailBtn" style="text-align:center;">Login with Email</button>
+          </div>
+          <button class="button-secondary" id="coachLoginExpandBtn" style="text-align:center;">Coach Login</button>
+          <div id="coachLoginOptions" style="display:none;flex-direction:column;gap:0.5em;margin-bottom:0.5em;">
+            <button class="button-secondary" id="coachLoginDiscordBtn" style="text-align:center;">Login with Discord</button>
+            <button class="button-secondary" id="coachLoginEmailBtn" style="text-align:center;">Login with Email</button>
+          </div>
+          <a href="https://discord.gg/SYtbqPMqju" class="button-secondary" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;gap:8px;text-align:center; text-decoration:none;">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:8px;">
+              <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276c-.598.3428-1.2205.6447-1.8733.8923a.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1835 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1835 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+              </svg>
+            </span>
+            Join Discord
+          </a>
+        `;
+        // Add expand/collapse logic
+        document.getElementById('userLoginExpandBtn').onclick = () => {
+          const opts = document.getElementById('userLoginOptions');
+          opts.style.display = opts.style.display === 'flex' ? 'none' : 'flex';
+        };
+        document.getElementById('coachLoginExpandBtn').onclick = () => {
+          const opts = document.getElementById('coachLoginOptions');
+          opts.style.display = opts.style.display === 'flex' ? 'none' : 'flex';
+        };
+        // User login options
+        document.getElementById('userLoginDiscordBtn').onclick = () => {
+          window.location.href = '/auth/discord/user';
+        };
+        document.getElementById('userLoginEmailBtn').onclick = () => {
+          window.location.href = '/user_email_login.html';
+        };
+        // Coach login options
+        document.getElementById('coachLoginDiscordBtn').onclick = () => {
+          window.location.href = '/auth/discord';
+        };
+        document.getElementById('coachLoginEmailBtn').onclick = () => {
+          window.location.href = '/coach_email_login.html';
+        };
+      }
     });
     // Step logic
     const stepContainer = document.getElementById('stepContainer');
@@ -519,8 +577,7 @@
               <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Continue as User</h2>
               <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <button class="button-primary" id="userEmailSignupBtn">Sign up with Email</button>
-                <button class="button-secondary" id="userEmailLoginBtn">Log in with Email</button>
-                <button class="button-secondary" id="userDiscordBtn">Sign up with Discord</button>
+                <button class="button-secondary" id="userLoginDiscordBtn">Login with Discord</button>
               </div>
             </div>
           </div>
@@ -533,11 +590,7 @@
           currentStep = 'user-email-signup';
           renderStep();
         };
-        document.getElementById('userEmailLoginBtn').onclick = () => {
-          currentStep = 'user-email-login';
-          renderStep();
-        };
-        document.getElementById('userDiscordBtn').onclick = () => {
+        document.getElementById('userLoginDiscordBtn').onclick = () => {
           // Discord OAuth flow for user
           const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
                         window.navigator.standalone ||
@@ -560,59 +613,28 @@
           }
         };
       } else if (currentStep === 'user-email-signup') {
-        console.log('[DEBUG] Rendering user-email-signup step');
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4">
-            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnUserSignup" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
             <div class="main-card animate-slide-in">
               <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Sign Up with Email</h2>
-              <form id="emailSignupForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
+              <form id="userEmailSignupForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
                 <input type="email" id="signupEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
                 <input type="password" id="signupPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                <input type="hidden" id="signupEmailHidden" />
                 <button type="submit" class="button-primary" id="signupSubmitBtn">Sign Up</button>
-                <div id="emailSignupMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
-              </form>
-              <div id="codeSection" style="display:none;flex-direction:column;gap:0.5rem;margin-top:1.2rem;">
-                <input type="text" id="signupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                <button type="button" id="resendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
-                <button type="button" id="verifyCodeBtn" class="button-primary" style="margin-top:0.7rem;">Verify Code</button>
-              </div>
-            </div>
-          </div>
-        `;
-        document.getElementById('backBtn').onclick = () => {
-          currentStep = 'select-type';
-          renderStep();
-        };
-        console.log('[DEBUG] Calling addEmailSignupLogic');
-        addEmailSignupLogic();
-      } else if (currentStep === 'user-email-login') {
-        stepContainer.innerHTML = `
-          <div class="w-full max-w-2xl mx-auto px-4">
-            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnUserLogin" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-              <span>Back</span>
-            </button>
-            <div class="main-card animate-slide-in">
-              <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Log In with Email</h2>
-              <form id="userEmailLoginForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
-                <input type="email" id="userLoginEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                <input type="password" id="userLoginPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                <button type="submit" class="button-primary" id="userLoginSubmitBtn">Log In</button>
-                <div id="userEmailLoginMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
+                <div id="userEmailSignupMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
               </form>
             </div>
           </div>
         `;
-        document.getElementById('backBtnUserLogin').onclick = () => {
+        document.getElementById('backBtnUserSignup').onclick = () => {
           currentStep = 'user-auth-choice';
           renderStep();
         };
-        addUserEmailLoginLogic();
+        addEmailSignupLogic();
       } else if (currentStep === 'coach-follower-question') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4 animate-slide-in">
@@ -689,8 +711,7 @@
               <h2 class="text-2xl md:text-3xl font-bold text-center mb-8">Continue as Coach</h2>
               <div class="flex flex-col md:flex-row gap-4 justify-center">
                 <button class="button-primary" id="coachEmailSignupBtn">Sign up with Email</button>
-                <button class="button-secondary" id="coachEmailLoginBtn">Log in with Email</button>
-                <button class="button-secondary" id="coachDiscordBtn">Sign up with Discord</button>
+                <button class="button-secondary" id="coachLoginDiscordBtn">Login with Discord</button>
               </div>
             </div>
           </div>
@@ -703,11 +724,7 @@
           currentStep = 'coach-email-signup';
           renderStep();
         };
-        document.getElementById('coachEmailLoginBtn').onclick = () => {
-          currentStep = 'coach-email-login';
-          renderStep();
-        };
-        document.getElementById('coachDiscordBtn').onclick = () => {
+        document.getElementById('coachLoginDiscordBtn').onclick = () => {
           // Discord OAuth flow for coach
           const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
                         window.navigator.standalone ||
@@ -732,7 +749,7 @@
       } else if (currentStep === 'coach-email-signup') {
         stepContainer.innerHTML = `
           <div class="w-full max-w-2xl mx-auto px-4">
-            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtn" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
+            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnCoachSignup" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
               <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
               <span>Back</span>
             </button>
@@ -741,60 +758,26 @@
               <form id="coachEmailSignupForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
                 <input type="email" id="coachSignupEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
                 <input type="password" id="coachSignupPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                <div id="coachCodeSection" style="display:none;flex-direction:column;gap:0.5rem;">
-                  <input type="text" id="coachSignupCode" placeholder="Verification Code" maxlength="6" style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                  <button type="button" id="coachResendCodeBtn" class="button-secondary" style="width:100%;">Resend Code</button>
-                </div>
                 <button type="submit" class="button-primary" id="coachSignupSubmitBtn">Sign Up</button>
-                <button type="button" id="coachVerifyCodeBtn" class="button-primary" style="display:none;">Verify Code</button>
                 <div id="coachEmailSignupMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
               </form>
             </div>
           </div>
         `;
-        document.getElementById('backBtn').onclick = () => {
-          currentStep = 'select-type';
-          renderStep();
-        };
-        addCoachEmailSignupLogic();
-      } else if (currentStep === 'coach-email-login') {
-        stepContainer.innerHTML = `
-          <div class="w-full max-w-2xl mx-auto px-4">
-            <button class="flex items-center mb-8 hover:underline gap-2 back-btn-white" id="backBtnCoachLogin" style="background:none;border:none;cursor:pointer;font:inherit;color:#fff;">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"/></svg>
-              <span>Back</span>
-            </button>
-            <div class="main-card animate-slide-in">
-              <h2 class="text-2xl md:text-3xl font-bold text-center mb-6">Log In as Coach with Email</h2>
-              <form id="coachEmailLoginForm" style="width:100%;max-width:400px;margin:0 auto 1.5rem auto;padding:1.2rem 1rem;background:#fff;border-radius:1rem;box-shadow:0 2px 12px rgba(0,0,0,0.07);display:flex;flex-direction:column;gap:0.7rem;">
-                <input type="email" id="coachLoginEmail" placeholder="Email" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                <input type="password" id="coachLoginPassword" placeholder="Password" required style="padding:0.7rem 1rem;border-radius:0.7rem;border:1px solid #ccc;font-size:1rem;">
-                <button type="submit" class="button-primary" id="coachLoginSubmitBtn">Log In</button>
-                <div id="coachEmailLoginMsg" style="margin-top:0.5rem;font-size:0.98rem;text-align:center;"></div>
-              </form>
-            </div>
-          </div>
-        `;
-        document.getElementById('backBtnCoachLogin').onclick = () => {
+        document.getElementById('backBtnCoachSignup').onclick = () => {
           currentStep = 'coach-auth-choice';
           renderStep();
         };
-        addCoachEmailLoginLogic();
+        addCoachEmailSignupLogic();
       }
     }
     renderStep();
     function addEmailSignupLogic() {
-      const form = document.getElementById('emailSignupForm');
-      if (!form) { console.error('[DEBUG] emailSignupForm not found'); return; }
+      const form = document.getElementById('userEmailSignupForm');
       const emailInput = document.getElementById('signupEmail');
       const passwordInput = document.getElementById('signupPassword');
-      const codeSection = document.getElementById('codeSection');
-      const codeInput = document.getElementById('signupCode');
       const signupBtn = document.getElementById('signupSubmitBtn');
-      const verifyBtn = document.getElementById('verifyCodeBtn');
-      const msg = document.getElementById('emailSignupMsg');
-      const resendBtn = document.getElementById('resendCodeBtn');
-      const emailHidden = document.getElementById('signupEmailHidden');
+      const msg = document.getElementById('userEmailSignupMsg');
       let email = '';
       form.onsubmit = async (e) => {
         e.preventDefault();
@@ -803,7 +786,6 @@
         signupBtn.disabled = true;
         msg.textContent = '';
         email = emailInput.value.trim();
-        emailHidden.value = email;
         localStorage.setItem('pendingSignupEmail', email);
         const password = passwordInput.value;
         console.log('[DEBUG] Signup submit:', { email, password });
@@ -817,24 +799,12 @@
           const data = await res.json();
           console.log('[DEBUG] Signup response:', data);
           if (res.ok && data.success) {
-            if (!codeSection) { console.error('[DEBUG] codeSection not found after signup'); }
-            if (!verifyBtn) { console.error('[DEBUG] verifyBtn not found after signup'); }
-            if (codeSection) codeSection.style.display = 'flex';
-            if (signupBtn) signupBtn.style.display = 'none';
-            if (verifyBtn) verifyBtn.style.display = 'inline-block';
-            if (emailInput) emailInput.style.display = 'none';
-            if (passwordInput) passwordInput.style.display = 'none';
-            if (document.getElementById('signupEmailHidden')) document.getElementById('signupEmailHidden').style.display = 'none';
-            msg.innerHTML = `Verification code sent to: <b>${email}</b>`;
+            msg.textContent = 'Verification code sent to your email.';
           } else {
             msg.textContent = data.error || 'Signup failed.';
             console.error('[DEBUG] Signup failed:', data.error);
-            if (!codeSection) { console.error('[DEBUG] codeSection not found on signup error'); }
-            if (codeSection) codeSection.style.display = 'none';
-            if (verifyBtn) verifyBtn.style.display = 'none';
           }
         } catch (err) {
-          console.error('[DEBUG] Signup network error:', err);
           msg.textContent = 'Network error.';
         }
         signupBtn.disabled = false;
@@ -845,12 +815,8 @@
       const form = document.getElementById('coachEmailSignupForm');
       const emailInput = document.getElementById('coachSignupEmail');
       const passwordInput = document.getElementById('coachSignupPassword');
-      const codeSection = document.getElementById('coachCodeSection');
-      const codeInput = document.getElementById('coachSignupCode');
       const signupBtn = document.getElementById('coachSignupSubmitBtn');
-      const verifyBtn = document.getElementById('coachVerifyCodeBtn');
       const msg = document.getElementById('coachEmailSignupMsg');
-      const resendBtn = document.getElementById('coachResendCodeBtn');
       let email = '';
       form.onsubmit = async (e) => {
         e.preventDefault();
@@ -869,93 +835,16 @@
           });
           const data = await res.json();
           if (res.ok && data.success) {
-            if (!codeSection) { console.error('[DEBUG] codeSection not found after signup'); }
-            if (!verifyBtn) { console.error('[DEBUG] verifyBtn not found after signup'); }
-            if (codeSection) codeSection.style.display = 'flex';
-            if (signupBtn) signupBtn.style.display = 'none';
-            if (verifyBtn) verifyBtn.style.display = 'inline-block';
-            if (emailInput) emailInput.style.display = 'none';
-            if (passwordInput) passwordInput.style.display = 'none';
-            if (document.getElementById('signupEmailHidden')) document.getElementById('signupEmailHidden').style.display = 'none';
             msg.textContent = 'Verification code sent to your email.';
           } else {
             msg.textContent = data.error || 'Signup failed.';
             console.error('[DEBUG] Signup failed:', data.error);
-            if (!codeSection) { console.error('[DEBUG] codeSection not found on signup error'); }
-            if (codeSection) codeSection.style.display = 'none';
-            if (verifyBtn) verifyBtn.style.display = 'none';
           }
         } catch (err) {
           msg.textContent = 'Network error.';
         }
         signupBtn.disabled = false;
         coachSignupInProgress = false;
-      };
-    }
-    function addUserEmailLoginLogic() {
-      const form = document.getElementById('userEmailLoginForm');
-      const emailInput = document.getElementById('userLoginEmail');
-      const passwordInput = document.getElementById('userLoginPassword');
-      const loginBtn = document.getElementById('userLoginSubmitBtn');
-      const msg = document.getElementById('userEmailLoginMsg');
-      form.onsubmit = async (e) => {
-        e.preventDefault();
-        loginBtn.disabled = true;
-        msg.textContent = '';
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        if (!email || !password) { msg.textContent = 'Email and password required.'; loginBtn.disabled = false; return; }
-        try {
-          const res = await fetch('/auth/email-login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password })
-          });
-          const data = await res.json();
-          if (res.ok && data.success && data.token) {
-            msg.textContent = 'Login successful! Redirecting...';
-            localStorage.setItem('userToken', data.token);
-            setTimeout(() => { window.location.href = '/user_dashboard.html'; }, 1200);
-          } else {
-            msg.textContent = data.error || 'Login failed.';
-          }
-        } catch (err) {
-          msg.textContent = 'Network error.';
-        }
-        loginBtn.disabled = false;
-      };
-    }
-    function addCoachEmailLoginLogic() {
-      const form = document.getElementById('coachEmailLoginForm');
-      const emailInput = document.getElementById('coachLoginEmail');
-      const passwordInput = document.getElementById('coachLoginPassword');
-      const loginBtn = document.getElementById('coachLoginSubmitBtn');
-      const msg = document.getElementById('coachEmailLoginMsg');
-      form.onsubmit = async (e) => {
-        e.preventDefault();
-        loginBtn.disabled = true;
-        msg.textContent = '';
-        const email = emailInput.value.trim();
-        const password = passwordInput.value;
-        if (!email || !password) { msg.textContent = 'Email and password required.'; loginBtn.disabled = false; return; }
-        try {
-          const res = await fetch('/auth/email-login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, role: 'coach' })
-          });
-          const data = await res.json();
-          if (res.ok && data.success && data.token) {
-            msg.textContent = 'Login successful! Redirecting...';
-            localStorage.setItem('coachToken', data.token);
-            setTimeout(() => { window.location.href = '/coach_dashboard.html'; }, 1200);
-          } else {
-            msg.textContent = data.error || 'Login failed.';
-          }
-        } catch (err) {
-          msg.textContent = 'Network error.';
-        }
-        loginBtn.disabled = false;
       };
     }
     document.addEventListener('click', async (event) => {
